@@ -276,5 +276,5 @@ document.addEventListener("DOMContentLoaded", function () {
   setTimeout(function () {
       popup.style.display = "none";
   }, 30 * 1000);
-});
+
 
