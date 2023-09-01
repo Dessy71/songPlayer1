@@ -266,9 +266,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 30 * 60 * 1000);
   });
 
-  // Hide the popup after 30 seconds
-  setTimeout(function () {
-      popup.style.display = "none";
-  }, 30 * 1000);
+ 
 });
 
