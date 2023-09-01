@@ -249,32 +249,26 @@ function clicked(element){
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const popup = document.getElementById("popup");
-  const contributeBtn = document.getElementById("contribute-btn");
-  const notReadyBtn = document.getElementById("not-ready-btn");
-  const instructions = document.getElementById("instructions");
+  const popup = document.querySelector(".popup");
+  const instructions = document.querySelector(".instructions");
 
   // Show the popup initially after 10 minutes
   setTimeout(function () {
       popup.style.display = "block";
-  }, 0.5 * 60 * 1000);
+  }, 1 * 60 * 1000);
 
-      // Show the popup again after 30 minutes
+  // Handle 'Not Ready' button click
+  popup.addEventListener("click", function () {
+      popup.style.display = "none";
+      // Show the popup again after 30 seconds
       setTimeout(function () {
           popup.style.display = "block";
       }, 30 * 60 * 1000);
-  });
-
-  // Hide the popup when clicking anywhere on the webpage
-  document.addEventListener("click", function (e) {
-      if (e.target !== popup && e.target !== contributeBtn && e.target !== notReadyBtn) {
-          popup.style.display = "none";
-      }
   });
 
   // Hide the popup after 30 seconds
   setTimeout(function () {
       popup.style.display = "none";
   }, 30 * 1000);
-
+});
 
