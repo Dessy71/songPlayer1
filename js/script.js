@@ -255,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Show the popup initially after 10 minutes
   setTimeout(function () {
       popup.style.display = "block";
-  }, 1 * 60 * 1000);
+  }, 3 * 60 * 1000);
 
   // Handle 'Not Ready' button click
   popup.addEventListener("click", function () {
