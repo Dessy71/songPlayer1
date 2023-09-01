@@ -243,3 +243,66 @@ ul li.playing{
   pointer-events: none;
   color: var(--violet);
 }
+/* Base styles */
+
+/* ... (Your existing CSS) ... */
+
+/* Media Queries */
+@media (max-width: 768px) {
+  /* Adjust styles for screens up to 768px wide */
+
+  .wrapper {
+    width: 70%;
+    max-width: 400px; /* Added max-width for smaller screens */
+  }
+
+  .img-area {
+    height: 180px; /* Reduced image area height */
+  }
+
+  .song-details {
+    margin: 10px 0;
+  }
+
+  .song-details .name {
+    font-size: 16px; /* Smaller font size for song name */
+  }
+
+  .song-details .artist {
+    font-size: 14px; /* Smaller font size for artist */
+    line-height: 28px;
+  }
+
+  .progress-area .song-timer span {
+    font-size: 10px; /* Smaller font size for timer */
+  }
+
+  .controls {
+    margin: 15px 0 5px 0;
+  }
+
+  .controls i {
+    font-size: 20px; /* Smaller icon size */
+  }
+
+  .controls i:nth-child(2),
+  .controls i:nth-child(4) {
+    font-size: 30px;
+  }
+
+  .play-pause {
+    height: 40px; /* Smaller play/pause button */
+    width: 40px;
+  }
+
+  .play-pause::before {
+    height: 30px;
+    width: 30px;
+  }
+
+  .play-pause i {
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+  }
+}
