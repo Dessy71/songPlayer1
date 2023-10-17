@@ -45,7 +45,7 @@ body{
 }
 .top-bar i{
   font-size: 30px;
-  color: var(--lightblack);
+  color: rgb(31, 132, 3)!important;;
 }
 .top-bar i:first-child{
   margin-left: -7px;
