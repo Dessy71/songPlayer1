@@ -419,7 +419,7 @@ button {
   border-radius: 20px;
   padding: 5px 10px;
   outline: none;
-  box-shadow: 0 0 30px  rgba(55, 255, 0, 0.889); /* Replace with your rainbow shadow effect */
+  box-shadow: 0 0 30px  rgba(83, 83, 83, 0.889); /* Replace with your rainbow shadow effect */
   transition: box-shadow 0.3s;
   width: 150px;
   background: linear-gradient(rgba(225, 141, 196, 0.533),rgba(140, 171, 225, 0.483));
