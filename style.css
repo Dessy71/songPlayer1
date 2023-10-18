@@ -412,20 +412,22 @@ button {
   display: flex;
   align-items: center;
   margin-right: 20px;
-}
+  }
 
 #search-input {
   border: none;
   border-radius: 20px;
   padding: 5px 10px;
   outline: none;
-  box-shadow: 0 0 30px  rgb(31, 132, 3); /* Replace with your rainbow shadow effect */
+  box-shadow: 0 0 30px  rgba(55, 255, 0, 0.889); /* Replace with your rainbow shadow effect */
   transition: box-shadow 0.3s;
-  width: 200px;
+  width: 150px;
+  background: linear-gradient(rgba(225, 141, 196, 0.533),rgba(140, 171, 225, 0.483));
 }
 
 #search-input:focus {
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7); /* Adjust the rainbow effect when focused */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+  background: #f0f0f0; /* Adjust the rainbow effect when focused */
 }
 
 /* Suggestions styles */
