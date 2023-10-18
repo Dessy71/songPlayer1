@@ -259,3 +259,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 30 * 60 * 1000);
   });
 });
+
+const searchInput = document.getElementById("search-input");
+const searchSuggestions = document.getElementById("search-suggestions");
+
+searchInput.addEventListener("input", handleSearchInput);
+
+function handleSearchInput() {
+    const searchText = searchInput.value.trim().toLowerCase();
+    const filteredMusic = allMusic.filter((music) => {
+        return music.name.toLowerCase().includes(searchText);
+    });
+
+    if (searchText === "") {
+        searchSuggestions.style.display = "none";
+    } else {
+        searchSuggestions.style.display = "block";
+        displaySuggestions(filteredMusic);
+    }
+}
+
+function displaySuggestions(suggestions) {
+    searchSuggestions.innerHTML = "";
+
+    if (suggestions.length === 0) {
+        searchSuggestions.innerHTML = '<div class="suggestion">No matching songs found.</div>';
+    } else {
+        suggestions.forEach((music) => {
+            const suggestion = document.createElement("div");
+            suggestion.className = "suggestion";
+            suggestion.textContent = music.name;
+            suggestion.addEventListener("click", () => {
+                loadMusic(allMusic.indexOf(music) + 1);
+                playMusic();
+                playingSong();
+                searchInput.value = "";
+                searchSuggestions.style.display = "none";
+            });
+            searchSuggestions.appendChild(suggestion);
+        });
+    }
+}
