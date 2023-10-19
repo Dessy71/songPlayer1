@@ -12,6 +12,16 @@ const musicList = wrapper.querySelector(".music-list");
 const moreMusicBtn = wrapper.querySelector("#more-music");
 const closemoreMusic = musicList.querySelector("#close");
 const downloadButton = document.querySelector("#download");
+const repeatPlaylistBtn = document.getElementById("repeat-plist");
+let repeatState = "all"; // Initial state
+
+mainAudio.addEventListener("ended", playNext);
+
+function playNext() {
+  nextMusic();
+}
+
+
 
 let musicIndex = Math.floor((Math.random() * allMusic.length) + 1);
 let isMusicPaused = true;
@@ -19,6 +29,7 @@ let isMusicPaused = true;
 window.addEventListener("load", () => {
   loadMusic(musicIndex);
   playingSong();
+  
 });
 
 function loadMusic(indexNumb) {
@@ -153,7 +164,7 @@ function clicked(element) {
 
 // Code for what to do after song ended
 mainAudio.addEventListener("ended", () => {
-  let getText = repeatBtn.innerText;
+  let getText = repeatPlaylistBtn.innerText;
   switch (getText) {
     case "repeat":
       nextMusic();
@@ -164,11 +175,15 @@ mainAudio.addEventListener("ended", () => {
       playMusic();
       break;
     case "shuffle":
-      let randIndex = Math.floor((Math.random() * allMusic.length) + 1);
-      do {
-        randIndex = Math.floor((Math.random() * allMusic.length) + 1);
-      } while (musicIndex == randIndex);
-      musicIndex = randIndex;
+      if (shuffleState) {
+        let randIndex;
+        do {
+          randIndex = Math.floor((Math.random() * allMusic.length) + 1);
+        } while (musicIndex == randIndex);
+        musicIndex = randIndex;
+      } else {
+        nextMusic();
+      }
       loadMusic(musicIndex);
       playMusic();
       playingSong();
@@ -233,14 +248,6 @@ downloadButton.addEventListener("click", (event) => {
   document.body.removeChild(link);
 });
 
-// Format time in minutes and seconds
-function formatTime(time) {
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-  const formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  return formattedTime;
-}
-
 document.addEventListener("DOMContentLoaded", function () {
   const popup = document.querySelector(".popup");
   const instructions = document.querySelector(".instructions");
@@ -266,37 +273,48 @@ const searchSuggestions = document.getElementById("search-suggestions");
 searchInput.addEventListener("input", handleSearchInput);
 
 function handleSearchInput() {
-    const searchText = searchInput.value.trim().toLowerCase();
-    const filteredMusic = allMusic.filter((music) => {
-        return music.name.toLowerCase().includes(searchText);
-    });
+  const searchText = searchInput.value.trim().toLowerCase();
+  const filteredMusic = allMusic.filter((music) => {
+    return music.name.toLowerCase().includes(searchText);
+  });
 
-    if (searchText === "") {
-        searchSuggestions.style.display = "none";
-    } else {
-        searchSuggestions.style.display = "block";
-        displaySuggestions(filteredMusic);
-    }
+  if (searchText === "") {
+    searchSuggestions.style.display = "none";
+  } else {
+    searchSuggestions.style.display = "block";
+    displaySuggestions(filteredMusic);
+  }
 }
 
 function displaySuggestions(suggestions) {
-    searchSuggestions.innerHTML = "";
+  searchSuggestions.innerHTML = "";
 
-    if (suggestions.length === 0) {
-        searchSuggestions.innerHTML = '<div class="suggestion">No matching songs found.</div>';
-    } else {
-        suggestions.forEach((music) => {
-            const suggestion = document.createElement("div");
-            suggestion.className = "suggestion";
-            suggestion.textContent = music.name;
-            suggestion.addEventListener("click", () => {
-                loadMusic(allMusic.indexOf(music) + 1);
-                playMusic();
-                playingSong();
-                searchInput.value = "";
-                searchSuggestions.style.display = "none";
-            });
-            searchSuggestions.appendChild(suggestion);
-        });
-    }
+  if (suggestions.length === 0) {
+    searchSuggestions.innerHTML = '<div class="suggestion">No matching songs found.</div>';
+  } else {
+    suggestions.forEach((music) => {
+      const suggestion = document.createElement("div");
+      suggestion.className = "suggestion";
+      suggestion.textContent = music.name;
+      suggestion.addEventListener("click", () => {
+        loadMusic(allMusic.indexOf(music) + 1);
+        playMusic();
+        playingSong();
+        searchInput.value = "";
+        searchSuggestions.style.display = "none";
+      });
+      searchSuggestions.appendChild(suggestion);
+    });
+  }
 }
+
+
+
+// Drag and seek within the song
+progressArea.addEventListener("click", (e) => {
+  const progressWidth = progressArea.clientWidth;
+  const clickedOffsetX = e.offsetX;
+  mainAudio.currentTime = (clickedOffsetX / progressWidth) * mainAudio.duration;
+});
+
+// Other functions and event listeners...
