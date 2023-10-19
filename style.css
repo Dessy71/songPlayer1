@@ -17,6 +17,8 @@
   --darkwhite: #cecaca;
   --pinkshadow: #ffcbdd;
   --lightbshadow: rgba(0,0,0,0.15);
+  --pinkg: #7ddb4bb8;
+  --violetg: #f566669b;
 }
 .logo-background {
   /* Set the background image (your logo) */
@@ -79,7 +81,10 @@ body::before {
 }
 .top-bar i{
   font-size: 30px;
-  color: rgb(31, 132, 3)!important;;
+  background: linear-gradient(var(--pink) 0%, var(--violet) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .top-bar i:first-child{
   margin-left: -7px;
@@ -420,10 +425,10 @@ button {
   border-radius: 20px;
   padding: 5px 10px;
   outline: none;
-  box-shadow: 0 0 10px  rgb(83, 83, 83); /* Replace with your rainbow shadow effect */
+  box-shadow: 0 0 10px  rgba(3, 249, 27, 0.681); /* Replace with your rainbow shadow effect */
   transition: box-shadow 0.3s;
   width: 275px;
-  background: linear-gradient(rgba(246, 118, 201, 0.66),rgba(129, 167, 234, 0.685));
+  background:  linear-gradient(var(--pink) 0%, var(--violet) 100%);
 }
 
 #search-input:focus {
@@ -460,4 +465,8 @@ button {
     width: 100%; /* Make the input full width on smaller screens */
   }
   /* You can add more styles or adjustments for smaller screens here */
+}
+/* styles.css */
+#search-input::placeholder {
+  color: white; /* Set the placeholder text color to white */
 }
