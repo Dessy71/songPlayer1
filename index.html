@@ -1,215 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Welcome to Gyidi nnwom... Get To Listen To Over 200 SCG Songs Online For Free.">
-  <title>Gyidi Nwomm</title>
-  <link rel="shortcut icon" href="grrr.svg" type="imagejpg">
-
-  
-     
-<style type="text/css">
-  /* Default styling for the page */
-  body {
-    margin: 0;
-    padding: 0;
-    background-image: url('bck.svg');
-    background-size: cover;
-    background-repeat: no-repeat;
-  }
-  
-  /* Common styles for both bigger and smaller screens */
-  #content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    color: #fff;
-    font-family: "Poppins", sans-serif;
-    font-style: italic;
-    font-weight: bolder;
-    font-size-adjust: inherit;
-    text-align: center;
-  }
-  
-  h1 {
-   
-    margin-bottom: 1rem;
-    overflow: hidden; /* Ensures the typewriter effect */
-    white-space: nowrap; /* Prevents line breaks */
-    color: rgb(18, 197, 188);
-    font-weight: 900;
-  }
-  
-  @keyframes typewriter {
-    0% {
-      width: 0;
-    }
-    100% {
-      width: 100%; /* Change this value to control how much of the text appears before disappearing */
-    }
-  }
-  
-  @keyframes blinkCursor {
-    from, to {
-      border-color: transparent;
-    }
-    50% {
-      border-color: #f5f2f2;
-    }
-  }
-  
-  #content h1 {
-    animation: typewriter 10s steps(40) infinite, blinkCursor 0.5s steps(1) infinite;
-  }
-  
-  #logo {
-    width: 100px;
-    height: auto;
-    margin-bottom: 2rem;
-    max-width: 100%;
-    /* Animation */
-    animation: popOut 20s infinite alternate;
-    /* Positioning */
-    position: fixed;
-    top: 20px;
-    left: 20px;
-  }
-  
-  @keyframes popOut {
-    0% {
-      transform: scale(0);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  #slide-through-tab {
-  margin-top: 2rem;
-}
-
-#slide-through-tab a {
-  color: rgb(249, 252, 249);
-  font-size: 1.2rem;
-  text-decoration: none;
-  font-weight: 500;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  padding: 10px 20px;
-  background: linear-gradient(45deg, #ff00cc, #333399);
-  border-radius: 30px;
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Added transform transition */
-  box-shadow: 0px 6px 22px -6px gray;
-}
-
-#slide-through-tab a:hover {
-  background: transparent;
-  transform: rotate(45deg); /* Added rotation on hover */
-}
-
-  
-  /* Media query for smaller screens */
-  @media screen and (max-width: 768px) {
-    h1 {
-      font-size: 1.5rem; /* Adjust the font size for smaller screens */
-    }
-  
-    @keyframes typewriter {
-      0% {
-        width: 0;
-      }
-      100% {
-        width: 100%; /* Reduce the width for smaller screens */
-      }
-    }
-  }
-  
-  /* Media query for bigger screens */
-  @media screen and (min-width: 1200px) {
-    h1 {
-      font-size: 4rem; /* Adjust the font size for bigger screens */
-    }
-  }
-  </style>
-</head>
-
-<body>
-  <div id="bck-img"></div>
-
-
-
-  <div id="content">
-    <img id="logo" src="grrr.svg" alt="Nike Logo">
-    <h1 style="font-family: monospace; font-size: 2rem; font-weight:900; color: rgb(255, 255, 255);">AKWAABA</h1>
-    <h1 style=" font-size: 3rem;">GYIDI NNWOM</h1>
-    <p>Listen To Over 300 SCG Songs Online</p>
-
-    <div id="slide-through-tab">
-      <a href="https://gyidi-music.vercel.app/home.html">Start Listening</a>
-     
-    </div>
-    <br />
-    <div id="slide-through-tab">
-    
-      <a href="https://dessy-portfolio.vercel.app/" class="tab-link">Meet The Developer</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Welcome to Gyidi Nwom. Listen to over 200 SCG Songs online for free."
+    />
+    <title>Gyidi Nwom</title>
+    <link rel="shortcut icon" href="grrr.svg" type="image/jpg" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+  </head>
+  <body>
+    <div class="preloader">
+      <!-- Your preloader content goes here -->
+      <img src="pre.svg" alt="Preloader Image" />
     </div>
 
+    <div id="popup" class="popup">
+      <div class="popup-content">
+        <h2>Support Gyidi Music</h2>
+        <p>
+          If you appreciate our website, your support can make a significant
+          difference. We're currently using a limited, free hosting platform
+          that restricts some functionalities. By contributing, you enable us to
+          migrate to a customized platform, add more songs, and enhance the
+          website's speed and overall performance.
+        </p>
+        <p>
+          <a
+            href="https://dessy-portfolio.vercel.app/"
+            class="tab-link"
+            target="_blank"
+            >Click to Meet The Developer</a
+          >
+        </p>
+        <p>Simply click anywhere on the page to dismiss this message.</p>
+      </br>
+        <p class="instructions" id="instructions">
+          Send your contribution to Momo number:
+        </p>
+        <p>
+          <span style="color: rgb(3, 160, 157)"
+            ><strong>0542442084</strong></span
+          >
+          with <span style="color: green">'gyidi' as reference.</span>
+        </p>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div class="top-bar">
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Search music..." />
 
-  </div>
-
-  <script>
-    // JavaScript code for typewriter effect
-    const welcomeMsg = document.querySelector('h1');
-    const welcomeText = '';
-
-    let charIndex = 0;
-    function typeWriter() {
-      if (charIndex < welcomeText.length) {
-        welcomeMsg.textContent += welcomeText.charAt(charIndex);
-        charIndex++;
-        setTimeout(typeWriter, 100); // Adjust typing speed here (in milliseconds)
-      }
-    }
-
-    typeWriter();
-
-    // JavaScript code for logo animation
-    const logo = document.getElementById('logo');
-    logo.addEventListener('animationiteration', function() {
-      logo.classList.toggle('show');
-    });
-
-// JavaScript code for setting background image dimensions
-function setBackgroundImageDimensions() {
-  const backgroundImage = document.getElementById('bck-img');
-  const { width, height } = backgroundImage.getBoundingClientRect();
-  const aspectRatio = width / height;
-  const windowAspectRatio = window.innerWidth / window.innerHeight;
-
-  if (aspectRatio > windowAspectRatio) {
-    backgroundImage.style.width = 'auto';
-    backgroundImage.style.height = '100%';
-  } else {
-    backgroundImage.style.width = '100%';
-    backgroundImage.style.height = 'auto';
-  }
-}
-
-// Call the function initially and on window resize
-setBackgroundImageDimensions();
-window.addEventListener('resize', setBackgroundImageDimensions);
-
-  </script>
-
-<script type="text/javascript"> var infolinks_pid = 3404355; var infolinks_wsid = 0; </script>
- <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>
- <script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
-</body>
-
+          <div id="search-suggestions" class="suggestions"></div>
+        </div>
+        <i id="more-music" class="material-icons">queue_music</i>
+      </div>
+      <div class="img-area">
+        <img src="" alt="" />
+      </div>
+      <div class="song-details">
+        <p class="name"></p>
+        <p class="artist"></p>
+      </div>
+      <div class="progress-area">
+        <div class="progress-bar">
+          <audio id="main-audio" src=""></audio>
+        </div>
+        <div class="song-timer">
+          <span class="current-time">0:00</span>
+          <span class="max-duration">0:00</span>
+        </div>
+      </div>
+      <div class="controls">
+        <a
+          href="mailto:desmondantwi07@gmail.com?subject=Music%20Upload%20for%20GyidiNwomm&body=‼‼‼%20Please%20provide%20the%20following%20details%20of%20your%20audio.%0A%0A‼‼‼%20Don't%20forget%20to%20add%20your%20audio%20as%20an%20attachment%20to%20this%20email%0A%0ATitle%20of%20audio..........%0AEg:%20Onyame%20Wo%20Tumi%0A%0AArtist%20name........%0AEg:%20Obogu%20Seth%0A%0ASigned_____DessyInc"
+        >
+          <i class="material-icons" style="cursor: pointer">cloud_upload</i>
+        </a>
+        <i id="prev" class="material-icons">skip_previous</i>
+        <div class="play-pause">
+          <i class="material-icons play">play_arrow</i>
+        </div>
+        <i id="next" class="material-icons">skip_next</i>
+        <a id="download" download="" href="#" class="download-button"
+          ><i class="material-icons">file_download</i></a
+        >
+      </div>
+      <div class="music-list">
+        <div class="header">
+          <div class="row">
+            <i class="list material-icons">queue_music</i>
+            <span>Music list</span>
+          </div>
+          <i id="close" class="material-icons">close</i>
+        </div>
+        <ul>
+          <!-- here li list are coming from js -->
+        </ul>
+      </div>
+    </div>
+    <script src="js/music-list.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+      window.va =
+        window.va ||
+        function () {
+          (window.vaq = window.vaq || []).push(arguments);
+        };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+  </body>
 </html>
