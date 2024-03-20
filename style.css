@@ -48,7 +48,7 @@ body {
 body::before {
   content: "";
   /* Apply the .logo-background class as a pseudo-element */
-  background-image: url('/images/myLogo.svg');
+  background-image: url('/images/indLogo.svg');
   background-size: 80px 80px; /* Adjust the size as needed */
   background-repeat: repeat;
   opacity: 0.175; /* You can adjust the opacity as needed */
