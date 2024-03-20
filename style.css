@@ -22,7 +22,7 @@
 }
 .logo-background {
   /* Set the background image (your logo) */
-  background-image: url('/images/myLogo.svg');
+  background-image: url('/images/indLogo.svg');
   /* Set the background size to control the size of the tiles */
   background-size: 80px 80px; /* Adjust the size as needed */
   /* Set the background repeat to create the tiled effect */
@@ -60,20 +60,6 @@ body::before {
   z-index: -1; /* Place it behind the content */
 }
 
-.preloader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw; /* Take up the full width of the viewport */
-  height: 100vh; /* Take up the full height of the viewport */
- 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  opacity: 1;
-  transition: opacity 1s ease-in-out; /* Add a smooth transition effect */
-}
 
 .wrapper{
   width: 380px;
