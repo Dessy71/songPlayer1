@@ -169,3 +169,42 @@ button:hover{
 #chk:checked ~ .login label{
     transform: scale(.6);
 }
+
+/* Media queries for smartphones (max-width: 767px) */
+@media only screen and (max-width: 767px) {
+    .preloader {
+      /* Adjust preloader styles for smartphones */
+      display: none; /* Hide preloader on smartphones */
+    }
+  
+    .video-background {
+      /* Adjust video background styles for smartphones */
+      height: 200px; /* Adjust height for better display on smartphones */
+    }
+  
+    .logo-container {
+      /* Adjust logo container styles for smartphones */
+      text-align: center; /* Center-align the logo on smartphones */
+      margin-top: 20px; /* Add some margin for better spacing */
+    }
+  
+    .main {
+      /* Adjust main container styles for smartphones */
+      padding: 20px; /* Add padding for better spacing */
+    }
+  
+    .login,
+    .signup {
+      display: block; /* Show login and signup forms */
+      margin-bottom: 20px; /* Add some margin for better spacing */
+    }
+  
+    /* Adjust form input styles for smartphones */
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    button {
+      width: 100%; /* Make inputs and buttons full-width on smartphones */
+      margin-bottom: 10px; /* Add some margin for better spacing */
+    }
+  }
