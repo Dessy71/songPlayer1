@@ -48,7 +48,7 @@ body {
 body::before {
   content: "";
   /* Apply the .logo-background class as a pseudo-element */
-  background-image: url('myLogo.svg');
+  background-image: url('/images/myLogo.svg');
   background-size: 80px 80px; /* Adjust the size as needed */
   background-repeat: repeat;
   opacity: 0.175; /* You can adjust the opacity as needed */
@@ -66,8 +66,7 @@ body::before {
   left: 0;
   width: 100vw; /* Take up the full width of the viewport */
   height: 100vh; /* Take up the full height of the viewport */
-  background: url('/images/homPre.svg') center center no-repeat; /* Set the background image */
-  background-size: cover; /* Cover the entire container with the background image */
+ 
   display: flex;
   justify-content: center;
   align-items: center;
