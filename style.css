@@ -22,7 +22,7 @@
 }
 .logo-background {
   /* Set the background image (your logo) */
-  background-image: url('myLogo.svg');
+  background-image: url('/images/myLogo.svg');
   /* Set the background size to control the size of the tiles */
   background-size: 80px 80px; /* Adjust the size as needed */
   /* Set the background repeat to create the tiled effect */
@@ -64,21 +64,16 @@ body::before {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: #000000; /* You can set the background to your image */
+  width: 100vw; /* Take up the full width of the viewport */
+  height: 100vh; /* Take up the full height of the viewport */
+  background: url('/images/homPre.svg') center center no-repeat; /* Set the background image */
+  background-size: cover; /* Cover the entire container with the background image */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   opacity: 1;
   transition: opacity 1s ease-in-out; /* Add a smooth transition effect */
-}
-
-/* Style your image within the preloader */
-.preloader img {
-  max-width: 100%;
-  height: 50%;
 }
 
 .wrapper{
