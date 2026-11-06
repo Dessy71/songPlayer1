@@ -15,7 +15,7 @@ export const QueueDrawer: React.FC<QueueDrawerProps> = ({ isOpen, onClose }) => 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-black/60 backdrop-blur-xs">
+    <div className="safe-overlay fixed inset-0 z-40 flex justify-end bg-black/60 backdrop-blur-xs">
       <div className="w-full max-w-md bg-zinc-950 border-l border-white/10 h-full flex flex-col pb-24 shadow-2xl">
         <div className="flex items-center justify-between gap-2 px-5 py-3 border-b border-white/10 bg-zinc-900/70">
           <button

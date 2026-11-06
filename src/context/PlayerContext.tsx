@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState, useCallb
 import { Song, RepeatMode, isSongPubliclyPlayable } from '../types/music';
 import { supabase } from '../lib/supabase';
 import { resolvePlayableAudioUrl } from '../lib/offlineAudio';
+import { applyAudioVolume, usesSystemVolume } from '../lib/audioVolume';
 import { clearSermonProgress, saveSermonProgress } from '../lib/sermonProgress';
 
 interface PlayOptions {
@@ -29,6 +30,7 @@ interface PlayerContextValue {
   bufferedPercent: number;
   volume: number;
   isMuted: boolean;
+  systemVolumeControlled: boolean;
   shuffle: boolean;
   repeat: RepeatMode;
   playbackRate: number;
@@ -81,10 +83,13 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
   const [duration, setDuration] = useState(0);
   const [bufferedPercent, setBufferedPercent] = useState(0);
   const [volume, setVolumeState] = useState<number>(() => {
-    const saved = localStorage.getItem(VOLUME_STORAGE_KEY);
-    return saved ? Math.min(1, Math.max(0, parseFloat(saved))) : 0.9;
+    try {
+      const saved = Number.parseFloat(localStorage.getItem(VOLUME_STORAGE_KEY) || '');
+      return Number.isFinite(saved) ? Math.min(1, Math.max(0, saved)) : 0.9;
+    } catch { return 0.9; }
   });
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(volume === 0);
+  const [systemVolumeControlled] = useState(() => usesSystemVolume(navigator));
   const [shuffle, setShuffle] = useState(false);
   const [repeat, setRepeat] = useState<RepeatMode>('all');
   const [playbackRate, setPlaybackRateState] = useState(1);
@@ -116,7 +121,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
     const audio = new Audio();
     audio.preload = 'auto';
     audio.crossOrigin = 'anonymous';
-    audio.volume = volume;
+    applyAudioVolume(audio, volume, isMuted);
     audioRef.current = audio;
 
     const prefetcher = new Audio();
@@ -227,7 +232,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
           audio.currentTime = 0;
         }
         audio.playbackRate = isAuthenticated ? playbackRate : 1;
-        audio.volume = isMuted ? 0 : volume;
+        applyAudioVolume(audio, volume, isMuted);
 
         const playPromise = audio.play();
         if (playPromise !== undefined) {
@@ -365,15 +370,11 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
 
   const setVolume = useCallback(
     (vol: number) => {
-      if (!isAuthenticated) {
-        onRequireAccount('Create a free account to unlock full player controls!');
-        return;
-      }
-      const clamped = Math.max(0, Math.min(1, vol));
+      const clamped = Number.isFinite(vol) ? Math.max(0, Math.min(1, vol)) : 0.9;
       setVolumeState(clamped);
       setIsMuted(clamped === 0);
       if (audioRef.current) {
-        audioRef.current.volume = clamped;
+        applyAudioVolume(audioRef.current, clamped, clamped === 0);
       }
       try {
         localStorage.setItem(VOLUME_STORAGE_KEY, String(clamped));
@@ -381,23 +382,19 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
         // ignore
       }
     },
-    [isAuthenticated, onRequireAccount]
+    []
   );
 
   const toggleMute = useCallback(() => {
-    if (!isAuthenticated) {
-      onRequireAccount('Create a free account to unlock full player controls!');
-      return;
+    const next = !isMuted;
+    const restoredVolume = !next && volume === 0 ? 0.8 : volume;
+    setIsMuted(next);
+    if (restoredVolume !== volume) {
+      setVolumeState(restoredVolume);
+      try { localStorage.setItem(VOLUME_STORAGE_KEY, String(restoredVolume)); } catch { /* Storage can be blocked. */ }
     }
-    const audio = audioRef.current;
-    setIsMuted((prev) => {
-      const next = !prev;
-      if (audio) {
-        audio.volume = next ? 0 : volume || 0.8;
-      }
-      return next;
-    });
-  }, [volume, isAuthenticated, onRequireAccount]);
+    if (audioRef.current) applyAudioVolume(audioRef.current, restoredVolume, next);
+  }, [volume, isMuted]);
 
   const toggleShuffle = useCallback(() => {
     if (!isAuthenticated) {
@@ -622,6 +619,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
         bufferedPercent,
         volume,
         isMuted,
+        systemVolumeControlled,
         shuffle,
         repeat,
         playbackRate,
