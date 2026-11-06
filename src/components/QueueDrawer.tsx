@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Trash2, Play, ListMusic } from 'lucide-react';
+import { ArrowLeft, X, Trash2, Play, ListMusic } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
 import { CoverArt } from './CoverArt';
 import { formatDuration } from '../lib/format';
@@ -17,7 +17,25 @@ export const QueueDrawer: React.FC<QueueDrawerProps> = ({ isOpen, onClose }) => 
   return (
     <div className="fixed inset-0 z-40 flex justify-end bg-black/60 backdrop-blur-xs">
       <div className="w-full max-w-md bg-zinc-950 border-l border-white/10 h-full flex flex-col pb-24 shadow-2xl">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between gap-2 px-5 py-3 border-b border-white/10 bg-zinc-900/70">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-200 hover:bg-white/15 cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Go Back
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-1 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-200 hover:bg-white/15 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            Close
+          </button>
+        </div>
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10">
           <div className="flex items-center gap-2.5">
             <ListMusic className="w-5 h-5 text-amber-400" />
             <div>
@@ -25,12 +43,6 @@ export const QueueDrawer: React.FC<QueueDrawerProps> = ({ isOpen, onClose }) => 
               <p className="text-xs text-zinc-400">{queue.length} tracks queued</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-3 space-y-1">

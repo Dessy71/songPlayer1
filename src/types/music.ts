@@ -89,6 +89,10 @@ export interface UserProfile {
   support_number?: string | null;
   support_account_name?: string | null;
   is_verified_artiste?: boolean;
+  is_premium?: boolean;
+  premium_plan?: 'monthly' | 'yearly' | 'lifetime' | null;
+  premium_until?: string | null;
+  last_payment_reference?: string | null;
   created_at: string;
 }
 
@@ -108,8 +112,29 @@ export interface PlatformSettings {
   adsense_sidebar_slot_id?: string | null;
   adsense_popup_slot_id?: string | null;
   adsense_auto_ads: boolean;
+  premium_enabled?: boolean;
+  premium_monthly_price_ghs?: number;
+  premium_yearly_price_ghs?: number;
+  paystack_public_key?: string | null;
+  premium_currency?: string | null;
   updated_by?: string | null;
   updated_at: string;
+}
+
+export interface PremiumSubscription {
+  id: string;
+  user_id: string;
+  profile_id?: string | null;
+  user_email?: string | null;
+  plan_interval: 'monthly' | 'yearly';
+  amount_ghs: number;
+  currency: string;
+  paystack_reference: string;
+  paystack_status: string;
+  payment_channel?: string | null;
+  starts_at: string;
+  expires_at: string;
+  created_at: string;
 }
 
 export interface DailyVerseFlyer {
@@ -199,9 +224,23 @@ export type NavTab =
   | 'playlists'
   | 'recent'
   | 'offline'
+  | 'premium'
   | 'messages'
   | 'artiste-studio'
   | 'admin';
+
+export function isUserPremiumActive(
+  profile: UserProfile | null,
+  settings?: PlatformSettings | null,
+  nowMs: number = Date.now()
+): boolean {
+  if (!profile) return false;
+  if (profile.role === 'admin') return true;
+  if (settings && settings.premium_enabled === false) return true;
+  if (!profile.is_premium) return false;
+  if (profile.premium_plan === 'lifetime' || !profile.premium_until) return true;
+  return new Date(profile.premium_until).getTime() > nowMs;
+}
 
 export function isSongUpcomingPremiere(song: Song, nowMs: number = Date.now()): boolean {
   if (song.approval_status !== 'approved') return false;

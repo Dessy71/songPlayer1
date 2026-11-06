@@ -1,16 +1,57 @@
 @import "tailwindcss";
 
 @layer base {
+  html,
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-color: #09090b;
     color: #f4f4f5;
-    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: manipulation;
+    position: fixed;
+    inset: 0;
   }
 
-  h1, h2, h3, h4, .font-display {
+  #root {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   }
+}
+
+/* Prevent iOS Safari & mobile browsers from auto-zooming on inputs/selects */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Smooth touch scroll container without horizontal drift */
+.stable-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 /* Custom sleek scrollbars */
@@ -32,39 +73,33 @@
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Animated equalizer bars */
-@keyframes eq-bar-1 {
-  0%, 100% { height: 25%; }
-  50% { height: 95%; }
+/* GPU-only equalizer bars (transform: scaleY never causes layout reflows or viewport zoom) */
+@keyframes eq-scale-1 {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(0.95); }
 }
-@keyframes eq-bar-2 {
-  0%, 100% { height: 85%; }
-  40% { height: 30%; }
-  80% { height: 100%; }
+@keyframes eq-scale-2 {
+  0%, 100% { transform: scaleY(0.85); }
+  45% { transform: scaleY(0.35); }
+  80% { transform: scaleY(1); }
 }
-@keyframes eq-bar-3 {
-  0%, 100% { height: 45%; }
-  35% { height: 100%; }
-  70% { height: 20%; }
-}
-@keyframes eq-bar-4 {
-  0%, 100% { height: 70%; }
-  50% { height: 25%; }
+@keyframes eq-scale-3 {
+  0%, 100% { transform: scaleY(0.45); }
+  35% { transform: scaleY(1); }
+  70% { transform: scaleY(0.25); }
 }
 
-.animate-eq-1 { animation: eq-bar-1 0.85s ease-in-out infinite; }
-.animate-eq-2 { animation: eq-bar-2 0.7s ease-in-out infinite; }
-.animate-eq-3 { animation: eq-bar-3 0.95s ease-in-out infinite; }
-.animate-eq-4 { animation: eq-bar-4 0.78s ease-in-out infinite; }
-
-/* Subtle vinyl spin */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.eq-bar-1 {
+  transform-origin: bottom;
+  animation: eq-scale-1 0.85s ease-in-out infinite;
 }
-
-.animate-spin-slow {
-  animation: spin-slow 18s linear infinite;
+.eq-bar-2 {
+  transform-origin: bottom;
+  animation: eq-scale-2 0.7s ease-in-out infinite;
+}
+.eq-bar-3 {
+  transform-origin: bottom;
+  animation: eq-scale-3 0.95s ease-in-out infinite;
 }
 
 /* Range input styling */
@@ -83,9 +118,4 @@ input[type="range"].audio-slider::-webkit-slider-thumb {
   border-radius: 9999px;
   background: #ffffff;
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
-  transition: transform 0.15s ease;
-}
-
-input[type="range"].audio-slider:hover::-webkit-slider-thumb {
-  transform: scale(1.25);
 }

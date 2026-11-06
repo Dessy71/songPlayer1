@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ArrowLeft,
   X,
   Mic2,
   Copy,
@@ -85,6 +86,26 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm">
       <div className="w-full max-w-xl bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-l border-white/10 h-full flex flex-col pb-24 shadow-2xl">
+        {/* Go Back & Close Bar */}
+        <div className="flex items-center justify-between gap-2 px-5 py-2.5 border-b border-white/10 bg-zinc-950/90">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-200 hover:bg-white/15 cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Go Back
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-1 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-200 hover:bg-white/15 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            Close
+          </button>
+        </div>
+
         {/* Top Bar */}
         <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-white/10 bg-black/30">
           <div className="flex items-center gap-3 min-w-0">

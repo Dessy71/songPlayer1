@@ -3,12 +3,12 @@ import {
   X,
   BookOpen,
   Megaphone,
-  Download,
   Share2,
   ExternalLink,
   Calendar,
   Sparkles,
   AlertTriangle,
+  Crown,
 } from 'lucide-react';
 import { Announcement, DailyVerseFlyer, UserRole } from '../types/music';
 
@@ -18,6 +18,8 @@ interface DailyFeedModalProps {
   verseFlyers: DailyVerseFlyer[];
   announcements: Announcement[];
   viewerRole?: UserRole | null;
+  isPremium?: boolean;
+  onUpgradeToPremium?: () => void;
   initialTab?: 'verse' | 'announcements';
 }
 
@@ -31,6 +33,8 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
   verseFlyers,
   announcements,
   viewerRole,
+  isPremium = false,
+  onUpgradeToPremium,
   initialTab,
 }) => {
   const todayStr = getTodayUtcDateStr();
@@ -198,7 +202,35 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {activeTab === 'verse' ? (
-            !activeFlyer ? (
+            !isPremium ? (
+              <div className="py-10 px-4 text-center space-y-4 rounded-2xl border border-amber-400/35 bg-gradient-to-br from-amber-500/15 via-zinc-900 to-pink-500/10">
+                <div className="h-12 w-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center mx-auto">
+                  <Crown className="w-6 h-6 text-amber-300" />
+                </div>
+                <div className="space-y-1.5 max-w-md mx-auto">
+                  <h4 className="text-base font-extrabold text-white">
+                    Daily Bible Verse Flyers are a Premium Feature
+                  </h4>
+                  <p className="text-xs text-zinc-300 leading-relaxed">
+                    Upgrade to Gyidi Nwom Premium to unlock daily scheduled Scripture flyers,
+                    Offline Saved songs, Playlists, Liked Songs, Artiste Support, and Live Streams.
+                  </p>
+                </div>
+                {onUpgradeToPremium && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onUpgradeToPremium();
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer shadow-lg"
+                  >
+                    <Crown className="w-4 h-4" />
+                    View Premium Plans &amp; Upgrade
+                  </button>
+                )}
+              </div>
+            ) : !activeFlyer ? (
               <div className="py-12 text-center space-y-2">
                 <BookOpen className="w-10 h-10 text-amber-400/70 mx-auto" />
                 <p className="text-sm font-bold text-white">No Daily Bible Verse posted yet</p>
@@ -227,16 +259,6 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <a
-                      href={activeFlyer.flyer_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3 py-1.5 text-xs font-bold text-white transition"
-                    >
-                      <Download className="w-3.5 h-3.5 text-amber-400" />
-                      Save Flyer
-                    </a>
                     <button
                       onClick={() => handleShareFlyer(activeFlyer)}
                       className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-400/30 hover:bg-amber-500/30 px-3 py-1.5 text-xs font-bold text-amber-300 cursor-pointer transition"

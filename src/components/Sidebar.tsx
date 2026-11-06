@@ -23,8 +23,15 @@ import {
   Video,
   CloudDownload,
   Smartphone,
+  Crown,
+  X,
 } from 'lucide-react';
-import { NavTab, PlatformSettings, UserProfile } from '../types/music';
+import {
+  NavTab,
+  PlatformSettings,
+  UserProfile,
+  isUserPremiumActive,
+} from '../types/music';
 import { GoogleAdBanner } from './GoogleAdBanner';
 
 interface SidebarProps {
@@ -79,12 +86,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const isAdmin = profile?.role === 'admin';
   const isArtiste = profile?.role === 'artiste' || isAdmin;
+  const isPremium = isUserPremiumActive(profile, platformSettings);
+  const monthlyPrice = Number(platformSettings?.premium_monthly_price_ghs ?? 5);
 
   const discoverItems: Array<{
     id: NavTab;
     label: string;
     icon: React.ReactNode;
     badge?: number | string;
+    isPro?: boolean;
   }> = [
     { id: 'discover', label: 'Discover', icon: <Compass className="w-4 h-4" /> },
     { id: 'trending', label: 'Trending Now', icon: <Flame className="w-4 h-4 text-orange-400" /> },
@@ -110,7 +120,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'live',
       label: 'Live Video & Radio',
       icon: <Video className="w-4 h-4 text-rose-400" />,
-      badge: 'Soon',
+      badge: 'PRO',
+      isPro: true,
     },
   ];
 
@@ -119,6 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     label: string;
     icon: React.ReactNode;
     badge?: number | string;
+    isPro?: boolean;
   }> = [
     {
       id: 'browse',
@@ -132,19 +144,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'offline',
       label: 'Offline Saved',
       icon: <CloudDownload className="w-4 h-4 text-emerald-400" />,
-      badge: userEmail && offlineCount > 0 ? offlineCount : undefined,
+      badge: isPremium && offlineCount > 0 ? offlineCount : !isPremium ? 'PRO' : undefined,
+      isPro: true,
     },
     {
       id: 'favorites',
       label: 'Liked Songs',
       icon: <Heart className="w-4 h-4" />,
-      badge: userEmail ? favoritesCount || undefined : undefined,
+      badge: isPremium && favoritesCount > 0 ? favoritesCount : !isPremium ? 'PRO' : undefined,
+      isPro: true,
     },
     {
       id: 'playlists',
       label: 'Playlists',
       icon: <ListMusic className="w-4 h-4" />,
-      badge: userEmail ? playlistsCount || undefined : undefined,
+      badge: isPremium && playlistsCount > 0 ? playlistsCount : !isPremium ? 'PRO' : undefined,
+      isPro: true,
     },
     { id: 'recent', label: 'Recently Played', icon: <Clock className="w-4 h-4" /> },
   ];
@@ -178,7 +193,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {item.badge !== undefined && (
           <span
             className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-              item.badge === 'Soon'
+              item.badge === 'PRO'
+                ? 'bg-amber-500/20 border border-amber-400/40 text-amber-300 uppercase tracking-wider'
+                : item.badge === 'Soon'
                 ? 'bg-rose-500/20 border border-rose-400/35 text-rose-200 uppercase tracking-wider'
                 : 'bg-white/10 text-zinc-200'
             }`}
@@ -192,25 +209,61 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const sidebarContent = (
     <div className="flex h-full flex-col bg-zinc-950 border-r border-white/10 w-64 px-4 py-4 select-none">
-      {/* Custom Generated Gyidi Nwom Logo */}
-      <div
-        onClick={() => handleSelect('discover')}
-        className="flex items-center gap-3 px-1.5 mb-5 cursor-pointer group"
-      >
-        <img
-          src="/logo-mark.png"
-          alt="Gyidi Nwom Logo"
-          className="h-11 w-11 rounded-xl object-cover border border-amber-500/30 shadow-lg shadow-amber-500/15 group-hover:scale-105 transition"
-        />
-        <div>
-          <h1 className="text-base font-extrabold tracking-tight text-white leading-none">
-            Gyidi Nwom
-          </h1>
-          <p className="text-[11px] text-amber-400/90 font-medium mt-1">
-            SCG & SACSU Streaming
-          </p>
+      {/* Custom Generated Gyidi Nwom Logo + Mobile Close Button */}
+      <div className="flex items-center justify-between gap-2 px-1.5 mb-4">
+        <div
+          onClick={() => handleSelect('discover')}
+          className="flex items-center gap-3 cursor-pointer group min-w-0"
+        >
+          <img
+            src="/logo-mark.png"
+            alt="Gyidi Nwom Logo"
+            className="h-10 w-10 rounded-xl object-cover border border-amber-500/30 shadow-lg shadow-amber-500/15 flex-shrink-0"
+          />
+          <div className="min-w-0">
+            <h1 className="text-base font-extrabold tracking-tight text-white leading-none truncate">
+              Gyidi Nwom
+            </h1>
+            <p className="text-[11px] text-amber-400/90 font-medium mt-1 truncate">
+              SCG &amp; SACSU Streaming
+            </p>
+          </div>
         </div>
+
+        <button
+          type="button"
+          onClick={onCloseMobile}
+          className="lg:hidden rounded-full bg-white/10 p-1.5 text-zinc-300 hover:bg-white/20 hover:text-white cursor-pointer"
+          aria-label="Close sidebar menu"
+        >
+          <X className="w-4 h-4" />
+        </button>
       </div>
+
+      {/* Premium Pricing & Billing CTA */}
+      <button
+        type="button"
+        onClick={() => handleSelect('premium')}
+        className={`mb-3 w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-extrabold transition cursor-pointer ${
+          activeTab === 'premium'
+            ? 'bg-gradient-to-r from-amber-400 to-pink-500 text-zinc-950 shadow-lg'
+            : 'bg-gradient-to-r from-amber-500/20 via-pink-500/15 to-amber-500/10 text-amber-200 border border-amber-400/35 hover:border-amber-400/60'
+        }`}
+      >
+        <span className="flex items-center gap-2">
+          <Crown className="w-4 h-4 flex-shrink-0" />
+          Premium &amp; Billing
+        </span>
+        <span
+          className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
+            activeTab === 'premium'
+              ? 'bg-zinc-950 text-amber-300'
+              : 'bg-amber-400 text-zinc-950'
+          }`}
+        >
+          {isPremium ? 'Active ✓' : `GHS ${monthlyPrice}`}
+        </span>
+      </button>
 
       {/* Scrollable Navigation */}
       <nav className="space-y-4 flex-1 overflow-y-auto pr-0.5">

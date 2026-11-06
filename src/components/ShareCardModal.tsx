@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ArrowLeft,
   X,
-  Download,
   Share2,
   Copy,
   Check,
@@ -220,16 +220,6 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
     quote.trim() ? `\n\n"${quote.trim()}"` : ''
   }\n\nListen now on *Gyidi Nwom*:\n${deepLink}`;
 
-  const handleDownloadPoster = () => {
-    if (!previewDataUrl) return;
-    const a = document.createElement('a');
-    a.href = previewDataUrl;
-    a.download = `${song.slug || 'gyidi-nwom'}-status-card.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
-
   const handleNativeOrWhatsAppShare = async () => {
     try {
       if (navigator.share && canvasRef.current) {
@@ -258,13 +248,25 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-zinc-950 p-5 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-2 text-zinc-400 hover:bg-white/10 hover:text-white cursor-pointer"
-        >
-          <X className="w-5 h-5" />
-        </button>
+      <div className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-zinc-950 p-5 sm:p-6 shadow-2xl max-h-[92dvh] overflow-y-auto stable-scroll">
+        <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-white/10">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-200 hover:bg-white/15 cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Go Back
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-1 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-bold text-zinc-200 hover:bg-white/15 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            Close
+          </button>
+        </div>
 
         <div className="flex items-center gap-2.5 mb-4">
           <Sparkles className="w-5 h-5 text-emerald-400" />
@@ -316,36 +318,26 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
               Share to WhatsApp / Status
             </button>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                onClick={handleDownloadPoster}
-                className="flex items-center justify-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/15 py-2.5 text-xs font-bold text-white cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5 text-amber-400" />
-                Save Poster PNG
-              </button>
-
-              <button
-                onClick={async () => {
-                  await navigator.clipboard.writeText(deepLink);
-                  setCopiedLink(true);
-                  setTimeout(() => setCopiedLink(false), 2000);
-                }}
-                className="flex items-center justify-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/15 py-2.5 text-xs font-bold text-white cursor-pointer"
-              >
-                {copiedLink ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    Link Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 text-amber-400" />
-                    Copy Song Link
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={async () => {
+                await navigator.clipboard.writeText(deepLink);
+                setCopiedLink(true);
+                setTimeout(() => setCopiedLink(false), 2000);
+              }}
+              className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/15 py-2.5 text-xs font-bold text-white cursor-pointer"
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  Link Copied!
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5 text-amber-400" />
+                  Copy Song Link
+                </>
+              )}
+            </button>
 
             <p className="text-[11px] text-zinc-500 flex items-center gap-1.5">
               <Share2 className="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />

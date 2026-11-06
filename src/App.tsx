@@ -34,6 +34,8 @@ import {
   CloudDownload,
   RotateCw,
   Smartphone,
+  ArrowLeft,
+  Crown,
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import {
@@ -50,6 +52,7 @@ import {
   isAlbumUpcomingPremiere,
   isSongPubliclyPlayable,
   isSongUpcomingPremiere,
+  isUserPremiumActive,
 } from './types/music';
 import { PlayerProvider, usePlayer } from './context/PlayerContext';
 import { Sidebar } from './components/Sidebar';
@@ -77,10 +80,12 @@ import { ShareCardModal } from './components/ShareCardModal';
 import { LiveStreamUpcomingView } from './components/LiveStreamUpcomingView';
 import { InstallAppModal, BeforeInstallPromptEvent } from './components/InstallAppModal';
 import { EditReleaseModal } from './components/EditReleaseModal';
+import { PremiumBillingView } from './components/PremiumBillingView';
 import {
   getOfflineSavedIds,
   removeSongFromOffline,
   saveSongForOffline,
+  syncProfileOfflineLibrary,
 } from './lib/offlineAudio';
 import { clearSermonProgress, getSermonProgressMap } from './lib/sermonProgress';
 import { formatDuration } from './lib/format';
@@ -145,8 +150,15 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   } = usePlayer();
 
   const isAuthenticated = Boolean(userId);
+  const [nowTick, setNowTick] = useState<number>(() => Date.now());
+  const isPremium = useMemo(
+    () => isUserPremiumActive(userProfile, platformSettings, nowTick),
+    [userProfile, platformSettings, nowTick]
+  );
 
   const [activeTab, setActiveTab] = useState<NavTab>('discover');
+  const [tabHistory, setTabHistory] = useState<NavTab[]>([]);
+  const [premiumPromptReason, setPremiumPromptReason] = useState<string | null>(null);
   const [selectedArtisteId, setSelectedArtisteId] = useState<string | null>(null);
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [artisteDirectoryFilter, setArtisteDirectoryFilter] = useState<
@@ -159,7 +171,6 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'title' | 'popular' | 'duration' | 'newest'>('title');
   const [visibleCount, setVisibleCount] = useState(80);
-  const [nowTick, setNowTick] = useState<number>(() => Date.now());
   const [copiedInlineMomo, setCopiedInlineMomo] = useState(false);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
@@ -167,6 +178,60 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   const [remindedIds, setRemindedIds] = useState<Set<string>>(new Set());
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [activePlaylistId, setActivePlaylistId] = useState<string | null>(null);
+
+  const navigateToTab = useCallback(
+    (nextTab: NavTab) => {
+      setActiveTab((prev) => {
+        if (prev !== nextTab) {
+          setTabHistory((h) => [...h.slice(-15), prev]);
+        }
+        return nextTab;
+      });
+    },
+    []
+  );
+
+  const handleGoBack = useCallback(() => {
+    if (selectedAlbumId) {
+      setSelectedAlbumId(null);
+      return;
+    }
+    if (selectedArtisteId) {
+      setSelectedArtisteId(null);
+      return;
+    }
+    if (activePlaylistId) {
+      setActivePlaylistId(null);
+      return;
+    }
+    setTabHistory((prev) => {
+      if (prev.length === 0) {
+        setActiveTab('discover');
+        return [];
+      }
+      const nextHist = [...prev];
+      const previousTab = nextHist.pop() || 'discover';
+      setActiveTab(previousTab);
+      return nextHist;
+    });
+  }, [selectedAlbumId, selectedArtisteId, activePlaylistId]);
+
+  const handleCloseSection = useCallback(() => {
+    setSelectedAlbumId(null);
+    setSelectedArtisteId(null);
+    setActivePlaylistId(null);
+    setPremiumPromptReason(null);
+    setTabHistory([]);
+    setActiveTab('discover');
+  }, []);
+
+  const openPremiumPrompt = useCallback(
+    (reason: string) => {
+      setPremiumPromptReason(reason);
+      navigateToTab('premium');
+    },
+    [navigateToTab]
+  );
 
   // Modals & Drawers
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -197,12 +262,23 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     window.matchMedia?.('(display-mode: standalone)').matches
   );
   const [offlineSavedIds, setOfflineSavedIds] = useState<Set<string>>(() =>
-    getOfflineSavedIds()
+    getOfflineSavedIds(userId)
   );
   const [sermonPreacherFilter, setSermonPreacherFilter] = useState<string>('All');
   const [sermonTopicFilter, setSermonTopicFilter] = useState<string>('All');
   const [sermonBookFilter, setSermonBookFilter] = useState<string>('All');
   const [sermonProgressTick, setSermonProgressTick] = useState(0);
+
+  useEffect(() => {
+    if (!userId) {
+      setOfflineSavedIds(new Set());
+      return;
+    }
+    setOfflineSavedIds(getOfflineSavedIds(userId));
+    syncProfileOfflineLibrary(userId).then((synced) => {
+      setOfflineSavedIds(synced);
+    });
+  }, [userId]);
 
   useEffect(() => {
     const onBeforeInstall = (e: Event) => {
@@ -227,15 +303,46 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     return getSermonProgressMap(userId);
   }, [userId, nowTick, sermonProgressTick, currentSong?.id]);
 
-  const handleToggleOfflineSave = useCallback(async (song: Song) => {
-    const currentlySaved = offlineSavedIds.has(song.id);
-    if (currentlySaved) {
-      await removeSongFromOffline(song);
-    } else {
-      await saveSongForOffline(song);
-    }
-    setOfflineSavedIds(getOfflineSavedIds());
-  }, [offlineSavedIds]);
+  const handleToggleOfflineSave = useCallback(
+    async (song: Song) => {
+      if (!userId) {
+        openAccountPrompt('Create an account to save songs to your profile for offline listening!');
+        return;
+      }
+      if (!isPremium) {
+        openPremiumPrompt(
+          'Saving songs & sermons to your profile for zero-data offline listening is a Gyidi Nwom Premium feature.'
+        );
+        return;
+      }
+      const currentlySaved = offlineSavedIds.has(song.id);
+      if (currentlySaved) {
+        await removeSongFromOffline(song, userId);
+      } else {
+        await saveSongForOffline(song, userId);
+      }
+      setOfflineSavedIds(getOfflineSavedIds(userId));
+    },
+    [offlineSavedIds, userId, isPremium, openAccountPrompt, openPremiumPrompt]
+  );
+
+  const handleRequestPlaylistModal = useCallback(
+    (song: Song | null) => {
+      if (!userId) {
+        openAccountPrompt('Create an account to create and manage playlists!');
+        return;
+      }
+      if (!isPremium) {
+        openPremiumPrompt(
+          'Adding songs to playlists and building custom worship sets is a Gyidi Nwom Premium feature.'
+        );
+        return;
+      }
+      setPlaylistModalSong(song);
+      setPlaylistModalOpen(true);
+    },
+    [userId, isPremium, openAccountPrompt, openPremiumPrompt]
+  );
 
   const canViewerEditSong = useCallback(
     (song: Song | null) => {
@@ -312,17 +419,23 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     }
   }, [userId, activePopupVerse, activeRoleAnnouncements]);
 
-  // Automatically pop up Daily Bible Verse Flyer & Announcements on Listener & Artiste accounts!
+  // Automatically pop up Daily Bible Verse Flyer (Premium) & Announcements on Listener & Artiste accounts!
   useEffect(() => {
     if (!isAuthenticated || !userId) return;
-    if (unseenFeedState.hasUnseenVerse) {
+    if (isPremium && unseenFeedState.hasUnseenVerse) {
       setDailyFeedInitialTab('verse');
       setDailyFeedOpen(true);
     } else if (unseenFeedState.hasUnseenAnn) {
       setDailyFeedInitialTab('announcements');
       setDailyFeedOpen(true);
     }
-  }, [isAuthenticated, userId, unseenFeedState.hasUnseenVerse, unseenFeedState.hasUnseenAnn]);
+  }, [
+    isAuthenticated,
+    userId,
+    isPremium,
+    unseenFeedState.hasUnseenVerse,
+    unseenFeedState.hasUnseenAnn,
+  ]);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const handledDeepLinkRef = useRef(false);
@@ -490,7 +603,13 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   const handleToggleFavorite = useCallback(
     async (song: Song) => {
       if (!userId) {
-        openAccountPrompt('Create a free account to like and save your favorite songs!');
+        openAccountPrompt('Create an account to like and save your favorite songs!');
+        return;
+      }
+      if (!isPremium) {
+        openPremiumPrompt(
+          'Liking songs and saving to your Liked Songs library is a Gyidi Nwom Premium feature.'
+        );
         return;
       }
       const exists = favoriteIds.has(song.id);
@@ -507,7 +626,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         await supabase.from('favorites').upsert({ user_id: userId, song_id: song.id });
       }
     },
-    [favoriteIds, userId, openAccountPrompt]
+    [favoriteIds, userId, isPremium, openAccountPrompt, openPremiumPrompt]
   );
 
   const handleToggleReminder = useCallback(
@@ -553,12 +672,12 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   const handleOpenArtisteProfile = (artisteId: string) => {
     setSelectedAlbumId(null);
     setSelectedArtisteId(artisteId);
-    setActiveTab('artistes');
+    navigateToTab('artistes');
   };
 
   const handleOpenAlbumView = (albumId: string) => {
     setSelectedAlbumId(albumId);
-    setActiveTab('albums');
+    navigateToTab('albums');
   };
 
   const handleCreatePlaylist = async (
@@ -894,21 +1013,43 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100">
+    <div className="flex h-[100dvh] w-full max-w-full overflow-hidden bg-zinc-950 text-zinc-100">
       <Sidebar
         activeTab={activeTab}
         onSelectTab={(t) => {
-          if (!isAuthenticated && (t === 'favorites' || t === 'playlists' || t === 'offline')) {
+          if (
+            !isAuthenticated &&
+            (t === 'favorites' || t === 'playlists' || t === 'offline' || t === 'live')
+          ) {
             openAccountPrompt(
               t === 'favorites'
-                ? 'Create a free account to view and save Liked Songs!'
+                ? 'Create an account to access Liked Songs!'
                 : t === 'offline'
-                ? 'Create a free account to save songs and sermons for zero-data offline playback!'
-                : 'Create a free account to build and save Playlists!'
+                ? 'Create an account to save songs to your profile for offline listening!'
+                : t === 'live'
+                ? 'Create an account to access Live Convention Video & Sabbath Radio!'
+                : 'Create an account to build and save Playlists!'
             );
             return;
           }
-          setActiveTab(t);
+          if (
+            isAuthenticated &&
+            !isPremium &&
+            (t === 'favorites' || t === 'playlists' || t === 'offline' || t === 'live')
+          ) {
+            openPremiumPrompt(
+              t === 'favorites'
+                ? 'Liked Songs is a Gyidi Nwom Premium feature.'
+                : t === 'offline'
+                ? 'Offline Saved (in-app profile offline listening) is a Gyidi Nwom Premium feature.'
+                : t === 'live'
+                ? 'Live Convention Video & Sabbath Radio access is a Gyidi Nwom Premium feature.'
+                : 'Custom Playlists are a Gyidi Nwom Premium feature.'
+            );
+            return;
+          }
+          if (t !== 'premium') setPremiumPromptReason(null);
+          navigateToTab(t);
           setActivePlaylistId(null);
           setSelectedArtisteId(null);
           setSelectedAlbumId(null);
@@ -924,9 +1065,19 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         userEmail={userEmail}
         profile={userProfile}
         platformSettings={platformSettings}
-        hasUnseenDailyFeed={unseenFeedState.hasAnyUnseen}
+        hasUnseenDailyFeed={
+          (isPremium && unseenFeedState.hasUnseenVerse) || unseenFeedState.hasUnseenAnn
+        }
         onOpenDailyFeed={() => {
-          setDailyFeedInitialTab(undefined);
+          if (!isAuthenticated && activeRoleAnnouncements.length === 0) {
+            openAccountPrompt('Create an account & upgrade to Premium to view Daily Bible Verses!');
+            return;
+          }
+          if (!isPremium && activeRoleAnnouncements.length === 0) {
+            openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.');
+            return;
+          }
+          setDailyFeedInitialTab(isPremium ? undefined : 'announcements');
           setDailyFeedOpen(true);
         }}
         onOpenInstallApp={() => setInstallAppOpen(true)}
@@ -964,9 +1115,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       activeTab === 'admin' ||
                       activeTab === 'artiste-studio' ||
                       activeTab === 'messages' ||
-                      activeTab === 'live')
+                      activeTab === 'live' ||
+                      activeTab === 'premium')
                   ) {
-                    setActiveTab('browse');
+                    navigateToTab('browse');
                   }
                 }}
                 placeholder="Search songs, Twi/English lyrics, artistes, campuses, sermons..."
@@ -983,7 +1135,26 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setPremiumPromptReason(null);
+                navigateToTab('premium');
+              }}
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-extrabold transition cursor-pointer ${
+                isPremium
+                  ? 'bg-amber-500/20 border border-amber-400/45 text-amber-200 hover:bg-amber-500/30'
+                  : 'bg-gradient-to-r from-amber-400 to-pink-500 text-zinc-950 shadow-md hover:opacity-95'
+              }`}
+              title="Gyidi Nwom Premium Pricing & Billing"
+            >
+              <Crown className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">
+                {isPremium ? 'Premium ✓' : 'Go Premium'}
+              </span>
+            </button>
+
             {!isAppInstalled && (
               <button
                 onClick={() => setInstallAppOpen(true)}
@@ -998,15 +1169,20 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             {(verseFlyers.length > 0 || activeRoleAnnouncements.length > 0) && (
               <button
                 onClick={() => {
-                  setDailyFeedInitialTab(undefined);
+                  if (!isPremium && activeRoleAnnouncements.length === 0) {
+                    openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.');
+                    return;
+                  }
+                  setDailyFeedInitialTab(isPremium ? undefined : 'announcements');
                   setDailyFeedOpen(true);
                 }}
-                className="relative inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-bold text-amber-200 hover:bg-white/15 cursor-pointer"
-                title="View Today's Bible Verse Flyer & Announcements"
+                className="relative inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-amber-200 hover:bg-white/15 cursor-pointer"
+                title="Daily Bible Verse (Premium) & Official Announcements"
               >
                 <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden sm:inline">Daily Word</span>
-                {unseenFeedState.hasAnyUnseen && (
+                <span className="hidden md:inline">Daily Word</span>
+                {((isPremium && unseenFeedState.hasUnseenVerse) ||
+                  unseenFeedState.hasUnseenAnn) && (
                   <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
                 )}
               </button>
@@ -1037,7 +1213,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <button
                 onClick={() => {
                   setAdminInitialSubTab(undefined);
-                  setActiveTab('admin');
+                  navigateToTab('admin');
                 }}
                 className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 cursor-pointer"
               >
@@ -1062,7 +1238,37 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         </header>
 
         {/* Main Scroll Area */}
-        <main className="flex-1 overflow-y-auto px-4 sm:px-7 py-6 pb-32">
+        <main className="flex-1 min-w-0 max-w-full stable-scroll px-3.5 sm:px-7 py-5 pb-36">
+          {/* Persistent Section Navigation Bar: Go Back & Close Buttons on Every Section */}
+          {activeTab !== 'discover' &&
+            !(activeTab === 'albums' && selectedAlbum) &&
+            !(activeTab === 'artistes' && selectedArtiste) && (
+              <div className="max-w-[1400px] mx-auto mb-5 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-zinc-900/75 px-3.5 py-2.5">
+                <button
+                  type="button"
+                  onClick={handleGoBack}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-white/15 transition cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Go Back
+                </button>
+
+                <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 truncate">
+                  {activeTab.replace('-', ' ')}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleCloseSection}
+                  className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white transition cursor-pointer"
+                  title="Close section and return to Discover"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  Close
+                </button>
+              </div>
+            )}
+
           {/* Guest Preview Notice Banner */}
           {!isAuthenticated && (
             <div className="max-w-[1400px] mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-400/35 bg-amber-500/10 px-4 py-3">
@@ -1070,14 +1276,14 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
                 <span>
                   <strong>Guest Preview:</strong> 5 preview songs are unlocked with Play, Next &amp;
-                  Previous. Create a free account to unlock all {playableSongs.length} songs, likes,
-                  downloads, playlists &amp; forwarding!
+                  Previous. Create a free account to unlock all {playableSongs.length} songs &amp;
+                  upgrade to Premium for Offline Vault, Likes, Playlists &amp; Daily Verses!
                 </span>
               </div>
               <button
                 onClick={() =>
                   openAccountPrompt(
-                    'Create your free Gyidi Nwom account to unlock every song and feature!'
+                    'Create your free Gyidi Nwom account to unlock all 295+ tracks!'
                   )
                 }
                 className="rounded-full bg-amber-400 px-4 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-amber-300 cursor-pointer"
@@ -1096,11 +1302,35 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 ))}
               </div>
             </div>
+          ) : activeTab === 'premium' ? (
+            <PremiumBillingView
+              userId={userId}
+              userEmail={userEmail}
+              profile={userProfile}
+              platformSettings={platformSettings}
+              promptReason={premiumPromptReason}
+              onOpenAuth={(reason) => openAccountPrompt(reason, false)}
+              onSubscriptionActivated={(updatedProfile) => {
+                setUserProfile(updatedProfile);
+                setPremiumPromptReason(null);
+                fetchPlatformData();
+              }}
+              onOpenAdminPremiumSettings={
+                userProfile?.role === 'admin'
+                  ? () => {
+                      setAdminInitialSubTab('premium');
+                      navigateToTab('admin');
+                    }
+                  : undefined
+              }
+            />
           ) : activeTab === 'live' ? (
             <LiveStreamUpcomingView
               userId={userId}
               userProfile={userProfile}
+              isPremium={isPremium}
               onRequireAccount={(reason: string) => openAccountPrompt(reason, false)}
+              onRequirePremium={(reason: string) => openPremiumPrompt(reason)}
             />
           ) : activeTab === 'admin' && userProfile?.role === 'admin' ? (
             <AdminDashboardView
@@ -1151,17 +1381,18 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               artiste={selectedAlbum.artiste_id ? artisteMap.get(selectedAlbum.artiste_id) : null}
               viewerProfile={userProfile}
               favoriteIds={favoriteIds}
+              offlineSavedIds={offlineSavedIds}
               onBack={() => setSelectedAlbumId(null)}
+              onClose={handleCloseSection}
               onOpenArtiste={handleOpenArtisteProfile}
               onToggleFavorite={handleToggleFavorite}
-              onOpenPlaylistModal={(s) => {
-                if (!userId) {
-                  openAccountPrompt('Create a free account to add songs to playlists!');
-                  return;
-                }
-                setPlaylistModalSong(s);
-                setPlaylistModalOpen(true);
+              onToggleOfflineSave={handleToggleOfflineSave}
+              onOpenLyrics={(s) => setLyricsDrawerSong(s)}
+              onOpenShareCard={(s) => {
+                setShareCardInitialQuote('');
+                setShareCardSong(s);
               }}
+              onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
               onUnlocked={() => setNowTick(Date.now())}
               onRefreshCatalog={fetchPlatformData}
             />
@@ -1266,20 +1497,23 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               songs={songs}
               albums={albums}
               viewerProfile={userProfile}
+              isPremium={isPremium}
               favoriteIds={favoriteIds}
+              offlineSavedIds={offlineSavedIds}
               remindedIds={remindedIds}
               onBack={() => setSelectedArtisteId(null)}
+              onClose={handleCloseSection}
+              onRequirePremium={(reason) => openPremiumPrompt(reason)}
               onOpenAlbum={handleOpenAlbumView}
               onToggleFavorite={handleToggleFavorite}
-              onToggleReminder={handleToggleReminder}
-              onOpenPlaylistModal={(s) => {
-                if (!userId) {
-                  openAccountPrompt('Create a free account to add songs to playlists!');
-                  return;
-                }
-                setPlaylistModalSong(s);
-                setPlaylistModalOpen(true);
+              onToggleOfflineSave={handleToggleOfflineSave}
+              onOpenLyrics={(s) => setLyricsDrawerSong(s)}
+              onOpenShareCard={(s) => {
+                setShareCardInitialQuote('');
+                setShareCardSong(s);
               }}
+              onToggleReminder={handleToggleReminder}
+              onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
               onArtisteUpdated={(updated) => {
                 setArtistes((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
               }}
@@ -1594,6 +1828,18 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   {activePopupVerse && (
                     <div
                       onClick={() => {
+                        if (!isAuthenticated) {
+                          openAccountPrompt(
+                            'Create an account & upgrade to Premium to unlock Daily Bible Verse flyers!'
+                          );
+                          return;
+                        }
+                        if (!isPremium) {
+                          openPremiumPrompt(
+                            'Daily Bible Verse flyers are a Gyidi Nwom Premium feature.'
+                          );
+                          return;
+                        }
                         setDailyFeedInitialTab('verse');
                         setDailyFeedOpen(true);
                       }}
@@ -1607,13 +1853,15 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <div className="min-w-0 flex-1">
                         <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
                           <BookOpen className="w-3.5 h-3.5" />
-                          Today&apos;s Bible Verse Flyer
+                          Today&apos;s Bible Verse Flyer • Premium
                         </span>
                         <h4 className="text-sm font-extrabold text-white truncate mt-0.5">
                           {activePopupVerse.scripture_ref || 'View Today’s Scripture Flyer'}
                         </h4>
                         <p className="text-xs text-zinc-400 truncate">
-                          {activePopupVerse.caption || 'Tap to view, download, or share today’s word'}
+                          {isPremium
+                            ? activePopupVerse.caption || 'Tap to view or share today’s word'
+                            : 'Unlock Daily Bible Verse flyers with Gyidi Nwom Premium'}
                         </p>
                       </div>
                     </div>
@@ -1648,7 +1896,21 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
               {/* UPCOMING FEATURE SPOTLIGHT: LIVE CONVENTION VIDEO & SABBATH RADIO */}
               <section
-                onClick={() => setActiveTab('live')}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    openAccountPrompt(
+                      'Create an account & upgrade to Premium to access Live Convention Video & Sabbath Radio!'
+                    );
+                    return;
+                  }
+                  if (!isPremium) {
+                    openPremiumPrompt(
+                      'Live Convention Video & Sabbath Radio access is a Gyidi Nwom Premium feature.'
+                    );
+                    return;
+                  }
+                  navigateToTab('live');
+                }}
                 className="group relative overflow-hidden rounded-2xl border border-rose-500/35 bg-gradient-to-r from-rose-600/20 via-zinc-900 to-amber-500/15 p-4 sm:p-5 hover:border-rose-400/60 transition cursor-pointer"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -1688,7 +1950,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 isAdmin={userProfile?.role === 'admin'}
                 onConfigureClick={() => {
                   setAdminInitialSubTab('adsense');
-                  setActiveTab('admin');
+                  navigateToTab('admin');
                 }}
               />
 
@@ -1708,7 +1970,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </div>
                   </div>
                   <button
-                    onClick={() => setActiveTab('artistes')}
+                    onClick={() => navigateToTab('artistes')}
                     className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
                   >
                     View all ({artistes.length})
@@ -1765,7 +2027,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </div>
                   </div>
                   <button
-                    onClick={() => setActiveTab('upcoming')}
+                    onClick={() => navigateToTab('upcoming')}
                     className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
                   >
                     See all
@@ -1839,7 +2101,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </div>
                   </div>
                   <button
-                    onClick={() => setActiveTab('trending')}
+                    onClick={() => navigateToTab('trending')}
                     className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
                   >
                     Full Trending Chart
@@ -1887,14 +2149,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         setShareCardSong(s);
                       }}
                       onToggleOfflineSave={handleToggleOfflineSave}
-                      onOpenPlaylistModal={(s) => {
-                        if (!userId) {
-                          openAccountPrompt('Create a free account to add songs to playlists!');
-                          return;
-                        }
-                        setPlaylistModalSong(s);
-                        setPlaylistModalOpen(true);
-                      }}
+                      onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
                     />
                   ))}
                 </div>
@@ -1913,7 +2168,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </div>
                   </div>
                   <button
-                    onClick={() => setActiveTab('new-music')}
+                    onClick={() => navigateToTab('new-music')}
                     className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
                   >
                     Explore New Releases
@@ -1969,7 +2224,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   <button
                     onClick={() => {
                       setArtisteDirectoryFilter('curated');
-                      setActiveTab('artistes');
+                      navigateToTab('artistes');
                     }}
                     className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
                   >
@@ -2115,14 +2370,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   </p>
                 </div>
                 <button
-                  onClick={() => {
-                    if (!userId) {
-                      openAccountPrompt('Create a free account to create playlists!');
-                      return;
-                    }
-                    setPlaylistModalSong(null);
-                    setPlaylistModalOpen(true);
-                  }}
+                  onClick={() => handleRequestPlaylistModal(null)}
                   className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
@@ -2504,14 +2752,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         setShareCardSong(s);
                       }}
                       onToggleOfflineSave={handleToggleOfflineSave}
-                      onOpenPlaylistModal={(s) => {
-                        if (!userId) {
-                          openAccountPrompt('Create a free account to add songs to playlists!');
-                          return;
-                        }
-                        setPlaylistModalSong(s);
-                        setPlaylistModalOpen(true);
-                      }}
+                      onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
                     />
                   ))}
                   {visibleCount < filteredSongs.length && (
@@ -2528,7 +2769,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
       <PlayerBar
         isFavorite={currentSong ? favoriteIds.has(currentSong.id) : false}
+        isOfflineSaved={currentSong ? offlineSavedIds.has(currentSong.id) : false}
         onToggleFavorite={() => currentSong && handleToggleFavorite(currentSong)}
+        onToggleOfflineSave={handleToggleOfflineSave}
+        onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
         onToggleQueue={() => {
           if (!isAuthenticated) {
             openAccountPrompt('Create a free account to manage your Up Next queue!');
@@ -2639,6 +2883,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         verseFlyers={verseFlyers}
         announcements={announcements}
         viewerRole={userProfile?.role || null}
+        isPremium={isPremium}
+        onUpgradeToPremium={() =>
+          openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.')
+        }
         initialTab={dailyFeedInitialTab}
       />
     </div>

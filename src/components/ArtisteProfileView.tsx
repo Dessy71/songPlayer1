@@ -13,6 +13,8 @@ import {
   GraduationCap,
   Disc3,
   Edit3,
+  Crown,
+  X,
 } from 'lucide-react';
 import {
   Album,
@@ -36,11 +38,18 @@ interface ArtisteProfileViewProps {
   songs: Song[];
   albums: Album[];
   viewerProfile: UserProfile | null;
+  isPremium?: boolean;
   favoriteIds: Set<string>;
+  offlineSavedIds?: Set<string>;
   remindedIds: Set<string>;
   onBack: () => void;
+  onClose?: () => void;
+  onRequirePremium?: (reason: string) => void;
   onOpenAlbum: (albumId: string) => void;
   onToggleFavorite: (song: Song) => void;
+  onToggleOfflineSave?: (song: Song) => Promise<void> | void;
+  onOpenLyrics?: (song: Song) => void;
+  onOpenShareCard?: (song: Song) => void;
   onToggleReminder: (song: Song) => void;
   onOpenPlaylistModal: (song: Song) => void;
   onArtisteUpdated: (updated: UserProfile) => void;
@@ -52,11 +61,18 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   songs,
   albums,
   viewerProfile,
+  isPremium = false,
   favoriteIds,
+  offlineSavedIds,
   remindedIds,
   onBack,
+  onClose,
+  onRequirePremium,
   onOpenAlbum,
   onToggleFavorite,
+  onToggleOfflineSave,
+  onOpenLyrics,
+  onOpenShareCard,
   onToggleReminder,
   onOpenPlaylistModal,
   onArtisteUpdated,
@@ -105,14 +121,27 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
 
   return (
     <div className="max-w-[1400px] mx-auto space-y-8">
-      <div className="flex items-center justify-between gap-3">
-        <button
-          onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Artistes Catalogue
-        </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-white/15 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Go Back
+          </button>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+              Close
+            </button>
+          )}
+        </div>
 
         {canEditThisArtiste && (
           <button
@@ -211,13 +240,43 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             </div>
           </div>
 
-          {/* Fan Support Card */}
+          {/* Fan Support Card (Gated behind Gyidi Nwom Premium) */}
           <div className="w-full md:w-80 rounded-2xl border border-emerald-500/30 bg-zinc-950/90 p-4 shadow-xl">
-            <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-              <Wallet className="w-4 h-4" />
-              Support {stageTitle}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                <Wallet className="w-4 h-4" />
+                Support {stageTitle}
+              </div>
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/35 px-2 py-0.5 text-[10px] font-extrabold text-amber-300">
+                <Crown className="w-2.5 h-2.5" />
+                Premium
+              </span>
             </div>
-            {artiste.support_number ? (
+
+            {!isPremium && !canEditThisArtiste ? (
+              <div className="mt-3 rounded-xl bg-zinc-900 border border-amber-400/25 p-3.5 space-y-2.5">
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  Direct Artiste Fan Support (verified Mobile Money &amp; Bank details) is a{' '}
+                  <strong className="text-amber-300">Gyidi Nwom Premium</strong> feature.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      requireAccount('Create an account & upgrade to Premium to support Artistes!');
+                      return;
+                    }
+                    onRequirePremium?.(
+                      `Upgrade to Gyidi Nwom Premium to view ${stageTitle}'s direct MoMo/Bank support details!`
+                    );
+                  }}
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
+                >
+                  <Crown className="w-3.5 h-3.5" />
+                  Unlock Artiste Support
+                </button>
+              </div>
+            ) : artiste.support_number ? (
               <>
                 <p className="text-[11px] text-zinc-400 mt-1">
                   Send fan love & ministry support directly to this artiste:
@@ -394,7 +453,11 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 index={idx}
                 contextQueue={releasedSongs}
                 isFavorite={favoriteIds.has(song.id)}
+                isOfflineSaved={offlineSavedIds?.has(song.id)}
                 onToggleFavorite={onToggleFavorite}
+                onToggleOfflineSave={onToggleOfflineSave}
+                onOpenLyrics={onOpenLyrics}
+                onOpenShareCard={onOpenShareCard}
                 onOpenPlaylistModal={onOpenPlaylistModal}
                 onEditSong={
                   canEditThisArtiste

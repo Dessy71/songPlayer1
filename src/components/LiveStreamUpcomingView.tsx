@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   GraduationCap,
   Loader2,
+  Crown,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { LiveStreamWaitlistEntry, UserProfile } from '../types/music';
@@ -18,13 +19,17 @@ import { LiveStreamWaitlistEntry, UserProfile } from '../types/music';
 interface LiveStreamUpcomingViewProps {
   userId: string | null;
   userProfile: UserProfile | null;
+  isPremium?: boolean;
   onRequireAccount: (reason: string) => void;
+  onRequirePremium?: (reason: string) => void;
 }
 
 export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
   userId,
   userProfile,
+  isPremium = false,
   onRequireAccount,
+  onRequirePremium,
 }) => {
   const [waitlist, setWaitlist] = useState<LiveStreamWaitlistEntry[]>([]);
   const [interestType, setInterestType] = useState<'viewer' | 'broadcaster' | 'both'>('viewer');
@@ -65,7 +70,13 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
     e.preventDefault();
     if (!userId) {
       onRequireAccount(
-        'Create a free account to get notified as soon as Live Convention Video & Sabbath Radio Streaming launches!'
+        'Create an account & upgrade to Premium to access Live Convention Video & Sabbath Radio Streaming!'
+      );
+      return;
+    }
+    if (!isPremium) {
+      onRequirePremium?.(
+        'Live Convention Video & Sabbath Radio access is included in Gyidi Nwom Premium!'
       );
       return;
     }
@@ -96,9 +107,15 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
       {/* Hero Banner */}
       <section className="relative overflow-hidden rounded-3xl border border-rose-500/30 bg-gradient-to-br from-rose-600/25 via-amber-500/15 to-zinc-950 p-6 sm:p-10">
         <div className="max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full bg-rose-500/20 border border-rose-400/40 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-rose-200">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            Upcoming Feature • Coming Soon to Gyidi Nwom
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-rose-500/20 border border-rose-400/40 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-rose-200">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              Upcoming Feature • Coming Soon
+            </div>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/25 border border-amber-400/40 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-200">
+              <Crown className="w-3.5 h-3.5 text-amber-300" />
+              Gyidi Nwom Premium
+            </div>
           </div>
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight">

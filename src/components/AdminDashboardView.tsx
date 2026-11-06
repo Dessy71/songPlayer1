@@ -28,6 +28,7 @@ import {
   Megaphone,
   DollarSign,
   KeyRound,
+  Crown,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
@@ -58,6 +59,7 @@ export type AdminSubTab =
   | 'messages'
   | 'users'
   | 'catalog'
+  | 'premium'
   | 'adsense';
 
 interface AdminDashboardViewProps {
@@ -272,6 +274,26 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     setBusyId(null);
   };
 
+  const handleToggleUserPremium = async (p: UserProfile) => {
+    setBusyId(p.id);
+    const nextPremium = !p.is_premium;
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        is_premium: nextPremium,
+        premium_plan: nextPremium ? 'lifetime' : null,
+        premium_until: null,
+      })
+      .eq('id', p.id)
+      .select('*')
+      .single();
+    if (!error && data) {
+      setAdminProfiles((prev) => prev.map((x) => (x.id === p.id ? (data as UserProfile) : x)));
+      await onRefreshAll();
+    }
+    setBusyId(null);
+  };
+
   const handleRoleChange = async (p: UserProfile, role: UserRole) => {
     setBusyId(p.id);
     const { data, error } = await supabase
@@ -425,6 +447,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           >
             <Music2 className="w-3.5 h-3.5" />
             Catalog ({adminSongs.length})
+          </button>
+
+          <button
+            onClick={() => setSubTab('premium')}
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
+              subTab === 'premium'
+                ? 'bg-amber-400 text-zinc-950'
+                : 'text-amber-300 hover:bg-amber-500/15 border border-amber-400/25'
+            }`}
+          >
+            <Crown className="w-3.5 h-3.5" />
+            Premium &amp; Paystack
           </button>
 
           <button
@@ -938,6 +972,15 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         />
       )}
 
+      {/* SUBTAB: PREMIUM PRICING & PAYSTACK BILLING */}
+      {subTab === 'premium' && (
+        <AdminContentMonetizationPanel
+          mode="premium"
+          adminProfileId={adminProfile.id}
+          onRefreshGlobal={onRefreshAll}
+        />
+      )}
+
       {/* SUBTAB: GOOGLE ADSENSE REVENUE */}
       {subTab === 'adsense' && (
         <AdminContentMonetizationPanel
@@ -1112,6 +1155,20 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         >
                           <Edit3 className="w-3 h-3" />
                           Edit
+                        </button>
+
+                        <button
+                          disabled={busyId === p.id}
+                          onClick={() => handleToggleUserPremium(p)}
+                          className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
+                            p.is_premium
+                              ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40'
+                              : 'bg-white/5 text-zinc-400 hover:text-amber-300'
+                          }`}
+                          title="Grant or revoke Gyidi Nwom Premium"
+                        >
+                          <Crown className="w-3 h-3" />
+                          {p.is_premium ? 'Premium ✓' : '+ Premium'}
                         </button>
 
                         {(p.role === 'artiste' || p.role === 'admin') && (

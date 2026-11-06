@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Play, Shuffle, Disc3, Lock, Calendar, Pencil } from 'lucide-react';
+import { ArrowLeft, Play, Shuffle, Disc3, Lock, Calendar, Pencil, X } from 'lucide-react';
 import {
   Album,
   Song,
@@ -20,9 +20,14 @@ interface AlbumViewProps {
   artiste?: UserProfile | null;
   viewerProfile?: UserProfile | null;
   favoriteIds: Set<string>;
+  offlineSavedIds?: Set<string>;
   onBack: () => void;
+  onClose?: () => void;
   onOpenArtiste?: (artisteId: string) => void;
   onToggleFavorite: (song: Song) => void;
+  onToggleOfflineSave?: (song: Song) => Promise<void> | void;
+  onOpenLyrics?: (song: Song) => void;
+  onOpenShareCard?: (song: Song) => void;
   onOpenPlaylistModal: (song: Song) => void;
   onUnlocked?: () => void;
   onRefreshCatalog?: () => void;
@@ -34,9 +39,14 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
   artiste,
   viewerProfile,
   favoriteIds,
+  offlineSavedIds,
   onBack,
+  onClose,
   onOpenArtiste,
   onToggleFavorite,
+  onToggleOfflineSave,
+  onOpenLyrics,
+  onOpenShareCard,
   onOpenPlaylistModal,
   onUnlocked,
   onRefreshCatalog,
@@ -59,14 +69,27 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
 
   return (
     <div className="max-w-[1350px] mx-auto space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <button
-          onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-white/15 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Go Back
+          </button>
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-white/10 hover:text-white cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+              Close
+            </button>
+          )}
+        </div>
 
         {canManageAlbum && (
           <button
@@ -178,7 +201,11 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
               index={idx}
               contextQueue={sortedTracks}
               isFavorite={favoriteIds.has(song.id)}
+              isOfflineSaved={offlineSavedIds?.has(song.id)}
               onToggleFavorite={onToggleFavorite}
+              onToggleOfflineSave={onToggleOfflineSave}
+              onOpenLyrics={onOpenLyrics}
+              onOpenShareCard={onOpenShareCard}
               onOpenPlaylistModal={onOpenPlaylistModal}
               onOpenArtiste={onOpenArtiste}
             />
