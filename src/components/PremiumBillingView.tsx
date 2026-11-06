@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Crown,
   CheckCircle2,
@@ -98,6 +98,8 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
   onSubscriptionActivated,
   onOpenAdminPremiumSettings,
 }) => {
+  const autoVerifiedAccount = useRef<string | null>(null);
+  const verificationInFlight = useRef(false);
   const [celebrating, setCelebrating] = useState(false);
   const [recoveryReference, setRecoveryReference] = useState('');
   const [recoveryPlan, setRecoveryPlan] = useState<PremiumPlan>('monthly');
@@ -163,6 +165,8 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
       onOpenAuth('Sign in to the account used for this payment.');
       return;
     }
+    if (verificationInFlight.current) return;
+    verificationInFlight.current = true;
     setVerifying(true);
     setStatusMessage(null);
     setRecoveryReference(reference);
@@ -177,10 +181,23 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
     } catch (error) {
       setStatusMessage({ type: 'err', text: `${error instanceof Error ? error.message : 'Unable to verify payment.'} Reference: ${reference}. Do not pay again; use Verify existing payment below.` });
     } finally {
+      verificationInFlight.current = false;
       setVerifying(false);
       setPayingPlan(null);
     }
   };
+
+  // Resume interrupted callbacks without asking users to locate a reference.
+  useEffect(() => {
+    if (!userId) {
+      autoVerifiedAccount.current = null;
+      return;
+    }
+    if (autoVerifiedAccount.current === userId) return;
+    autoVerifiedAccount.current = userId;
+    const pending = pendingPayment(userId);
+    if (pending) void activatePayment(pending.reference, pending.plan);
+  }, [userId]);
 
   const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
     setStatusMessage(null);
@@ -212,6 +229,11 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
         currency,
         planInterval: plan,
         userId,
+        onReferenceCreated: (reference) => {
+          rememberPayment(userId, { reference, plan });
+          setRecoveryReference(reference);
+          setRecoveryPlan(plan);
+        },
         onSuccess: (reference) => { void activatePayment(reference, plan); },
         onClose: () => {
           setPayingPlan(null);
@@ -260,7 +282,15 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
       )}
 
       <section className="rounded-2xl border border-white/15 bg-zinc-900 p-5 space-y-3">
-        <h3 className="font-bold text-white">Already paid? Verify existing payment</h3>
+        <h3 className="font-bold text-white">Already paid? Check my payment</h3>
+        {userId && recoveryReference && (
+          <button type="button" disabled={verifying || payingPlan !== null || celebrating}
+            onClick={() => { const saved = pendingPayment(userId); if (saved) void activatePayment(saved.reference, saved.plan); else void activatePayment(recoveryReference.trim(), recoveryPlan); }}
+            className="rounded-xl bg-emerald-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
+            {verifying ? 'Checking your payment…' : 'Check my payment — no reference needed'}
+          </button>
+        )}
+        <p className="text-sm text-zinc-300">Payments started on this browser are remembered automatically. Return here after approving Mobile Money and we will check your saved payment without charging you again.</p>
         <p className="text-sm text-zinc-300">Do not pay again. Sign in to the same account and enter the Paystack transaction reference from your receipt. Verification does not charge you.</p>
         <form className="flex flex-wrap gap-3" onSubmit={(event) => { event.preventDefault(); void activatePayment(recoveryReference.trim(), recoveryPlan); }}>
           <input required aria-label="Paystack payment reference" placeholder="Paystack payment reference" value={recoveryReference} onChange={(event) => setRecoveryReference(event.target.value)} className="min-w-0 flex-1 rounded-xl border border-white/20 bg-zinc-950 p-3 text-white" />

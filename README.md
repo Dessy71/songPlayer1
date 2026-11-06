@@ -60,3 +60,5 @@ npm run build
 Failed callback references are retained locally per account for retry. Checkout checks verifier configuration before opening Paystack. Lyrics and song sharing are Premium features.
 
 Payment helper regression tests: `node --experimental-vm-modules --test tests/premiumPayment.test.mjs`.
+
+Checkout now records its reference **before** opening Paystack, rather than waiting for the success callback. Returning to Billing on the same browser automatically retries saved-payment verification; **Check my payment** retries without requiring the user to type a reference. For older payments made before reference capture, or after browser data is cleared/on another device, administrator-assisted reference lookup is still needed. Background activation independent of the browser requires a signed Paystack webhook and server-side checkout records; these are not implemented by this change.
