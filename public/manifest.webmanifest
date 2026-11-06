@@ -1,0 +1,26 @@
+{
+  "name": "Gyidi Nwom — SCG Music, Lyrics & Sermons",
+  "short_name": "Gyidi Nwom",
+  "description": "Stream Savior Church of Ghana (SCG) & SACSU hymns, choir albums, synchronized Twi/English lyrics, daily Bible verses, and sermons.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "categories": ["music", "lifestyle", "education"],
+  "icons": [
+    {
+      "src": "/logo-mark.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

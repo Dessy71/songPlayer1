@@ -1,162 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Gyidi Nwom</title>
-  <link rel="shortcut icon" href="profile.svg" type="image/jpg" />
-<link rel="apple-touch-icon" href="profile.svg">
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Gyidi Nwom — Stream Savior Church of Ghana (SCG) & SACSU hymns, choir albums, synchronized Twi/English lyrics, daily Bible verses, and sermons."
+    />
+    <meta name="theme-color" content="#09090b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Gyidi Nwom" />
+    <title>Gyidi Nwom — SCG Music, Lyrics, Premieres & Sermons</title>
 
-  
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js"
-  integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    <!-- Preconnect & warm TLS to Supabase Storage CDN for <1s playback -->
+    <link rel="preconnect" href="https://neicfighjkzokoxojboz.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://neicfighjkzokoxojboz.supabase.co" />
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js" type="module"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js" type="module"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/logo-mark.png" />
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-  <link rel="stylesheet" type="text/css" href="slidestyles.css">
-</head>
-<body>
-
-  <div class="preloader">
-    <!-- Your preloader content goes here -->
-    <img src="/images/pre.svg" alt="Preloader Image" />
-  </div>
-
-
-  <div class="video-background">
-    <video autoplay loop muted>
-      <source src="vid.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
- <div class="logo-container">
-    <img src="/images/indLogo.svg" alt="Logo">
-  </div>
-  <div class="main">
-    <input type="checkbox" id="chk" aria-hidden="true">
-    <div class="login">
-      <form id="loginForm">
-        <label for="chk" aria-hidden="true">Login</label>
-        <input type="text" placeholder="Username" id="loginUsername" required>
-        <input type="password" placeholder="Password" id="loginPassword" required>
-        <button type="submit">Login</button>
-      </form>
-    </div>
-    <div class="signup">
-      <form id="signupForm">
-        <label for="chk" aria-hidden="true">Sign Up</label>
-        <input type="text" placeholder="Username" id="signupUsername" required>
-        <input type="email" placeholder="Email" id="signupEmail" required>
-        <input type="password" placeholder="Password" id="signupPassword" required>
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    // Wait for the document to fully load
-    document.addEventListener("DOMContentLoaded", function () {
-      // Wait for 10 seconds and then fade out the preloader
-      setTimeout(function () {
-        var preloader = document.querySelector(".preloader");
-        var mainContent = document.querySelector(".main-content");
-
-        // Fade out the preloader
-        preloader.style.opacity = 0;
-
-        // Set a timeout to hide the preloader after the fade out animation
-        setTimeout(function () {
-          preloader.style.display = "none";
-          // Show the main content
-          mainContent.style.display = "block";
-        }, 1000); // 1000ms = 1s (duration of the fade out animation)
-      }, 4000); // 10000ms = 10s (time before fading out)
-    });
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-  crossorigin="anonymous"></script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getDatabase, ref, get, child, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-    // Initialize Firebase app
-    const firebaseConfig = {
-  apiKey: "AIzaSyClM1v69pjRX9b7EZ5lVMFpi_1ScV41s6w",
-  authDomain: "gyidi-music-ebaf3.firebaseapp.com",
-  databaseURL: "https://gyidi-music-ebaf3-default-rtdb.firebaseio.com",
-  projectId: "gyidi-music-ebaf3",
-  storageBucket: "gyidi-music-ebaf3.appspot.com",
-  messagingSenderId: "510934356254",
-  appId: "1:510934356254:web:529827e376123f1fba390f"
-};
-    const app = initializeApp(firebaseConfig);
-const db = getDatabase(app); // Passing the app instance to getDatabase()
-
-  // Function to handle user registration
-  document.getElementById("signupForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    const username = document.getElementById("signupUsername").value;
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
-
-    // Validation
-    if (username.trim() === "" || email.trim() === "" || password.trim() === "") {
-      return Swal.fire("Error", "All fields are required.", "error");
-    }
-
-    // Check if the username already exists
-    get(child(ref(db, "users"), username)).then(snapshot => {
-      if (snapshot.exists()) {
-        // Username already exists, display error message
-        Swal.fire("Error", "Username already exists. Please choose a different username.", "error");
-      } else {
-        // Username is available, register user in Firebase database
-        set(ref(db, "users/" + username), {
-          email: email,
-          password: CryptoJS.AES.encrypt(password, password).toString() // Encrypting password
-        }).then(() => {
-          Swal.fire("Success", "User registered successfully.", "success");
-          document.getElementById("signupForm").reset();
-        }).catch(error => {
-          Swal.fire("Error", error.message, "error");
-        });
-      }
-    }).catch(error => {
-      Swal.fire("Error", error.message, "error");
-    });
-  });
-// Function to handle user login
-document.getElementById("loginForm").addEventListener("submit", function(event) {
-  event.preventDefault();
-  const username = document.getElementById("loginUsername").value;
-  const password = document.getElementById("loginPassword").value;
-
-  get(child(ref(db, "users"), username)).then(snapshot => {
-    if (snapshot.exists()) {
-      const decryptedPassword = CryptoJS.AES.decrypt(snapshot.val().password, password).toString(CryptoJS.enc.Utf8);
-      if (decryptedPassword === password) {
-        // Login successful
-        Swal.fire("Success", "Login successful.", "success");
-        // Redirect to home page
-        window.location.href = "home.html";
-      } else {
-        Swal.fire("Error", "Invalid password.", "error");
-      }
-    } else {
-      Swal.fire("Error", "User not found.", "error");
-    }
-  }).catch(error => {
-    Swal.fire("Error", error.message, "error");
-  });
-});
-  </script>
-</body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 antialiased selection:bg-amber-500/30 selection:bg-amber-200">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
