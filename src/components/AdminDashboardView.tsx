@@ -29,6 +29,7 @@ import {
   DollarSign,
   KeyRound,
   Crown,
+  Wallet, // NEW: Wallet icon for Support Details
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
@@ -48,6 +49,7 @@ import { EditReleaseModal } from './EditReleaseModal';
 import { MessagesView } from './MessagesView';
 import { AdminContentMonetizationPanel } from './AdminContentMonetizationPanel';
 import { ProvisionArtisteLoginModal } from './ProvisionArtisteLoginModal';
+import { SupportModal } from './SupportModal'; // NEW: SupportModal import
 import { formatBytes, formatDuration } from '../lib/format';
 import { usePlayer } from '../context/PlayerContext';
 
@@ -103,6 +105,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [userSearch, setUserSearch] = useState('');
   const [catalogSearch, setCatalogSearch] = useState('');
+
+  // NEW: Support Gyidi / Artiste Paystack URL & Subaccount Dashboard State
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const [selectedArtisteForSupport, setSelectedArtisteForSupport] = useState<UserProfile | null>(null);
 
   const [adminSongs, setAdminSongs] = useState<Song[]>(allSongs);
   const [adminAlbums, setAdminAlbums] = useState<Album[]>(allAlbums);
@@ -509,7 +515,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 {stats.approvedSongs.length}
               </p>
               <p className="text-[11px] text-zinc-400 mt-1">
-                {adminAlbums.filter((a) => a.approval_status === 'approved').length} Albums •{' '}
+                {adminAlbums.filter((a) => a.approval_status === 'approved').length} Albums •
                 {stats.totalLikes} ♥
               </p>
             </div>
@@ -843,8 +849,8 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         </div>
 
                         <p className="text-xs text-zinc-300">
-                          Artiste: <strong className="text-white">{song.artist}</strong> •{' '}
-                          {formatDuration(song.duration_seconds)} •{' '}
+                          Artiste: <strong className="text-white">{song.artist}</strong> •
+                          {formatDuration(song.duration_seconds)} •
                           {formatBytes(song.file_size_bytes)}
                         </p>
 
@@ -893,11 +899,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       >
                         {isPrelisteningThis && isPlaying ? (
                           <>
-                            <Pause className="w-3.5 h-3.5 fill-current" /> Pause Pre-Listen
+                            <Pause className="w-3 h-3 fill-current" /> Pause Pre-Listen
                           </>
                         ) : (
                           <>
-                            <Play className="w-3.5 h-3.5 fill-current" /> Pre-Listen
+                            <Play className="w-3 h-3 fill-current" /> Pre-Listen
                           </>
                         )}
                       </button>
@@ -1004,7 +1010,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         <div className="space-y-4">
           <div className="rounded-2xl border border-amber-400/25 bg-amber-500/10 px-4 py-3 text-xs text-zinc-200 flex flex-wrap items-center justify-between gap-2">
             <div>
-              <strong className="text-amber-300">How Pre-Created Artistes Log In:</strong> Click{' '}
+              <strong className="text-amber-300">How Pre-Created Artistes Log In:</strong> Click
               <strong className="text-emerald-300">Login Creds</strong> on any pre-created profile
               below to either <strong>(1)</strong> create ready-made Email + Password credentials to
               send them, OR <strong>(2)</strong> copy their secret <strong>Claim Code</strong> so
@@ -1114,9 +1120,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}
                           </p>
                         )}
-                        {p.support_number && (
-                          <p className="text-[11px] text-emerald-400 mt-0.5">
-                            {p.support_provider}: {p.support_number} ({p.support_account_name})
+                        {/* NEW: Admin-only Paystack URL & Subaccount Display in List */}
+                        {p.role === 'artiste' || p.id === 'support-gyidi' && (
+                          <p className="text-[11px] text-amber-400 mt-0.5 font-mono">
+                            {p.support_provider || 'Paystack Payment Page'}: {p.support_number || 'N/A'}
+                            {p.support_account_name && ` (Sub: ${p.support_account_name})`}
                           </p>
                         )}
                       </div>
@@ -1156,6 +1164,21 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           <Edit3 className="w-3 h-3" />
                           Edit
                         </button>
+
+                        {/* NEW: Support Details Button for Admin */}
+                        {p.role === 'artiste' || p.id === 'support-gyidi' && (
+                          <button
+                            onClick={() => {
+                              setSelectedArtisteForSupport(p);
+                              setSupportModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400/10 border border-amber-400/25 px-2.5 py-1 text-[11px] font-bold text-amber-400 hover:bg-amber-400/20 cursor-pointer"
+                            title="Edit Paystack URL & Subaccount"
+                          >
+                            <Wallet className="w-3 h-3" />
+                            Support Details
+                          </button>
+                        )}
 
                         <button
                           disabled={busyId === p.id}
@@ -1237,13 +1260,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       className="rounded-lg bg-white/10 p-1.5 text-amber-300 hover:bg-white/15 cursor-pointer"
                       title="Edit song"
                     >
-                      <Edit3 className="w-3.5 h-3.5" />
+                      <Edit3 className="w-3 h-3" />
                     </button>
                     <button
                       onClick={() => playSong(s, [s], { isPrelisten: true })}
                       className="rounded-lg bg-white/10 p-1.5 text-white hover:bg-white/15 cursor-pointer"
                     >
-                      <Play className="w-3.5 h-3.5 fill-white" />
+                      <Play className="w-3 h-3 fill-white" />
                     </button>
                     <button
                       disabled={busyId === s.id}
@@ -1251,14 +1274,24 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       className="rounded-lg bg-rose-500/10 p-1.5 text-rose-400 hover:bg-rose-500/20 cursor-pointer"
                       title="Delete song"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
-              ))}
+              ))
+            }
           </div>
         </div>
       )}
+
+      {/* NEW: SupportModal Integration */}
+      <SupportModal
+        key={selectedArtisteForSupport?.id || 'support-gyidi'}
+        isOpen={supportModalOpen}
+        onClose={() => { setSupportModalOpen(false); setSelectedArtisteForSupport(null); }}
+        artiste={selectedArtisteForSupport || { id: 'support-gyidi', display_name: 'Support Gyidi', role: 'admin', approval_status: 'approved' } as UserProfile}
+        isAdminViewer={true}
+      />
 
       <EditArtisteModal
         key={editingArtiste?.id || 'new-artiste'}
