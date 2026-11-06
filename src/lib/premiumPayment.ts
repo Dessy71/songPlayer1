@@ -50,3 +50,20 @@ export async function verifyPremiumPayment(payment: PendingPayment): Promise<Use
   }
   return data as UserProfile;
 }
+
+
+/** Server-created checkout: price, account and reference are stored before payment. */
+export async function initializePremiumPayment(plan: PremiumPlan) {
+  const data = await invoke({ action: 'initialize', plan });
+  if (!data?.reference || typeof data.authorization_url !== 'string') throw new Error('Unable to initialize checkout.');
+  const destination = new URL(data.authorization_url);
+  if (destination.protocol !== 'https:' || destination.hostname !== 'checkout.paystack.com') throw new Error('Invalid checkout destination.');
+  return data as { reference: string; authorization_url: string };
+}
+
+/** Uses only the authenticated account ID; works without local browser state. */
+export async function recoverPremiumAccount(): Promise<{ profile: UserProfile; pending: number }> {
+  const data = await invoke({ action: 'recover' });
+  if (!data?.profile?.id) throw new Error('Unable to load account membership.');
+  return data;
+}

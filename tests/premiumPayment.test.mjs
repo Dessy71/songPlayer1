@@ -7,7 +7,7 @@ import ts from 'typescript';
 async function harness(result, signedIn = true) {
   const storage = new Map();
   const calls = [];
-  const context = vm.createContext({ Response, Date, localStorage: {
+  const context = vm.createContext({ Response, Date, URL, localStorage: {
     getItem: key => storage.get(key) ?? null,
     setItem: (key, value) => storage.set(key, value),
     removeItem: key => storage.delete(key),
@@ -64,4 +64,24 @@ test('pending references are account scoped and clear only when requested', asyn
   assert.equal(api.pendingPayment('user-b'), null);
   api.rememberPayment('user-a', null);
   assert.equal(api.pendingPayment('user-a'), null);
+});
+
+test('cross-device restore needs only the authenticated account, not local payment references',async()=>{
+ const profile={id:'u',is_premium:true,premium_until:new Date(Date.now()+86400000).toISOString()};
+ const {api,calls}=await harness({data:{profile,pending:0},error:null});
+ assert.equal(api.pendingPayment('u'),null);
+ assert.equal((await api.recoverPremiumAccount()).profile,profile);
+ assert.equal(calls[0].body.action,'recover');
+});
+
+test('hosted checkout initialization sends only a plan, never a client amount or account ID',async()=>{
+ const checkout={reference:'GN-server-generated',authorization_url:'https://checkout.paystack.com/example'};
+ const {api,calls}=await harness({data:checkout,error:null});
+ assert.equal(await api.initializePremiumPayment('monthly'),checkout);
+ assert.equal(JSON.stringify(calls[0].body),JSON.stringify({action:'initialize',plan:'monthly'}));
+});
+
+test('unexpected checkout origins are rejected instead of redirecting customers',async()=>{
+ const {api}=await harness({data:{reference:'GN-server',authorization_url:'https://fake.example/charge'},error:null});
+ await assert.rejects(api.initializePremiumPayment('monthly'),/Invalid checkout destination/);
 });

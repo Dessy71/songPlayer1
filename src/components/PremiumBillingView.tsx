@@ -17,8 +17,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { openPaystackCheckout } from '../lib/paystack';
-import { checkPaymentReadiness, pendingPayment, rememberPayment, verifyPremiumPayment, PremiumPlan } from '../lib/premiumPayment';
+import { initializePremiumPayment, recoverPremiumAccount, pendingPayment, rememberPayment, verifyPremiumPayment, PremiumPlan } from '../lib/premiumPayment';
 import {
   PlatformSettings,
   PremiumSubscription,
@@ -126,12 +125,6 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
   const monthlyPrice = Number(platformSettings?.premium_monthly_price_ghs ?? 5);
   const yearlyPrice = Number(platformSettings?.premium_yearly_price_ghs ?? 50);
   const currency = platformSettings?.premium_currency || 'GHS';
-  const paystackPublicKey = (
-    platformSettings?.paystack_public_key ||
-    import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ||
-    ''
-  ).trim();
-
   const isPremium = isUserPremiumActive(profile, platformSettings);
   const isAdmin = profile?.role === 'admin';
 
@@ -187,16 +180,37 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
     }
   };
 
-  // Resume interrupted callbacks without asking users to locate a reference.
+  const recoverAccount = async () => {
+    if (!userId) { onOpenAuth('Sign in to the same account used for payment.'); return; }
+    if (verificationInFlight.current) return;
+    verificationInFlight.current = true;
+    setVerifying(true);
+    setStatusMessage(null);
+    try {
+      const { profile: recovered, pending } = await recoverPremiumAccount();
+      onSubscriptionActivated(recovered);
+      if (isUserPremiumActive(recovered, platformSettings)) {
+        setStatusMessage({ type: 'ok', text: 'Your active subscription has been restored from your account.' });
+        if (new URLSearchParams(window.location.search).has('payment_return')) {
+          window.history.replaceState(null, '', window.location.pathname);
+          setCelebrating(true);
+        }
+      } else {
+        setStatusMessage({ type: 'err', text: pending ? 'Your payment has not been confirmed yet. If you were debited, do not pay again; check your payment again shortly.' : 'No active paid subscription was found for this account. Sign in to the account used at checkout.' });
+      }
+    } catch (error) {
+      setStatusMessage({ type: 'err', text: error instanceof Error ? error.message : 'Unable to recover membership. Please retry.' });
+    } finally { verificationInFlight.current = false; setVerifying(false); }
+  };
+
   useEffect(() => {
-    if (!userId) {
-      autoVerifiedAccount.current = null;
-      return;
-    }
+    if (!userId) { autoVerifiedAccount.current = null; return; }
     if (autoVerifiedAccount.current === userId) return;
     autoVerifiedAccount.current = userId;
+    // Legacy local references remain a fallback for older Inline checkouts.
     const pending = pendingPayment(userId);
     if (pending) void activatePayment(pending.reference, pending.plan);
+    else void recoverAccount();
   }, [userId]);
 
   const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
@@ -207,38 +221,12 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
       return;
     }
 
-    if (!paystackPublicKey) {
-      setStatusMessage({
-        type: 'err',
-        text: isAdmin
-          ? 'Paystack Public Key (pk_live_... or pk_test_...) has not been added yet. Click "Admin: Configure Prices & Paystack" above to paste your Paystack Public Key.'
-          : 'Paystack checkout is being finalized by the platform administrator. Please check back shortly.',
-      });
-      return;
-    }
-
-    const amountGhs = plan === 'yearly' ? yearlyPrice : monthlyPrice;
     setPayingPlan(plan);
-
     try {
-      await checkPaymentReadiness();
-      await openPaystackCheckout({
-        publicKey: paystackPublicKey,
-        email: userEmail,
-        amountGhs,
-        currency,
-        planInterval: plan,
-        userId,
-        onReferenceCreated: (reference) => {
-          rememberPayment(userId, { reference, plan });
-          setRecoveryReference(reference);
-          setRecoveryPlan(plan);
-        },
-        onSuccess: (reference) => { void activatePayment(reference, plan); },
-        onClose: () => {
-          setPayingPlan(null);
-        },
-      });
+      const checkout = await initializePremiumPayment(plan);
+      // Convenience only: account recovery and webhook delivery do not need this.
+      rememberPayment(userId, { reference: checkout.reference, plan });
+      window.location.assign(checkout.authorization_url);
     } catch (err) {
       setPayingPlan(null);
       setStatusMessage({
@@ -283,15 +271,13 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
 
       <section className="rounded-2xl border border-white/15 bg-zinc-900 p-5 space-y-3">
         <h3 className="font-bold text-white">Already paid? Check my payment</h3>
-        {userId && recoveryReference && (
-          <button type="button" disabled={verifying || payingPlan !== null || celebrating}
-            onClick={() => { const saved = pendingPayment(userId); if (saved) void activatePayment(saved.reference, saved.plan); else void activatePayment(recoveryReference.trim(), recoveryPlan); }}
-            className="rounded-xl bg-emerald-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
-            {verifying ? 'Checking your payment…' : 'Check my payment — no reference needed'}
-          </button>
-        )}
-        <p className="text-sm text-zinc-300">Payments started on this browser are remembered automatically. Return here after approving Mobile Money and we will check your saved payment without charging you again.</p>
-        <p className="text-sm text-zinc-300">Do not pay again. Sign in to the same account and enter the Paystack transaction reference from your receipt. Verification does not charge you.</p>
+        <button type="button" disabled={verifying || payingPlan !== null || celebrating}
+          onClick={() => void recoverAccount()}
+          className="rounded-xl bg-emerald-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
+          {verifying ? 'Checking your account…' : 'Restore my subscription — no reference needed'}
+        </button>
+        <p className="text-sm text-zinc-300">Sign in to the same account on any device. Payments are saved securely to your account, even if browser data was cleared or the app was reinstalled.</p>
+        <p className="text-sm text-zinc-300">Older payment not found? The reference form below is an optional support fallback for payments made before account-linked checkout. Recovery and verification never charge you.</p>
         <form className="flex flex-wrap gap-3" onSubmit={(event) => { event.preventDefault(); void activatePayment(recoveryReference.trim(), recoveryPlan); }}>
           <input required aria-label="Paystack payment reference" placeholder="Paystack payment reference" value={recoveryReference} onChange={(event) => setRecoveryReference(event.target.value)} className="min-w-0 flex-1 rounded-xl border border-white/20 bg-zinc-950 p-3 text-white" />
           <select aria-label="Paid plan" value={recoveryPlan} onChange={(event) => setRecoveryPlan(event.target.value as PremiumPlan)} className="rounded-xl border border-white/20 bg-zinc-950 p-3 text-white">
