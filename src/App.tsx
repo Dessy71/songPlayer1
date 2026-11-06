@@ -344,6 +344,23 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     [userId, isPremium, openAccountPrompt, openPremiumPrompt]
   );
 
+  const handleOpenLyrics = (song: Song) => {
+    if (!isPremium) {
+      openPremiumPrompt('Viewing song lyrics is a Gyidi Nwom Premium feature.');
+      return;
+    }
+    setLyricsDrawerSong(song);
+  };
+
+  const handleOpenShareCard = (song: Song, quote = '') => {
+    if (!isPremium) {
+      openPremiumPrompt('Sharing songs and WhatsApp Status cards is a Gyidi Nwom Premium feature.');
+      return;
+    }
+    setShareCardInitialQuote(quote);
+    setShareCardSong(song);
+  };
+
   const canViewerEditSong = useCallback(
     (song: Song | null) => {
       if (!song || !userProfile) return false;
@@ -1387,11 +1404,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               onOpenArtiste={handleOpenArtisteProfile}
               onToggleFavorite={handleToggleFavorite}
               onToggleOfflineSave={handleToggleOfflineSave}
-              onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-              onOpenShareCard={(s) => {
-                setShareCardInitialQuote('');
-                setShareCardSong(s);
-              }}
+              onOpenLyrics={handleOpenLyrics}
+              onOpenShareCard={(s) => handleOpenShareCard(s)}
               onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
               onUnlocked={() => setNowTick(Date.now())}
               onRefreshCatalog={fetchPlatformData}
@@ -1507,11 +1521,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               onOpenAlbum={handleOpenAlbumView}
               onToggleFavorite={handleToggleFavorite}
               onToggleOfflineSave={handleToggleOfflineSave}
-              onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-              onOpenShareCard={(s) => {
-                setShareCardInitialQuote('');
-                setShareCardSong(s);
-              }}
+              onOpenLyrics={handleOpenLyrics}
+              onOpenShareCard={(s) => handleOpenShareCard(s)}
               onToggleReminder={handleToggleReminder}
               onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
               onArtisteUpdated={(updated) => {
@@ -2143,11 +2154,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       onToggleFavorite={handleToggleFavorite}
                       onOpenArtiste={handleOpenArtisteProfile}
                       onEditSong={canViewerEditSong(song) ? (s) => setEditingLyricsSong(s) : undefined}
-                      onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-                      onOpenShareCard={(s) => {
-                        setShareCardInitialQuote('');
-                        setShareCardSong(s);
-                      }}
+                      onOpenLyrics={handleOpenLyrics}
+                      onOpenShareCard={(s) => handleOpenShareCard(s)}
                       onToggleOfflineSave={handleToggleOfflineSave}
                       onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
                     />
@@ -2746,11 +2754,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       onToggleFavorite={handleToggleFavorite}
                       onOpenArtiste={handleOpenArtisteProfile}
                       onEditSong={canViewerEditSong(song) ? (s) => setEditingLyricsSong(s) : undefined}
-                      onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-                      onOpenShareCard={(s) => {
-                        setShareCardInitialQuote('');
-                        setShareCardSong(s);
-                      }}
+                      onOpenLyrics={handleOpenLyrics}
+                      onOpenShareCard={(s) => handleOpenShareCard(s)}
                       onToggleOfflineSave={handleToggleOfflineSave}
                       onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
                     />
@@ -2780,17 +2785,14 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           }
           setQueueOpen((o) => !o);
         }}
-        onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-        onOpenShareCard={(s) => {
-          setShareCardInitialQuote('');
-          setShareCardSong(s);
-        }}
+        onOpenLyrics={handleOpenLyrics}
+        onOpenShareCard={(s) => handleOpenShareCard(s)}
       />
 
       <QueueDrawer isOpen={queueOpen} onClose={() => setQueueOpen(false)} />
 
       <LyricsDrawer
-        isOpen={Boolean(lyricsDrawerSong)}
+        isOpen={isPremium && Boolean(lyricsDrawerSong)}
         song={lyricsDrawerSong}
         canEditSong={canViewerEditSong(lyricsDrawerSong)}
         onClose={() => setLyricsDrawerSong(null)}
@@ -2798,14 +2800,11 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           setLyricsDrawerSong(null);
           setEditingLyricsSong(s);
         }}
-        onOpenShareCard={(s, selectedLine) => {
-          setShareCardInitialQuote(selectedLine || '');
-          setShareCardSong(s);
-        }}
+        onOpenShareCard={handleOpenShareCard}
       />
 
       <ShareCardModal
-        isOpen={Boolean(shareCardSong)}
+        isOpen={isPremium && Boolean(shareCardSong)}
         song={shareCardSong}
         initialQuote={shareCardInitialQuote}
         onClose={() => setShareCardSong(null)}

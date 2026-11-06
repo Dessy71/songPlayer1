@@ -119,3 +119,18 @@ input[type="range"].audio-slider::-webkit-slider-thumb {
   background: #ffffff;
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
 }
+
+@keyframes premium-confetti-fall {
+  from { translate: 0 -10vh; rotate: 0deg; opacity: 1; }
+  to { translate: 35px 105vh; rotate: 640deg; opacity: 0.2; }
+}
+.premium-confetti {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 16px;
+  animation: premium-confetti-fall 2.8s ease-in forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .premium-confetti { animation: none; display: none; }
+}
