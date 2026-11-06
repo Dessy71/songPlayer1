@@ -1031,7 +1031,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   };
 
   return (
-    <div className="flex h-[100dvh] w-full max-w-full overflow-hidden bg-zinc-950 text-zinc-100">
+    <div className="app-shell flex w-full max-w-full overflow-hidden bg-zinc-950 text-zinc-100">
       <Sidebar
         activeTab={activeTab}
         onSelectTab={(t) => {
@@ -1108,10 +1108,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl px-4 sm:px-7 py-3">
-          <div className="flex items-center gap-3 flex-1 max-w-xl">
+        <header className="mobile-header shrink-0 z-30 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl px-4 sm:px-7 py-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 basis-full sm:basis-auto min-w-0 sm:max-w-xl">
             <button
               onClick={() => setMobileMenuOpen(true)}
               className="lg:hidden rounded-xl p-2 bg-white/5 text-zinc-300 hover:bg-white/10 cursor-pointer"
@@ -1120,7 +1120,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <Menu className="w-5 h-5" />
             </button>
 
-            <div className="relative flex-1">
+            <div className="relative flex-1 min-w-0">
               <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
@@ -1153,7 +1153,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 max-w-full">
             <button
               type="button"
               onClick={() => {
@@ -1256,7 +1256,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         </header>
 
         {/* Main Scroll Area */}
-        <main className="flex-1 min-w-0 max-w-full stable-scroll px-3.5 sm:px-7 py-5 pb-36">
+        <main className="flex-1 min-h-0 min-w-0 max-w-full stable-scroll px-3.5 sm:px-7 py-5 pb-36">
           {/* Persistent Section Navigation Bar: Go Back & Close Buttons on Every Section */}
           {activeTab !== 'discover' &&
             !(activeTab === 'albums' && selectedAlbum) &&

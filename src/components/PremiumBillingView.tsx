@@ -239,7 +239,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
   return (
     <div className="max-w-[1250px] mx-auto space-y-6 pb-8">
       {celebrating && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-5" role="dialog" aria-modal="true" aria-labelledby="premium-success-title">
+        <div className="safe-overlay fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-5" role="dialog" aria-modal="true" aria-labelledby="premium-success-title">
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             {Array.from({ length: 65 }, (_, i) => (
               <span key={i} className="premium-confetti" style={{ left: `${(i * 37) % 100}%`, backgroundColor: ['#fbbf24', '#f472b6', '#34d399', '#60a5fa'][i % 4], animationDelay: `${(i % 13) * 0.07}s`, transform: `rotate(${i * 29}deg)` }} />
