@@ -56,3 +56,11 @@ See [the payment operations guide](docs/payments.md) for webhook configuration, 
 npm test
 npm run build
 ```
+
+## Compact homepage and iPhone audio controls
+
+The Discover page uses one 96px rotating Church Spotlight (welcome/catalog count, Daily Verse, upcoming Live/Radio, and active notices), followed immediately by three playable tracks with visible actions. The old tall intro and its playback/shuffle/upload buttons were removed; upload remains available in the header/sidebar. Rotation pauses on interaction, can be toggled explicitly, and respects reduced motion.
+
+On iPhone/iPad, native HTML media loudness is controlled with hardware buttons or Control Center. The app displays device-volume guidance instead of a slider that iOS ignores. Native mute/unmute works in the app, including the expanded player and guest preview. Desktop keeps the loudness slider. No Web Audio routing was added, to avoid compromising background/lock-screen playback.
+
+Optional browser regression: with Playwright installed and port 5173 running, `node tests/homepage-layout.mjs`. It checks above-the-fold song controls, fixed slide size, pause/resume/reduced motion, and native mute with simulated iPhone volume restrictions. Physical iOS Safari/audio testing is still required.

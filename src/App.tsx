@@ -57,6 +57,7 @@ import {
 } from './types/music';
 import { PlayerProvider, usePlayer } from './context/PlayerContext';
 import { Sidebar } from './components/Sidebar';
+import { HomeSpotlight } from './components/HomeSpotlight';
 import { SongRow } from './components/SongRow';
 import { PlayerBar } from './components/PlayerBar';
 import { QueueDrawer } from './components/QueueDrawer';
@@ -142,11 +143,9 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 }) => {
   const {
     currentSong,
-    isPlaying,
     startupLatencyMs,
     recentlyPlayedIds,
     playSong,
-    togglePlay,
     warmTrack,
   } = usePlayer();
 
@@ -1011,15 +1010,6 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     });
   }, [artistes, artisteTrackCounts, artisteDirectoryFilter, institutionFilter]);
 
-  const handleHeroPlay = () => {
-    const unlockedList = playableSongs.filter((s) =>
-      isAuthenticated ? s.category === 'Songs' : guestUnlockedIds.has(s.id)
-    );
-    if (unlockedList.length === 0) return;
-    if (currentSong) togglePlay();
-    else playSong(unlockedList[0], unlockedList);
-  };
-
   const handleShuffleAll = (pool: Song[]) => {
     if (!isAuthenticated) {
       openAccountPrompt('Create a free account to shuffle songs and unlock the full catalog!');
@@ -1293,9 +1283,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <div className="flex items-center gap-2.5 text-xs sm:text-sm text-amber-200">
                 <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
                 <span>
-                  <strong>Guest Preview:</strong> 5 preview songs are unlocked with Play, Next &amp;
+                  <span className="sm:hidden">5 free preview tracks. Sign in for the full library.</span>
+                  <span className="hidden sm:inline">                  <strong>Guest Preview:</strong> 5 preview songs are unlocked with Play, Next &amp;
                   Previous. Create a free account to unlock all {playableSongs.length} songs &amp;
-                  upgrade to Premium for Offline Vault, Likes, Playlists &amp; Daily Verses!
+                  upgrade to Premium for Offline Vault, Likes, Playlists &amp; Daily Verses!</span>
                 </span>
               </div>
               <button
@@ -1768,190 +1759,63 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               )}
             </div>
           ) : activeTab === 'discover' ? (
-            <div className="space-y-10 max-w-[1400px] mx-auto">
-              {/* Hero Banner */}
-              <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-amber-600/30 via-pink-600/25 to-violet-950/60 p-6 sm:p-9">
-                <div
-                  className="absolute inset-0 opacity-20 pointer-events-none"
-                  style={{
-                    backgroundImage:
-                      'radial-gradient(circle at 80% 20%, rgba(245,158,11,0.55), transparent 50%)',
-                  }}
-                />
-                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div className="max-w-2xl">
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-black/40 border border-white/15 px-3 py-1 text-xs font-semibold text-amber-300 mb-3">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      SCG & SACSU Streaming • Singles & Full Albums
-                    </div>
-                    <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                      Gyidi Nwom — Savior Church of Ghana Digital Sanctuary
-                    </h2>
-                    <p className="mt-2.5 text-sm sm:text-base text-zinc-200/90 leading-relaxed">
-                      Stream {playableSongs.length} sacred hymns, choir recordings, SACSU tertiary
-                      ministrations, full albums, and convention sermons with instant cloud
-                      playback.
-                    </p>
+            <div className="space-y-4 sm:space-y-6 max-w-[1400px] mx-auto">
+              <HomeSpotlight slides={[
+                {
+                  id: 'welcome', label: 'SCG & SACSU · Gyidi Nwom',
+                  title: 'Savior Church of Ghana Digital Sanctuary',
+                  description: `Stream ${playableSongs.length} hymns, choir recordings & convention sermons.`,
+                  image: '/logo-mark.png', icon: <Music2 className="h-6 w-6" />,
+                  onOpen: () => navigateToTab('browse'),
+                },
+                {
+                  id: 'verse', label: "Today's Bible Verse · Premium",
+                  title: activePopupVerse?.scripture_ref || 'Your daily word & encouragement',
+                  description: activePopupVerse?.caption || 'View today’s Scripture flyer',
+                  image: isPremium ? activePopupVerse?.flyer_url : undefined,
+                  icon: <BookOpen className="h-6 w-6" />,
+                  onOpen: () => {
+                    if (!isPremium) { openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.'); return; }
+                    setDailyFeedInitialTab('verse'); setDailyFeedOpen(true);
+                  },
+                },
+                {
+                  id: 'live', label: 'Coming soon · Live Video & Radio',
+                  title: 'Live conventions & Sabbath Radio',
+                  description: 'HD video & low-data audio · Preview and join the waitlist',
+                  icon: <Video className="h-6 w-6" />,
+                  onOpen: () => {
+                    if (!isPremium) { openPremiumPrompt('Live Convention Video & Sabbath Radio is a Premium feature.'); return; }
+                    navigateToTab('live');
+                  },
+                },
+                ...(activeRoleAnnouncements.length ? [{
+                  id: 'announcement', label: 'Official church & platform notice',
+                  title: activeRoleAnnouncements[0].title,
+                  description: activeRoleAnnouncements[0].body,
+                  icon: <Megaphone className="h-6 w-6" />,
+                  onOpen: () => { setDailyFeedInitialTab('announcements'); setDailyFeedOpen(true); },
+                }] : []),
+              ]} />
 
-                    <div className="mt-6 flex flex-wrap items-center gap-3">
-                      <button
-                        onClick={handleHeroPlay}
-                        className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-zinc-950 shadow-xl hover:bg-amber-100 transition cursor-pointer"
-                      >
-                        <Play className="w-4 h-4 fill-zinc-950" />
-                        {currentSong && isPlaying
-                          ? 'Pause Stream'
-                          : isAuthenticated
-                          ? 'Start Listening'
-                          : 'Play 5-Song Free Preview'}
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          handleShuffleAll(playableSongs.filter((s) => s.category === 'Songs'))
-                        }
-                        className="inline-flex items-center gap-2 rounded-full bg-black/40 border border-white/20 px-5 py-3 text-sm font-semibold text-white hover:bg-black/60 transition cursor-pointer"
-                      >
-                        <Shuffle className="w-4 h-4 text-amber-400" />
-                        Shuffle Hymns
-                      </button>
-
-                      <button
-                        onClick={handleUploadTrigger}
-                        className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-400/40 px-5 py-3 text-sm font-bold text-amber-200 hover:bg-amber-500/30 transition cursor-pointer"
-                      >
-                        <UploadCloud className="w-4 h-4" />
-                        Upload Song or Album
-                      </button>
-                    </div>
-                  </div>
-
-                  <img
-                    src="/logo-mark.png"
-                    alt="Gyidi Nwom Official Emblem"
-                    className="hidden md:block h-36 w-36 rounded-3xl object-cover border border-amber-400/30 shadow-2xl shadow-black/60"
-                  />
+              {/* Playable songs come before adverts, artistes and premieres. */}
+              <section aria-label="Listen now" data-testid="home-listen-now">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-extrabold text-white">Listen now</h2>
+                  <button type="button" onClick={() => navigateToTab('browse')} className="min-h-11 text-xs font-bold text-amber-300">All songs →</button>
                 </div>
-              </section>
-
-              {/* DAILY BIBLE VERSE FLYER & CHURCH ANNOUNCEMENTS SPOTLIGHT */}
-              {(activePopupVerse || activeRoleAnnouncements.length > 0) && (
-                <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {activePopupVerse && (
-                    <div
-                      onClick={() => {
-                        if (!isAuthenticated) {
-                          openAccountPrompt(
-                            'Create an account & upgrade to Premium to unlock Daily Bible Verse flyers!'
-                          );
-                          return;
-                        }
-                        if (!isPremium) {
-                          openPremiumPrompt(
-                            'Daily Bible Verse flyers are a Gyidi Nwom Premium feature.'
-                          );
-                          return;
-                        }
-                        setDailyFeedInitialTab('verse');
-                        setDailyFeedOpen(true);
-                      }}
-                      className="group flex items-center gap-4 rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-zinc-900 to-zinc-950 p-4 hover:border-amber-400/60 transition cursor-pointer"
-                    >
-                      <img
-                        src={activePopupVerse.flyer_url}
-                        alt={activePopupVerse.scripture_ref || 'Daily Verse'}
-                        className="h-16 w-16 rounded-xl object-cover border border-amber-400/30 flex-shrink-0"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
-                          <BookOpen className="w-3.5 h-3.5" />
-                          Today&apos;s Bible Verse Flyer • Premium
-                        </span>
-                        <h4 className="text-sm font-extrabold text-white truncate mt-0.5">
-                          {activePopupVerse.scripture_ref || 'View Today’s Scripture Flyer'}
-                        </h4>
-                        <p className="text-xs text-zinc-400 truncate">
-                          {isPremium
-                            ? activePopupVerse.caption || 'Tap to view or share today’s word'
-                            : 'Unlock Daily Bible Verse flyers with Gyidi Nwom Premium'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeRoleAnnouncements.length > 0 && (
-                    <div
-                      onClick={() => {
-                        setDailyFeedInitialTab('announcements');
-                        setDailyFeedOpen(true);
-                      }}
-                      className="group flex items-center gap-4 rounded-2xl border border-violet-400/30 bg-gradient-to-r from-violet-500/15 via-zinc-900 to-zinc-950 p-4 hover:border-violet-400/60 transition cursor-pointer"
-                    >
-                      <div className="h-14 w-14 rounded-2xl bg-violet-500/20 border border-violet-400/30 flex items-center justify-center flex-shrink-0">
-                        <Megaphone className="w-6 h-6 text-violet-300" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-violet-300">
-                          Official Church & Platform Notice ({activeRoleAnnouncements.length})
-                        </span>
-                        <h4 className="text-sm font-extrabold text-white truncate mt-0.5">
-                          {activeRoleAnnouncements[0].title}
-                        </h4>
-                        <p className="text-xs text-zinc-400 truncate">
-                          {activeRoleAnnouncements[0].body}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {/* UPCOMING FEATURE SPOTLIGHT: LIVE CONVENTION VIDEO & SABBATH RADIO */}
-              <section
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    openAccountPrompt(
-                      'Create an account & upgrade to Premium to access Live Convention Video & Sabbath Radio!'
-                    );
-                    return;
-                  }
-                  if (!isPremium) {
-                    openPremiumPrompt(
-                      'Live Convention Video & Sabbath Radio access is a Gyidi Nwom Premium feature.'
-                    );
-                    return;
-                  }
-                  navigateToTab('live');
-                }}
-                className="group relative overflow-hidden rounded-2xl border border-rose-500/35 bg-gradient-to-r from-rose-600/20 via-zinc-900 to-amber-500/15 p-4 sm:p-5 hover:border-rose-400/60 transition cursor-pointer"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-start sm:items-center gap-3.5">
-                    <div className="h-12 w-12 rounded-2xl bg-rose-500/20 border border-rose-400/35 flex items-center justify-center flex-shrink-0">
-                      <Video className="w-6 h-6 text-rose-300" />
-                    </div>
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/25 border border-rose-400/40 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-rose-200">
-                          <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
-                          Upcoming Feature • Coming Soon
-                        </span>
-                        <span className="text-[11px] font-semibold text-amber-300">
-                          HD Live Video + Low-Data Sabbath Radio
-                        </span>
-                      </div>
-                      <h4 className="text-sm sm:text-base font-extrabold text-white mt-1">
-                        Live Convention Video Broadcasts &amp; Sabbath Radio Stream
-                      </h4>
-                      <p className="text-xs text-zinc-300 mt-0.5">
-                        Soon, SCG Headquarters, regional conventions &amp; SACSU campuses will stream
-                        live HD video and low-data audio directly to brethren worldwide.
-                      </p>
-                    </div>
-                  </div>
-                  <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-extrabold text-zinc-950 group-hover:bg-amber-200 transition flex-shrink-0">
-                    Preview &amp; Join Waitlist →
-                  </span>
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-1">
+                  {playableSongs.filter((song) => isAuthenticated || guestUnlockedIds.has(song.id)).sort((a, b) => Number(b.category === 'Songs') - Number(a.category === 'Songs')).slice(0, 3).map((song, i) => (
+                    <SongRow key={song.id} song={song} index={i}
+                      contextQueue={playableSongs} isFavorite={favoriteIds.has(song.id)}
+                      savedResumeSec={sermonProgressMap[song.id]?.positionSec}
+                      isOfflineSaved={offlineSavedIds.has(song.id)}
+                      onToggleFavorite={handleToggleFavorite} onOpenArtiste={handleOpenArtisteProfile}
+                      onEditSong={canViewerEditSong(song) ? (track) => setEditingLyricsSong(track) : undefined}
+                      onOpenLyrics={handleOpenLyrics} onOpenShareCard={(track) => handleOpenShareCard(track)}
+                      onToggleOfflineSave={handleToggleOfflineSave}
+                      onOpenPlaylistModal={(track) => handleRequestPlaylistModal(track)} />
+                  ))}
                 </div>
               </section>
 
