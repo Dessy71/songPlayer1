@@ -5,7 +5,7 @@ A fast, installable Progressive Web Application (**React + TypeScript + Tailwind
 ## Key Features
 
 - **Sub-Second Cloud Audio Streaming**: 295+ catalog tracks (~718 MB, 62.6 hours of audio) hosted on Supabase Cloud Storage (`eu-west-1`) with HTTP Range streaming, hover audio pre-warming, and `localStorage` catalog caching.
-- **5-Song Guest Preview & Full Member Library**: Unauthenticated visitors can preview 5 songs with Play/Pause, Next, and Previous; free Listener accounts unlock all 295+ tracks, Likes, Playlists, Seeking, Offline Saving, and Lyrics.
+- **5-Song Guest Preview & Full Member Library**: Unauthenticated visitors can preview 5 songs with Play/Pause, Next, and Previous; free Listener accounts unlock all 295+ tracks and seeking; Premium adds Likes, Playlists, Offline Saving, Lyrics, and Sharing.
 - **SCG & SACSU Artiste Profiles, Studio & Pre-Created Claim Codes**:
   - Dedicated profiles for SCG choirs/singers and SACSU campus fellowships (KNUST, UG Legon, UCC, UEW, UMaT, UENR, KsTU, etc.) with Fan Support MoMo/Bank details.
   - Pre-created Artiste profiles with Claim Codes & Master Admin credential provisioning.
@@ -41,24 +41,18 @@ npm run dev
 npm run build
 ```
 
-## Premium billing configuration (Phase 7)
+## Premium billing and cross-device recovery
 
-- Master Admin → Premium & Paystack: set the Paystack **public** key and monthly/yearly GHS prices (defaults: GHS 5 / GHS 50).
-- Supabase → Edge Function Secrets: configure `PAYSTACK_SECRET_KEY` securely. Never place the secret in Vite variables, the settings table, or source control.
-- `verify-premium-payment` checks the authenticated user, Paystack success status, currency, exact amount, account email and plan/user metadata before allowing activation. Client callbacks alone cannot grant Premium. References cannot extend a membership twice.
-- Plans currently use prepaid, manually renewed monthly/yearly access, not recurring direct debits. Live Video/Radio remains an upcoming feature; Premium does not imply a live broadcast is available today.
-- Offline Save keeps audio in browser-managed in-app storage on the current device, not in Downloads. The saved track list syncs to the account; another device still needs to cache the stream. Browser storage eviction can remove offline audio.
-- Payments cannot be fully tested until both Paystack keys are configured. Use matching test keys first, verify success/cancellation/duplicate-reference behavior, then switch to matching live keys.
+See [the payment operations guide](docs/payments.md) for webhook configuration, deployment, security model, recovery and rollout tests.
 
-### Recover a charged payment that did not activate Premium
+- Checkout is initialized server-side using admin-configured monthly/yearly GHS prices.
+- Orders are stored against the authenticated Supabase account ID before payment. Restoring access on another device requires signing in to that same account, not a transaction ID or browser storage.
+- A signed Paystack webhook verifies every successful payment through Paystack's API before atomic subscription activation. Browser callbacks are never proof of payment.
+- Existing subscription receipts, admin lifetime grants, billing history, and optional legacy reference recovery are retained.
+- Plans remain prepaid monthly/yearly memberships, not recurring direct debits.
+- Offline audio stays in browser-managed app storage on each device. The account's saved track list syncs centrally, but audio must be cached on each new device.
 
-1. Set the matching Paystack secret key securely in Supabase → Edge Functions → Secrets as `PAYSTACK_SECRET_KEY` (live secret for a live charge). Do not paste secrets into chat or frontend settings.
-2. Sign in to the same Gyidi Nwom account used at checkout.
-3. Open Premium & Billing → **Already paid? Verify existing payment**, paste the transaction reference from the Paystack receipt, select the plan paid for, and verify. This does not make a new charge.
-4. Only a server-verified active profile triggers the confetti success dialog. The app reloads after 3.5 seconds to refresh account entitlements.
-
-Failed callback references are retained locally per account for retry. Checkout checks verifier configuration before opening Paystack. Lyrics and song sharing are Premium features.
-
-Payment helper regression tests: `node --experimental-vm-modules --test tests/premiumPayment.test.mjs`.
-
-Checkout now records its reference **before** opening Paystack, rather than waiting for the success callback. Returning to Billing on the same browser automatically retries saved-payment verification; **Check my payment** retries without requiring the user to type a reference. For older payments made before reference capture, or after browser data is cleared/on another device, administrator-assisted reference lookup is still needed. Background activation independent of the browser requires a signed Paystack webhook and server-side checkout records; these are not implemented by this change.
+```bash
+npm test
+npm run build
+```

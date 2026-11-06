@@ -38,6 +38,7 @@ import {
   Crown,
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
+import { recoverPremiumAccount } from './lib/premiumPayment';
 import {
   Album,
   Announcement,
@@ -156,7 +157,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     [userProfile, platformSettings, nowTick]
   );
 
-  const [activeTab, setActiveTab] = useState<NavTab>('discover');
+  const [activeTab, setActiveTab] = useState<NavTab>(() => new URLSearchParams(window.location.search).has('payment_return') ? 'premium' : 'discover');
   const [tabHistory, setTabHistory] = useState<NavTab[]>([]);
   const [premiumPromptReason, setPremiumPromptReason] = useState<string | null>(null);
   const [selectedArtisteId, setSelectedArtisteId] = useState<string | null>(null);
@@ -1319,7 +1320,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 ))}
               </div>
             </div>
-          ) : activeTab === 'premium' ? (
+          ) : activeTab === 'premium' || (!isPremium && ['favorites', 'playlists', 'offline', 'live'].includes(activeTab)) ? (
             <PremiumBillingView
               userId={userId}
               userEmail={userEmail}
@@ -3032,6 +3033,22 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, [fetchOwnProfile, fetchPlatformData]);
+
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    const restore = async () => {
+      try {
+        const result = await recoverPremiumAccount();
+        if (!cancelled) setUserProfile(result.profile);
+      } catch { if (!cancelled) void fetchOwnProfile(userId); }
+    };
+    void restore();
+    const refresh = () => { if (document.visibilityState === 'visible') void restore(); };
+    document.addEventListener('visibilitychange', refresh);
+    const interval = window.setInterval(() => { if (document.visibilityState === 'visible') void fetchOwnProfile(userId); }, 60000);
+    return () => { cancelled = true; document.removeEventListener('visibilitychange', refresh); window.clearInterval(interval); };
+  }, [userId, fetchOwnProfile]);
 
   const playableSongs = useMemo(
     () => songs.filter((s) => isSongPubliclyPlayable(s)),

@@ -17,7 +17,7 @@ import {
   Crown,
   CreditCard,
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, SUPABASE_URL } from '../lib/supabase';
 import {
   Announcement,
   DailyVerseFlyer,
@@ -1226,12 +1226,18 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 </div>
               </div>
 
+              <div className="rounded-2xl border border-emerald-400/25 bg-zinc-950 p-4 space-y-2">
+                <p className="text-sm font-bold text-emerald-300">Paystack Webhook Setup (one-time)</p>
+                <p className="text-xs text-zinc-300">In Paystack Dashboard → Settings → API Keys &amp; Webhooks, set the webhook URL below in the matching Live/Test mode. Keep PAYSTACK_SECRET_KEY only in Supabase Edge Function Secrets.</p>
+                <code className="block break-all text-xs text-amber-200 select-all">{`${SUPABASE_URL}/functions/v1/verify-premium-payment?webhook=1`}</code>
+                <p className="text-xs text-zinc-400">The endpoint validates the raw-body signature, verifies the transaction with Paystack, and activates the account even when the app is closed.</p>
+              </div>
+
               <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-zinc-950/80 p-4 cursor-pointer">
                 <div>
-                  <p className="text-sm font-bold text-white">Enable Gyidi Nwom Premium Gating</p>
+                  <p className="text-sm font-bold text-white">Enable New Premium Checkouts</p>
                   <p className="text-xs text-zinc-400">
-                    Gates Offline Saved, Liked Songs, Playlists, Artiste Support, Daily Verses &amp;
-                    Live Video/Radio behind Premium
+                    Pause new checkouts without revoking paid access. Expired accounts remain locked; this setting never grants free Premium.
                   </p>
                 </div>
                 <input
