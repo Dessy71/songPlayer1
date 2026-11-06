@@ -17,8 +17,8 @@ for(const [width,height,top,left,right,bottom] of [[393,852,59,0,0,34],[320,568,
  const menu=page.getByRole('button',{name:'Open menu',exact:true});
  const search=page.getByPlaceholder('Search songs, Twi/English lyrics, artistes, campuses, sermons...');
  await search.waitFor();
- const crown=page.getByTitle('Gyidi Nwom Premium Pricing & Billing');
- for(const locator of [search,crown,...(width<1024?[menu]:[])]){
+ assert.equal(await page.locator('header').getByTitle('Gyidi Nwom Premium Pricing & Billing').count(),0);
+ for(const locator of [search,...(width<1024?[menu]:[])]){
   const box=await locator.boundingBox();assert.ok(box.y>=top,`top overlap at ${width}: ${box.y}<${top}`);assert.ok(box.x>=left);assert.ok(box.x+box.width<=width-right+1);assert.ok(box.y+box.height<=height-bottom);
  }
  await search.fill('hymn');assert.equal(await search.inputValue(),'hymn');
@@ -26,6 +26,6 @@ for(const [width,height,top,left,right,bottom] of [[393,852,59,0,0,34],[320,568,
  const sizes=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth,mainHeight:document.querySelector('main').clientHeight,mainOverflow:getComputedStyle(document.querySelector('main')).overflowY}));
  assert.ok(sizes.scroll<=sizes.width,JSON.stringify(sizes));assert.ok(sizes.mainHeight>100);assert.equal(sizes.mainOverflow,'auto');
  const scrolled=await page.evaluate(()=>{const main=document.querySelector('main');const fixture=document.createElement('div');fixture.style.height=`${innerHeight*2}px`;fixture.setAttribute('data-test-scroll-fixture','');main.appendChild(fixture);main.scrollTop=120;return main.scrollTop;});assert.ok(scrolled>0,'Main content must actually scroll');assert.deepEqual(errors,[]);
- console.log(`PASS ${width}x${height}, simulated safe insets ${top}/${right}/${bottom}/${left}: search editable, menu tappable, crown unobstructed, main scrollable, no horizontal overflow.`);
+ console.log(`PASS ${width}x${height}, simulated safe insets ${top}/${right}/${bottom}/${left}: search editable, menu tappable, removed header icons absent, main scrollable, no horizontal overflow.`);
  await browser.close();
 }

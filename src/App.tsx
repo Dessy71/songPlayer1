@@ -35,7 +35,6 @@ import {
   RotateCw,
   Smartphone,
   ArrowLeft,
-  Crown,
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { recoverPremiumAccount } from './lib/premiumPayment';
@@ -1020,6 +1019,9 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     playSong(rnd, pool);
   };
 
+  const nextPremiere = [...upcomingAlbums, ...upcomingSinglePremieres]
+    .sort((a, b) => new Date(a.premiere_at || 0).getTime() - new Date(b.premiere_at || 0).getTime())[0];
+
   return (
     <div className="app-shell flex w-full max-w-full overflow-hidden bg-zinc-950 text-zinc-100">
       <Sidebar
@@ -1100,7 +1102,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
       <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
         {/* Top Bar */}
-        <header className="mobile-header shrink-0 z-30 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl px-4 sm:px-7 py-3">
+        <header className="mobile-header shrink-0 z-30 flex items-center justify-between gap-2 sm:gap-3 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl px-4 sm:px-7 py-3">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 basis-full sm:basis-auto min-w-0 sm:max-w-xl">
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -1143,26 +1145,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             </div>
           </div>
 
-          <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 max-w-full">
-            <button
-              type="button"
-              onClick={() => {
-                setPremiumPromptReason(null);
-                navigateToTab('premium');
-              }}
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-extrabold transition cursor-pointer ${
-                isPremium
-                  ? 'bg-amber-500/20 border border-amber-400/45 text-amber-200 hover:bg-amber-500/30'
-                  : 'bg-gradient-to-r from-amber-400 to-pink-500 text-zinc-950 shadow-md hover:opacity-95'
-              }`}
-              title="Gyidi Nwom Premium Pricing & Billing"
-            >
-              <Crown className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">
-                {isPremium ? 'Premium ✓' : 'Go Premium'}
-              </span>
-            </button>
-
+          <div className="ml-auto hidden sm:flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 max-w-full">
             {!isAppInstalled && (
               <button
                 onClick={() => setInstallAppOpen(true)}
@@ -1171,28 +1154,6 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               >
                 <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
                 Install App
-              </button>
-            )}
-
-            {(verseFlyers.length > 0 || activeRoleAnnouncements.length > 0) && (
-              <button
-                onClick={() => {
-                  if (!isPremium && activeRoleAnnouncements.length === 0) {
-                    openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.');
-                    return;
-                  }
-                  setDailyFeedInitialTab(isPremium ? undefined : 'announcements');
-                  setDailyFeedOpen(true);
-                }}
-                className="relative inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-amber-200 hover:bg-white/15 cursor-pointer"
-                title="Daily Bible Verse (Premium) & Official Announcements"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden md:inline">Daily Word</span>
-                {((isPremium && unseenFeedState.hasUnseenVerse) ||
-                  unseenFeedState.hasUnseenAnn) && (
-                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-                )}
               </button>
             )}
 
@@ -1235,13 +1196,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               </button>
             )}
 
-            <button
-              onClick={handleUploadTrigger}
-              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-pink-500/20 hover:opacity-95 transition cursor-pointer"
-            >
-              <UploadCloud className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Upload Song / Album</span>
-            </button>
+
           </div>
         </header>
 
@@ -1789,6 +1744,16 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     navigateToTab('live');
                   },
                 },
+                {
+                  id: 'premieres', label: `Upcoming Premieres · ${upcomingAlbums.length + upcomingSinglePremieres.length}`,
+                  title: nextPremiere?.title || 'New singles & albums are on the way',
+                  description: nextPremiere?.premiere_at
+                    ? `${nextPremiere.artist} · ${new Date(nextPremiere.premiere_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`
+                    : 'Explore scheduled releases and premiere countdowns',
+                  image: nextPremiere?.cover_url || undefined,
+                  icon: <CalendarClock className="h-6 w-6" />,
+                  onOpen: () => navigateToTab('upcoming'),
+                },
                 ...(activeRoleAnnouncements.length ? [{
                   id: 'announcement', label: 'Official church & platform notice',
                   title: activeRoleAnnouncements[0].title,
@@ -1798,23 +1763,72 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 }] : []),
               ]} />
 
-              {/* Playable songs come before adverts, artistes and premieres. */}
-              <section aria-label="Listen now" data-testid="home-listen-now">
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <h2 className="text-lg font-extrabold text-white">Listen now</h2>
-                  <button type="button" onClick={() => navigateToTab('browse')} className="min-h-11 text-xs font-bold text-amber-300">All songs →</button>
+              {/* TRENDING & WHAT EVERYBODY IS LISTENING TO */}
+              <section aria-label="Trending and what everyone is listening to" data-testid="home-trending">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2.5">
+                    <Flame className="w-5 h-5 text-orange-400" />
+                    <div>
+                      <h3 aria-label="Trending & What Everyone Is Listening To" className="font-extrabold text-white">
+                        <span className="block text-base sm:inline sm:text-lg">Trending</span>
+                        <span className="block text-[11px] font-medium text-zinc-300 sm:inline sm:text-lg sm:font-extrabold sm:text-white"> &amp; What Everyone Is Listening To</span>
+                      </h3>
+                      <p className="hidden sm:block text-xs text-zinc-400">
+                        {isAuthenticated
+                          ? 'Most streamed hymns & live community listening pulse'
+                          : 'First 5 tracks are unlocked for Guest Preview — sign up free to unlock #6+'}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => navigateToTab('trending')}
+                    aria-label="Full Trending Chart"
+                    className="shrink-0 min-h-11 text-[11px] sm:text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
+                  >
+                    Full chart →
+                  </button>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-1">
-                  {playableSongs.filter((song) => isAuthenticated || guestUnlockedIds.has(song.id)).sort((a, b) => Number(b.category === 'Songs') - Number(a.category === 'Songs')).slice(0, 3).map((song, i) => (
-                    <SongRow key={song.id} song={song} index={i}
-                      contextQueue={playableSongs} isFavorite={favoriteIds.has(song.id)}
+
+                {listeningNowFeed.length > 0 && (
+                  <div className="mb-4 flex items-center gap-2.5 overflow-x-auto pb-1">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-[11px] font-bold text-emerald-300 flex-shrink-0">
+                      <Radio className="w-3.5 h-3.5 animate-pulse" />
+                      Listening Now
+                    </span>
+                    {listeningNowFeed.slice(0, 5).map(({ song }) => (
+                      <button
+                        key={song.id}
+                        onClick={() => playSong(song, trendingSongs)}
+                        className="flex items-center gap-2 rounded-full bg-zinc-900 border border-white/10 px-3 py-1 text-xs text-zinc-200 hover:border-amber-400/50 transition flex-shrink-0 cursor-pointer"
+                      >
+                        {!isAuthenticated && !guestUnlockedIds.has(song.id) && (
+                          <Lock className="w-3 h-3 text-amber-400" />
+                        )}
+                        <span className="font-semibold truncate max-w-[150px]">{song.title}</span>
+                        <span className="text-zinc-500">• {song.artist}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-2">
+                  {trendingSongs.slice(0, 7).map((song, i) => (
+                    <SongRow
+                      key={song.id}
+                      song={song}
+                      index={i}
+                      contextQueue={trendingSongs}
+                      isFavorite={favoriteIds.has(song.id)}
                       savedResumeSec={sermonProgressMap[song.id]?.positionSec}
                       isOfflineSaved={offlineSavedIds.has(song.id)}
-                      onToggleFavorite={handleToggleFavorite} onOpenArtiste={handleOpenArtisteProfile}
-                      onEditSong={canViewerEditSong(song) ? (track) => setEditingLyricsSong(track) : undefined}
-                      onOpenLyrics={handleOpenLyrics} onOpenShareCard={(track) => handleOpenShareCard(track)}
+                      onToggleFavorite={handleToggleFavorite}
+                      onOpenArtiste={handleOpenArtisteProfile}
+                      onEditSong={canViewerEditSong(song) ? (s) => setEditingLyricsSong(s) : undefined}
+                      onOpenLyrics={handleOpenLyrics}
+                      onOpenShareCard={(s) => handleOpenShareCard(s)}
                       onToggleOfflineSave={handleToggleOfflineSave}
-                      onOpenPlaylistModal={(track) => handleRequestPlaylistModal(track)} />
+                      onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
+                    />
                   ))}
                 </div>
               </section>
@@ -1887,144 +1901,6 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         </p>
                       </div>
                     ))}
-                </div>
-              </section>
-
-              {/* UPCOMING PREMIERES */}
-              <section>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <CalendarClock className="w-5 h-5 text-amber-400" />
-                    <div>
-                      <h3 className="text-lg font-extrabold text-white">Upcoming Premieres</h3>
-                      <p className="text-xs text-zinc-400">
-                        Approved singles & full albums counting down to public drop
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => navigateToTab('upcoming')}
-                    className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
-                  >
-                    See all
-                  </button>
-                </div>
-
-                {upcomingAlbums.length === 0 && upcomingSinglePremieres.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-white/15 bg-zinc-900/35 p-6 flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-bold text-white">
-                        Have an upcoming SCG single, SACSU hymn, or full choir album?
-                      </p>
-                      <p className="text-xs text-zinc-400 mt-0.5">
-                        Artistes can schedule a Single or Album Premiere (7+ days ahead) with custom
-                        Cover Art & live countdown!
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleUploadTrigger}
-                      className="rounded-full bg-amber-500 px-4 py-2 text-xs font-extrabold text-zinc-950 hover:bg-amber-400 cursor-pointer"
-                    >
-                      Schedule a Premiere
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {upcomingAlbums.slice(0, 2).map((alb) => (
-                      <AlbumPremiereCard
-                        key={alb.id}
-                        album={alb}
-                        tracks={songs.filter((s) => s.album_id === alb.id)}
-                        artiste={alb.artiste_id ? artisteMap.get(alb.artiste_id) : null}
-                        onOpenArtiste={handleOpenArtisteProfile}
-                        onOpenAlbum={handleOpenAlbumView}
-                        onUnlocked={() => setNowTick(Date.now())}
-                      />
-                    ))}
-
-                    {upcomingSinglePremieres
-                      .slice(0, Math.max(0, 4 - upcomingAlbums.slice(0, 2).length))
-                      .map((song) => (
-                        <PremiereCard
-                          key={song.id}
-                          song={song}
-                          artiste={song.artiste_id ? artisteMap.get(song.artiste_id) : null}
-                          reminded={remindedIds.has(song.id)}
-                          onToggleReminder={handleToggleReminder}
-                          onOpenArtiste={handleOpenArtisteProfile}
-                          onPlayIfUnlocked={(s) => playSong(s, [s, ...playableSongs])}
-                          onUnlocked={() => setNowTick(Date.now())}
-                        />
-                      ))}
-                  </div>
-                )}
-              </section>
-
-              {/* TRENDING & WHAT EVERYBODY IS LISTENING TO */}
-              <section>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <Flame className="w-5 h-5 text-orange-400" />
-                    <div>
-                      <h3 className="text-lg font-extrabold text-white">
-                        Trending & What Everybody Is Listening To
-                      </h3>
-                      <p className="text-xs text-zinc-400">
-                        {isAuthenticated
-                          ? 'Most streamed hymns & live community listening pulse'
-                          : 'First 5 tracks are unlocked for Guest Preview — sign up free to unlock #6+'}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => navigateToTab('trending')}
-                    className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
-                  >
-                    Full Trending Chart
-                  </button>
-                </div>
-
-                {listeningNowFeed.length > 0 && (
-                  <div className="mb-4 flex items-center gap-2.5 overflow-x-auto pb-1">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-[11px] font-bold text-emerald-300 flex-shrink-0">
-                      <Radio className="w-3.5 h-3.5 animate-pulse" />
-                      Listening Now
-                    </span>
-                    {listeningNowFeed.slice(0, 5).map(({ song }) => (
-                      <button
-                        key={song.id}
-                        onClick={() => playSong(song, trendingSongs)}
-                        className="flex items-center gap-2 rounded-full bg-zinc-900 border border-white/10 px-3 py-1 text-xs text-zinc-200 hover:border-amber-400/50 transition flex-shrink-0 cursor-pointer"
-                      >
-                        {!isAuthenticated && !guestUnlockedIds.has(song.id) && (
-                          <Lock className="w-3 h-3 text-amber-400" />
-                        )}
-                        <span className="font-semibold truncate max-w-[150px]">{song.title}</span>
-                        <span className="text-zinc-500">• {song.artist}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-2">
-                  {trendingSongs.slice(0, 7).map((song, i) => (
-                    <SongRow
-                      key={song.id}
-                      song={song}
-                      index={i}
-                      contextQueue={trendingSongs}
-                      isFavorite={favoriteIds.has(song.id)}
-                      savedResumeSec={sermonProgressMap[song.id]?.positionSec}
-                      isOfflineSaved={offlineSavedIds.has(song.id)}
-                      onToggleFavorite={handleToggleFavorite}
-                      onOpenArtiste={handleOpenArtisteProfile}
-                      onEditSong={canViewerEditSong(song) ? (s) => setEditingLyricsSong(s) : undefined}
-                      onOpenLyrics={handleOpenLyrics}
-                      onOpenShareCard={(s) => handleOpenShareCard(s)}
-                      onToggleOfflineSave={handleToggleOfflineSave}
-                      onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
-                    />
-                  ))}
                 </div>
               </section>
 
