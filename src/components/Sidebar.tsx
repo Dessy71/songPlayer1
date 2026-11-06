@@ -266,7 +266,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </button>
 
       {/* Scrollable Navigation */}
-      <nav className="space-y-4 flex-1 overflow-y-auto pr-0.5">
+      <nav className="space-y-4 flex-1 min-h-0 overflow-y-auto pr-0.5">
         {(isAdmin || userEmail) && (
           <div className="space-y-1">
             <p className="px-2.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-amber-400/90">
@@ -481,10 +481,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <aside className="hidden lg:block flex-shrink-0">{sidebarContent}</aside>
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 flex lg:hidden bg-black/70 backdrop-blur-xs"
+          className="safe-insets fixed inset-0 z-40 flex lg:hidden bg-black/70 backdrop-blur-xs"
           onClick={onCloseMobile}
         >
-          <div onClick={(e) => e.stopPropagation()}>{sidebarContent}</div>
+          <div className="h-full min-h-0 max-w-full" onClick={(e) => e.stopPropagation()}>{sidebarContent}</div>
         </div>
       )}
     </>

@@ -130,7 +130,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
     <>
       {/* Fullscreen Now Playing Modal */}
       {expanded && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-between bg-gradient-to-b from-zinc-900 via-zinc-950 to-black p-4 sm:p-8 stable-scroll">
+        <div className="safe-overlay fixed inset-0 z-50 flex flex-col justify-between bg-gradient-to-b from-zinc-900 via-zinc-950 to-black p-4 sm:p-8 stable-scroll">
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"
@@ -394,7 +394,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
       )}
 
       {/* Persistent Bottom Bar — ALL Controls Visible on Mobile & Desktop */}
-      <div className="fixed bottom-0 inset-x-0 z-30 w-full max-w-full overflow-hidden border-t border-white/15 bg-zinc-950/98 backdrop-blur-xl px-3 sm:px-5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="safe-player fixed bottom-0 inset-x-0 z-30 w-full max-w-full overflow-hidden border-t border-white/15 bg-zinc-950/98 backdrop-blur-xl px-3 sm:px-5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <div className="mx-auto max-w-[1600px] space-y-1.5">
           {/* Top Row: Track Info + Seek Bar (Visible on Mobile & Desktop) */}
           <div className="flex items-center justify-between gap-2.5 min-w-0">

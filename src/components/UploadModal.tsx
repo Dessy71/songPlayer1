@@ -498,7 +498,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-2xl rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}

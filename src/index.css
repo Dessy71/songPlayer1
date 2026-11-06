@@ -17,8 +17,6 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     touch-action: manipulation;
-    position: fixed;
-    inset: 0;
   }
 
   #root {
@@ -35,6 +33,41 @@
   .font-display {
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   }
+}
+
+/* viewport-fit=cover draws under iPhone hardware/status bars. Reserve those
+   insets explicitly rather than relying on Safari's browser chrome. */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+.app-shell {
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100dvh;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+.safe-insets {
+  box-sizing: border-box;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+.safe-overlay {
+  box-sizing: border-box;
+  padding-top: max(1rem, var(--safe-top));
+  padding-right: max(1rem, var(--safe-right));
+  padding-bottom: max(1rem, var(--safe-bottom));
+  padding-left: max(1rem, var(--safe-left));
+}
+.safe-player {
+  padding-right: max(0.75rem, var(--safe-right));
+  padding-bottom: max(0.5rem, var(--safe-bottom));
+  padding-left: max(0.75rem, var(--safe-left));
+}
+@media (max-width: 639px) {
+  .mobile-header button { min-width: 44px; min-height: 44px; }
+  .mobile-header input { min-height: 44px; }
 }
 
 /* Prevent iOS Safari & mobile browsers from auto-zooming on inputs/selects */

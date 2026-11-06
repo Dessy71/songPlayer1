@@ -247,7 +247,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-zinc-950 p-5 sm:p-6 shadow-2xl max-h-[92dvh] overflow-y-auto stable-scroll">
         <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-white/10">
           <button
