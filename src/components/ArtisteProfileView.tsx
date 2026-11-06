@@ -25,6 +25,8 @@ import {
   isSongPubliclyPlayable,
   isSongUpcomingPremiere,
 } from '../types/music';
+import { ArtisteSupporters } from './ArtisteSupporters';
+import { SupportCheckout } from './SupportCheckout';
 import { SongRow } from './SongRow';
 import { PremiereCard } from './PremiereCard';
 import { AlbumPremiereCard } from './AlbumPremiereCard';
@@ -112,12 +114,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   const releasedSongs = artisteSongs.filter((s) => isSongPubliclyPlayable(s));
   const totalPlays = releasedSongs.reduce((sum, s) => sum + (s.plays_count || 0), 0);
 
-  const copyAccount = () => {
-    if (!artiste.support_number) return;
-    navigator.clipboard.writeText(artiste.support_number);
-    setCopiedSupport(true);
-    setTimeout(() => setCopiedSupport(false), 2000);
-  };
+
 
   return (
     <div className="max-w-[1400px] mx-auto space-y-8">
@@ -267,7 +264,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                       return;
                     }
                     onRequirePremium?.(
-                      `Upgrade to Gyidi Nwom Premium to view ${stageTitle}'s direct MoMo/Bank support details!`
+                      `Upgrade to Gyidi Nwom Premium to support ${stageTitle}!`
                     );
                   }}
                   className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
@@ -276,61 +273,14 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                   Unlock Artiste Support
                 </button>
               </div>
-            ) : artiste.support_number ? (
-              <>
-                <p className="text-[11px] text-zinc-400 mt-1">
-                  Send fan love & ministry support directly to this artiste:
-                </p>
-                <div className="mt-3 rounded-xl bg-zinc-900 border border-white/10 p-3">
-                  <p className="text-[10px] uppercase font-bold text-amber-400">
-                    {artiste.support_provider || 'MTN Mobile Money (MoMo)'}
-                  </p>
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <span className="text-lg font-extrabold text-white tabular-nums">
-                      {artiste.support_number}
-                    </span>
-                    <button
-                      onClick={copyAccount}
-                      className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white hover:bg-white/15 cursor-pointer"
-                    >
-                      {copiedSupport ? (
-                        <>
-                          <Check className="w-3 h-3 text-emerald-400" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3 h-3" /> Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  {artiste.support_account_name && (
-                    <p className="mt-1 text-xs text-zinc-300">
-                      Name:{' '}
-                      <span className="font-semibold text-white">
-                        {artiste.support_account_name}
-                      </span>
-                    </p>
-                  )}
-                </div>
-              </>
             ) : (
-              <div className="mt-2 rounded-xl bg-zinc-900/80 border border-dashed border-white/10 p-3 text-xs text-zinc-400">
-                Direct fan support MoMo / bank details will appear here once updated on this
-                profile.
-                {canEditThisArtiste && (
-                  <button
-                    onClick={() => setEditOpen(true)}
-                    className="mt-2 block text-amber-300 font-bold hover:underline cursor-pointer"
-                  >
-                    + Add Support Account Details
-                  </button>
-                )}
-              </div>
+              <SupportCheckout target={artiste.id} name={stageTitle} />
             )}
           </div>
         </div>
       </div>
+
+      <ArtisteSupporters artisteId={artiste.id} />
 
       {/* Upcoming Album & Song Premieres */}
       {(upcomingAlbums.length > 0 || upcomingSingles.length > 0) && (

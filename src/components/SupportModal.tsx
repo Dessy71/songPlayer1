@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { SupportCheckout } from './SupportCheckout';
 import { X, HeartHandshake, Copy, Check } from 'lucide-react';
 
 interface SupportModalProps {
@@ -7,15 +8,9 @@ interface SupportModalProps {
 }
 
 export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) => {
-  const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
-  const copyMomo = () => {
-    navigator.clipboard.writeText('0557394159');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
@@ -43,42 +38,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
           sermons streaming fast and free for believers everywhere.
         </p>
 
-        <div className="mt-4 rounded-xl border border-amber-500/30 bg-zinc-950 p-4 space-y-2">
-          <p className="text-xs uppercase tracking-wider text-amber-400 font-bold">
-            MTN Mobile Money (MoMo)
-          </p>
-          <div className="flex items-center justify-between">
-            <span className="text-2xl font-extrabold tracking-wide text-white tabular-nums">
-              0557394159
-            </span>
-            <button
-              onClick={copyMomo}
-              className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 text-xs font-semibold text-amber-200 hover:bg-amber-500/30 transition cursor-pointer"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5" />
-                  Copy Number
-                </>
-              )}
-            </button>
-          </div>
-          <div className="pt-2 border-t border-white/10 flex flex-col gap-1 text-xs text-zinc-300">
-            <div>
-              <span className="text-zinc-500">Account Name: </span>
-              <span className="font-bold text-white">Desmond Kofi Antwi</span>
-            </div>
-            <div>
-              <span className="text-zinc-500">Reference: </span>
-              <span className="font-semibold text-emerald-400">gyidi</span>
-            </div>
-          </div>
-        </div>
+        <SupportCheckout target="gyidi" name="Gyidi Nwom" />
 
         <div className="mt-5 flex justify-end">
           <button
