@@ -25,8 +25,6 @@ import {
   isSongPubliclyPlayable,
   isSongUpcomingPremiere,
 } from '../types/music';
-import { ArtisteSupporters } from './ArtisteSupporters';
-import { SupportCheckout } from './SupportCheckout';
 import { SongRow } from './SongRow';
 import { PremiereCard } from './PremiereCard';
 import { AlbumPremiereCard } from './AlbumPremiereCard';
@@ -99,9 +97,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           s.artist.toLowerCase() === artiste.stage_name.trim().toLowerCase()))
   );
 
-  const artisteAlbums = albums.filter(
-    (a) => a.approval_status === 'approved' && a.artiste_id === artiste.id
-  );
+  const artisteAlbums = albums.filter((a) => a.approval_status === 'approved' && a.artiste_id === artiste.id);
 
   const upcomingAlbums = artisteAlbums.filter((a) => isAlbumUpcomingPremiere(a));
   const releasedAlbums = artisteAlbums.filter((a) => isAlbumPubliclyPlayable(a));
@@ -114,10 +110,16 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   const releasedSongs = artisteSongs.filter((s) => isSongPubliclyPlayable(s));
   const totalPlays = releasedSongs.reduce((sum, s) => sum + (s.plays_count || 0), 0);
 
-
+  const copyAccount = () => {
+    if (!artiste.support_number) return;
+    navigator.clipboard.writeText(artiste.support_number);
+    setCopiedSupport(true);
+    setTimeout(() => setCopiedSupport(false), 2000);
+  };
 
   return (
     <div className="max-w-[1400px] mx-auto space-y-8">
+      {/* Profile Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <button
@@ -152,13 +154,13 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       </div>
 
       {/* Artiste Hero Header */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-amber-500/20 via-pink-600/15 to-zinc-950 p-6 sm:p-8">
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-amber-500/20 via-pink-600/15 to-zinc-900 p-6 sm:p-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+          <div className="flex items-center gap-3">
             {artiste.avatar_url ? (
               <img
                 src={artiste.avatar_url}
-                alt={stageTitle}
+                alt=""
                 className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl object-cover border-2 border-amber-400/40 shadow-2xl"
               />
             ) : (
@@ -169,49 +171,38 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                {artiste.is_sacsu ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-300">
-                    <GraduationCap className="w-3.5 h-3.5" />
-                    SACSU • Tertiary Students&apos; Union
-                  </span>
-                ) : (
-                  <span className="rounded-full bg-amber-500/20 border border-amber-400/30 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                    SCG Artiste Profile
-                  </span>
-                )}
-
+                <h2 className="text-2xl font-extrabold text-white">{stageTitle}</h2>
                 {artiste.is_verified_artiste && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/20 border border-sky-400/30 px-2.5 py-0.5 text-[10px] font-bold text-sky-300">
                     <BadgeCheck className="w-3.5 h-3.5" />
                     Verified
                   </span>
                 )}
+                {isAdminViewer && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/30 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                    <Wallet className="w-3.5 h-3.5" />
+                    Admin View
+                  </span>
+                )}
               </div>
 
-              <h2 className="mt-2 text-2xl sm:text-4xl font-extrabold text-white">{stageTitle}</h2>
-
-              {artiste.real_name && (
-                <p className="text-sm text-zinc-300 mt-0.5">
-                  Real / Ministry Name:{' '}
-                  <span className="font-semibold text-white">{artiste.real_name}</span>
-                </p>
-              )}
+              <p className="text-sm text-zinc-300 mt-0.5">
+                {artiste.bio || 'No bio provided yet.'}
+              </p>
 
               <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-300">
                 {artiste.tertiary_institution && (
                   <span className="inline-flex items-center gap-1 rounded-lg bg-cyan-500/15 border border-cyan-400/30 px-2.5 py-1 text-cyan-200 font-semibold">
-                    <GraduationCap className="w-3.5 h-3.5 text-cyan-400" />
+                    <GraduationCap className="w-3.5 h-3.5" />
                     {artiste.tertiary_institution}
                   </span>
                 )}
-
                 {(artiste.scg_zone || artiste.scg_branch) && (
                   <span className="inline-flex items-center gap-1 rounded-lg bg-black/40 border border-white/10 px-2.5 py-1">
                     <MapPin className="w-3.5 h-3.5 text-amber-400" />
                     {[artiste.scg_zone, artiste.scg_branch].filter(Boolean).join(' • ')}
                   </span>
                 )}
-
                 <span className="rounded-lg bg-black/40 border border-white/10 px-2.5 py-1">
                   {releasedSongs.length} Tracks
                   {releasedAlbums.length > 0 ? ` • ${releasedAlbums.length} Albums` : ''} •{' '}
@@ -237,21 +228,22 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             </div>
           </div>
 
-          {/* Fan Support Card (Gated behind Gyidi Nwom Premium) */}
-          <div className="w-full md:w-80 rounded-2xl border border-emerald-500/30 bg-zinc-950/90 p-4 shadow-xl">
-            <div className="flex items-center justify-between gap-2">
+          {/* Fan Support Card (Gated behind Gyidi Nwom Premium / Admin View) */}
+          <div className="w-full md:w-80 rounded-2xl border border-emerald-500/30 bg-zinc-900/90 p-4 shadow-xl">
+            <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                 <Wallet className="w-4 h-4" />
                 Support {stageTitle}
               </div>
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/35 px-2 py-0.5 text-[10px] font-extrabold text-amber-300">
-                <Crown className="w-2.5 h-2.5" />
-                Premium
-              </span>
+              {isAdminViewer && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/35 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                  Admin View
+                </span>
+              )}
             </div>
 
-            {!isPremium && !canEditThisArtiste ? (
-              <div className="mt-3 rounded-xl bg-zinc-900 border border-amber-400/25 p-3.5 space-y-2.5">
+            {!artiste.support_number && !isAdminViewer ? (
+              <div className="mt-3 rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   Direct Artiste Fan Support (verified Mobile Money &amp; Bank details) is a{' '}
                   <strong className="text-amber-300">Gyidi Nwom Premium</strong> feature.
@@ -264,23 +256,64 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                       return;
                     }
                     onRequirePremium?.(
-                      `Upgrade to Gyidi Nwom Premium to support ${stageTitle}!`
+                      `Upgrade to Gyidi Nwom Premium to view ${stageTitle}'s direct MoMo/Bank support details!`
                     );
                   }}
-                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
+                  className="w-full inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
                 >
                   <Crown className="w-3.5 h-3.5" />
                   Unlock Artiste Support
                 </button>
               </div>
+            ) : artiste.support_number ? (
+              <>
+                <p className="text-[11px] text-zinc-400 mt-1">
+                  Send fan love & ministry support directly to this artiste:
+                </p>
+                <div className="mt-3 rounded-xl bg-zinc-900 border border-white/10 p-3">
+                  {/* NEW: Paystack Provider Detection */}
+                  <p className="text-[10px] uppercase font-bold text-amber-400">
+                    {artiste.support_provider || 'MTN Mobile Money (MoMo)'}
+                  </p>
+                  <div className="mt-1 flex items-center justify-between gap-2">
+                    <span className="text-lg font-extrabold text-white tabular-nums break-all">
+                      {artiste.support_number}
+                    </span>
+                    <button
+                      onClick={copyAccount}
+                      disabled={!artiste.support_number}
+                      className={`p-2 rounded-lg transition-colors ${
+                        copiedSupport
+                          ? 'bg-green-500/20 text-green-300'
+                          : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
+                      }`}
+                    >
+                      {copiedSupport ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  {artiste.support_account_name && (
+                    <p className="mt-1 text-xs text-zinc-300 font-mono">
+                      Subaccount: {artiste.support_account_name}
+                    </p>
+                  )}
+                </div>
+              </>
             ) : (
-              <SupportCheckout target={artiste.id} name={stageTitle} />
+              <div className="mt-2 rounded-xl bg-zinc-900/80 border border-dashed border-white/10 p-3 text-xs text-zinc-400">
+                Direct fan support MoMo / bank details will appear here once updated on this
+                profile.
+                {canEditThisArtiste && (
+                  <button
+                    onClick={() => setEditOpen(true)}
+                    className="mt-2 block text-amber-300 font-bold hover:underline cursor-pointer"
+                  >
+                    + Add Support Account Details
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>
-      </div>
-
-      <ArtisteSupporters artisteId={artiste.id} />
 
       {/* Upcoming Album & Song Premieres */}
       {(upcomingAlbums.length > 0 || upcomingSingles.length > 0) && (
@@ -339,44 +372,16 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {releasedAlbums.map((alb) => {
-              const albTracks = releasedSongs.filter((s) => s.album_id === alb.id);
-              return (
-                <div
-                  key={alb.id}
-                  onClick={() => onOpenAlbum(alb.id)}
-                  className="group relative rounded-2xl border border-white/10 bg-zinc-900/55 p-3 hover:bg-zinc-900 hover:border-amber-500/40 transition cursor-pointer"
-                >
-                  <CoverArt
-                    title={alb.title}
-                    category={alb.category}
-                    theme={alb.cover_theme}
-                    coverUrl={alb.cover_url}
-                    size="lg"
-                    className="w-full aspect-square rounded-xl"
-                  />
-                  {canEditThisArtiste && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingSong(null);
-                        setEditingAlbum(alb);
-                        setEditReleaseOpen(true);
-                      }}
-                      className="absolute top-4 right-4 rounded-full bg-black/75 p-2 text-amber-300 hover:bg-black cursor-pointer"
-                      title="Edit or delete album"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                  <h4 className="mt-2.5 text-sm font-bold text-white truncate group-hover:text-amber-300">
-                    {alb.title}
-                  </h4>
-                  <p className="text-[11px] text-zinc-400">{albTracks.length} tracks • Album</p>
-                </div>
-              );
-            })}
+            {releasedAlbums.map((alb) => (
+              <AlbumPremiereCard
+                key={alb.id}
+                album={alb}
+                tracks={artisteSongs.filter((s) => s.album_id === alb.id)}
+                artiste={artiste}
+                onOpenAlbum={onOpenAlbum}
+                onUnlocked={onRefreshCatalog}
+              />
+            ))}
           </div>
         </section>
       )}
@@ -408,44 +413,52 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 onToggleOfflineSave={onToggleOfflineSave}
                 onOpenLyrics={onOpenLyrics}
                 onOpenShareCard={onOpenShareCard}
+                onToggleReminder={onToggleReminder}
                 onOpenPlaylistModal={onOpenPlaylistModal}
-                onEditSong={
-                  canEditThisArtiste
-                    ? (s) => {
-                        setEditingAlbum(null);
-                        setEditingSong(s);
-                        setEditReleaseOpen(true);
-                      }
-                    : undefined
-                }
+                onArtisteUpdated={onArtisteUpdated}
+                onRefreshCatalog={onRefreshCatalog}
               />
             ))}
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
-      <EditArtisteModal
-        isOpen={editOpen}
-        onClose={() => setEditOpen(false)}
-        artiste={artiste}
-        isAdminViewer={viewerProfile?.role === 'admin'}
-        onSaved={(saved) => {
-          onArtisteUpdated(saved);
-          onRefreshCatalog();
-        }}
-      />
+      {/* Edit Modal */}
+      {editOpen && (
+        <EditArtisteModal
+          isOpen={true}
+          onClose={() => setEditOpen(false)}
+          artiste={artiste}
+          isAdminViewer={viewerProfile?.role === 'admin'}
+          onSaved={(saved) => {
+            onArtisteUpdated(saved);
+            onRefreshCatalog();
+          }}
+        />
+      )}
 
-      <EditReleaseModal
-        isOpen={editReleaseOpen}
-        onClose={() => setEditReleaseOpen(false)}
-        song={editingSong}
-        album={editingAlbum}
-        albumTracks={
-          editingAlbum ? songs.filter((s) => s.album_id === editingAlbum.id) : []
-        }
-        onSaved={onRefreshCatalog}
-        onDeleted={onRefreshCatalog}
-      />
+      {editingSong && (
+        <EditReleaseModal
+          isOpen={true}
+          onClose={() => setEditingSong(null)}
+          song={editingSong}
+          onSaved={onRefreshCatalog}
+          onDeleted={onRefreshCatalog}
+        />
+      )}
+
+      {editingAlbum && (
+        <EditReleaseModal
+          isOpen={true}
+          onClose={() => setEditingAlbum(null)}
+          album={editingAlbum}
+          albumTracks={artisteSongs.filter((s) => s.album_id === editingAlbum.id)}
+          onSaved={onRefreshCatalog}
+          onDeleted={onRefreshCatalog}
+        />
+      )}
     </div>
   );
 };
+
+       
