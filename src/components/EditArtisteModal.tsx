@@ -9,6 +9,8 @@ import {
   Wallet,
   Mail,
   CheckCircle2,
+  Link,
+  Code2,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { UserProfile } from '../types/music';
@@ -49,6 +51,16 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
   const [avatarUrl, setAvatarUrl] = useState(artiste?.avatar_url || '');
   const [assignEmail, setAssignEmail] = useState(artiste?.email || '');
 
+  // NEW: Admin-only Paystack fields
+  const [paystackPaymentPageUrl, setPaystackPaymentPageUrl] = useState(
+    artiste?.support_provider === 'Paystack Payment Page' && artiste?.support_number
+      ? artiste.support_number
+      : ''
+  );
+  const [paystackSubaccountCode, setPaystackSubaccountCode] = useState(
+    artiste?.support_account_name || ''
+  );
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
@@ -87,9 +99,30 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
       return;
     }
 
+    // Admin-only validation for Paystack Payment Page URL
+    if (isAdminViewer) {
+      if (supportProvider === 'Paystack Payment Page') {
+        if (!paystackPaymentPageUrl.trim()) {
+          setError('Please enter the Paystack Payment Page URL.');
+          return;
+        }
+        if (!paystackSubaccountCode.trim()) {
+          setError('Please enter the Paystack Subaccount Code.');
+          return;
+        }
+      }
+    }
+
     setSaving(true);
     try {
       let savedProfile: UserProfile;
+
+      // Determine support fields based on role
+      const isSupportPaystack = isAdminViewer && supportProvider === 'Paystack Payment Page';
+      
+      const finalSupportProvider = isSupportPaystack ? 'Paystack Payment Page' : (supportNumber.trim() ? supportProvider : null);
+      const finalSupportNumber = isSupportPaystack ? paystackPaymentPageUrl.trim() : (supportNumber.trim() || null);
+      const finalSupportAccountName = isSupportPaystack ? paystackSubaccountCode.trim() : (supportAccountName.trim() || null);
 
       if (isCreating) {
         const cleanUser =
@@ -113,9 +146,9 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             is_sacsu: isSacsu,
             tertiary_institution: isSacsu ? tertiaryInstitution.trim() : tertiaryInstitution.trim() || null,
             bio: bio.trim() || null,
-            support_provider: supportNumber.trim() ? supportProvider : null,
-            support_number: supportNumber.trim() || null,
-            support_account_name: supportAccountName.trim() || null,
+            support_provider: finalSupportProvider,
+            support_number: finalSupportNumber,
+            support_account_name: finalSupportAccountName,
             avatar_url: avatarUrl || null,
             is_precreated: true,
             is_verified_artiste: true,
@@ -137,9 +170,9 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             is_sacsu: isSacsu,
             tertiary_institution: tertiaryInstitution.trim() || null,
             bio: bio.trim() || null,
-            support_provider: supportNumber.trim() ? supportProvider : null,
-            support_number: supportNumber.trim() || null,
-            support_account_name: supportAccountName.trim() || null,
+            support_provider: finalSupportProvider,
+            support_number: finalSupportNumber,
+            support_account_name: finalSupportAccountName,
             avatar_url: avatarUrl || null,
           })
           .eq('id', artiste.id)
@@ -318,28 +351,60 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <select
                 value={supportProvider}
-                onChange={(e) => setSupportProvider(e.target.value)}
+                onChange={(e) => {
+                  setSupportProvider(e.target.value);
+                  // Reset Paystack fields if switching away from Paystack Payment Page
+                  if (e.target.value !== 'Paystack Payment Page') {
+                    setPaystackPaymentPageUrl('');
+                    setPaystackSubaccountCode('');
+                  }
+                }}
                 className="rounded-xl border border-white/10 bg-zinc-950 px-2.5 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
               >
                 <option value="MTN Mobile Money (MoMo)">MTN MoMo</option>
                 <option value="Telecel Cash">Telecel Cash</option>
                 <option value="AT Money">AT Money</option>
                 <option value="Bank Account">Bank Account</option>
+                {isAdminViewer && (
+                  <option value="Paystack Payment Page">Paystack Payment Page (Admin)</option>
+                )}
               </select>
-              <input
-                type="text"
-                value={supportNumber}
-                onChange={(e) => setSupportNumber(e.target.value)}
-                placeholder="MoMo / Account No."
-                className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-              />
-              <input
-                type="text"
-                value={supportAccountName}
-                onChange={(e) => setSupportAccountName(e.target.value)}
-                placeholder="Account Holder Name"
-                className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-              />
+              
+              {supportProvider === 'Paystack Payment Page' && isAdminViewer ? (
+                <>
+                  <input
+                    type="url"
+                    value={paystackPaymentPageUrl}
+                    onChange={(e) => setPaystackPaymentPageUrl(e.target.value)}
+                    placeholder="https://paystack.com/pay/..."
+                    className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    value={paystackSubaccountCode}
+                    onChange={(e) => setPaystackSubaccountCode(e.target.value)}
+                    placeholder="Subaccount Code (e.g. SUB_XXXX)"
+                    className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                  />
+                </>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    value={supportNumber}
+                    onChange={(e) => setSupportNumber(e.target.value)}
+                    placeholder="MoMo / Account No."
+                    className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    value={supportAccountName}
+                    onChange={(e) => setSupportAccountName(e.target.value)}
+                    placeholder="Account Holder Name"
+                    className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                  />
+                </>
+              )}
             </div>
           </div>
 

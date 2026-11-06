@@ -48,6 +48,7 @@ import { EditReleaseModal } from './EditReleaseModal';
 import { MessagesView } from './MessagesView';
 import { AdminContentMonetizationPanel } from './AdminContentMonetizationPanel';
 import { ProvisionArtisteLoginModal } from './ProvisionArtisteLoginModal';
+import { SupportModal } from './SupportModal';
 import { formatBytes, formatDuration } from '../lib/format';
 import { usePlayer } from '../context/PlayerContext';
 
@@ -95,9 +96,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   useEffect(() => {
     if (initialSubTab) setSubTab(initialSubTab);
   }, [initialSubTab]);
-  const [approvalFilter, setApprovalFilter] = useState<'pending' | 'approved' | 'rejected'>(
-    'pending'
-  );
+  const [approvalFilter, setApprovalFilter] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -111,6 +110,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
   const [editingArtiste, setEditingArtiste] = useState<UserProfile | null>(null);
   const [artisteModalOpen, setArtisteModalOpen] = useState(false);
+
+  // NEW: Support Gyidi / Artiste Paystack URL & Subaccount Dashboard View
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const [selectedArtisteForSupport, setSelectedArtisteForSupport] = useState<UserProfile | null>(null);
 
   const [provisioningArtiste, setProvisioningArtiste] = useState<UserProfile | null>(null);
 
@@ -619,7 +622,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       {s.plays_count} plays
                     </span>
                   </div>
-                ))}
+                )))}
               </div>
             </div>
           </div>
@@ -687,7 +690,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                               FULL ALBUM ({tracks.length} TRACKS)
                             </span>
                             {album.is_premiere ? (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-300">
                                 <Calendar className="w-3 h-3" />
                                 Premiere:{' '}
                                 {album.premiere_at
@@ -769,7 +772,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             >
                               {playingThis ? (
                                 <>
-                                  <Pause className="w-3 h-3 fill-current" /> Pause
+                                  <Pause className="w-3 h-3 fill-current" /> Pause Pre-Listen
                                 </>
                               ) : (
                                 <>
@@ -827,7 +830,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         <div className="flex flex-wrap items-center gap-2">
                           <h4 className="text-base font-extrabold text-white">{song.title}</h4>
                           {song.is_premiere ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-300">
                               <Calendar className="w-3 h-3" />
                               Premiere:{' '}
                               {song.premiere_at
@@ -893,11 +896,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       >
                         {isPrelisteningThis && isPlaying ? (
                           <>
-                            <Pause className="w-3.5 h-3.5 fill-current" /> Pause Pre-Listen
+                            <Pause className="w-3 h-3 fill-current" /> Pause Pre-Listen
                           </>
                         ) : (
                           <>
-                            <Play className="w-3.5 h-3.5 fill-current" /> Pre-Listen
+                            <Play className="w-3 h-3 fill-current" /> Pre-Listen
                           </>
                         )}
                       </button>
@@ -948,7 +951,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 );
               })}
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -1158,6 +1161,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         </button>
 
                         <button
+                          onClick={() => {
+                            setSelectedArtisteForSupport(p);
+                            setSupportModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/15 border border-emerald-500/35 px-2.5 py-1 text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer"
+                          title="View/Edit Paystack Payment Page & Subaccount (Admin)"
+                        >
+                          <Wallet className="w-3 h-3" />
+                          Support Details
+                        </button>
+
+                        <button
                           disabled={busyId === p.id}
                           onClick={() => handleToggleUserPremium(p)}
                           className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
@@ -1237,13 +1252,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       className="rounded-lg bg-white/10 p-1.5 text-amber-300 hover:bg-white/15 cursor-pointer"
                       title="Edit song"
                     >
-                      <Edit3 className="w-3.5 h-3.5" />
+                      <Edit3 className="w-3 h-3" />
                     </button>
                     <button
                       onClick={() => playSong(s, [s], { isPrelisten: true })}
                       className="rounded-lg bg-white/10 p-1.5 text-white hover:bg-white/15 cursor-pointer"
                     >
-                      <Play className="w-3.5 h-3.5 fill-white" />
+                      <Play className="w-3 h-3 fill-white" />
                     </button>
                     <button
                       disabled={busyId === s.id}
@@ -1251,11 +1266,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       className="rounded-lg bg-rose-500/10 p-1.5 text-rose-400 hover:bg-rose-500/20 cursor-pointer"
                       title="Delete song"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
-              ))}
+              ))
+            </div>
           </div>
         </div>
       )}
@@ -1274,6 +1290,14 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           await loadFullAdminData();
           await onRefreshAll();
         }}
+      />
+
+      {/* NEW: Support Gyidi / Artiste Paystack URL & Subaccount Dashboard Modal */}
+      <SupportModal
+        isOpen={supportModalOpen}
+        onClose={() => setSupportModalOpen(false)}
+        isAdminViewer={true}
+        artiste={selectedArtisteForSupport}
       />
 
       <ProvisionArtisteLoginModal

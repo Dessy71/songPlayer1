@@ -15,6 +15,7 @@ import {
   Edit3,
   Crown,
   X,
+  Link,
 } from 'lucide-react';
 import {
   Album,
@@ -85,6 +86,18 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [editReleaseOpen, setEditReleaseOpen] = useState(false);
 
+  const isSupportPaystack = viewerProfile?.role === 'admin' && artiste.support_provider === 'Paystack Payment Page';
+  const displaySupportNumber = isSupportPaystack ? artiste.support_number : (artiste.support_number || '');
+  const displaySupportAccountName = isSupportPaystack ? artiste.support_account_name : (artiste.support_account_name || '');
+  const displaySupportProvider = isSupportPaystack ? 'Paystack Payment Page' : (artiste.support_provider || 'MTN Mobile Money (MoMo)');
+  const displayStageTitle = artiste.stage_name || artiste.display_name || 'SCG Artiste';
+  const copySupportText = isSupportPaystack ? 'Copy URL' : 'Copy Number';
+  const CopyComponent = isSupportPaystack ? (
+    <Link className="w-3 h-3" />
+  ) : (
+    <Copy className="w-3 h-3" />
+  );
+
   const stageTitle = artiste.stage_name || artiste.display_name || 'SCG Artiste';
   const canEditThisArtiste =
     viewerProfile?.role === 'admin' || viewerProfile?.id === artiste.id;
@@ -113,8 +126,8 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   const totalPlays = releasedSongs.reduce((sum, s) => sum + (s.plays_count || 0), 0);
 
   const copyAccount = () => {
-    if (!artiste.support_number) return;
-    navigator.clipboard.writeText(artiste.support_number);
+    if (!displaySupportNumber) return;
+    navigator.clipboard.writeText(displaySupportNumber);
     setCopiedSupport(true);
     setTimeout(() => setCopiedSupport(false), 2000);
   };
@@ -161,7 +174,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             {artiste.avatar_url ? (
               <img
                 src={artiste.avatar_url}
-                alt={stageTitle}
+                alt={displayStageTitle}
                 className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl object-cover border-2 border-amber-400/40 shadow-2xl"
               />
             ) : (
@@ -191,7 +204,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 )}
               </div>
 
-              <h2 className="mt-2 text-2xl sm:text-4xl font-extrabold text-white">{stageTitle}</h2>
+              <h2 className="mt-2 text-2xl sm:text-4xl font-extrabold text-white">{displayStageTitle}</h2>
 
               {artiste.real_name && (
                 <p className="text-sm text-zinc-300 mt-0.5">
@@ -245,7 +258,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                 <Wallet className="w-4 h-4" />
-                Support {stageTitle}
+                Support {displayStageTitle}
               </div>
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/35 px-2 py-0.5 text-[10px] font-extrabold text-amber-300">
                 <Crown className="w-2.5 h-2.5" />
@@ -267,7 +280,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                       return;
                     }
                     onRequirePremium?.(
-                      `Upgrade to Gyidi Nwom Premium to view ${stageTitle}'s direct MoMo/Bank support details!`
+                      `Upgrade to Gyidi Nwom Premium to view ${displayStageTitle}'s direct MoMo/Bank support details!`
                     );
                   }}
                   className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
@@ -276,18 +289,18 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                   Unlock Artiste Support
                 </button>
               </div>
-            ) : artiste.support_number ? (
+            ) : displaySupportNumber ? (
               <>
                 <p className="text-[11px] text-zinc-400 mt-1">
                   Send fan love & ministry support directly to this artiste:
                 </p>
                 <div className="mt-3 rounded-xl bg-zinc-900 border border-white/10 p-3">
                   <p className="text-[10px] uppercase font-bold text-amber-400">
-                    {artiste.support_provider || 'MTN Mobile Money (MoMo)'}
+                    {displaySupportProvider}
                   </p>
                   <div className="mt-1 flex items-center justify-between gap-2">
-                    <span className="text-lg font-extrabold text-white tabular-nums">
-                      {artiste.support_number}
+                    <span className={`text-${isSupportPaystack ? 'sm' : 'lg'} font-extrabold text-white ${isSupportPaystack ? 'break-all' : 'tabular-nums'}`}>
+                      {displaySupportNumber}
                     </span>
                     <button
                       onClick={copyAccount}
@@ -299,16 +312,16 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                         </>
                       ) : (
                         <>
-                          <Copy className="w-3 h-3" /> Copy
+                          {CopyComponent} {copySupportText}
                         </>
                       )}
                     </button>
                   </div>
-                  {artiste.support_account_name && (
+                  {displaySupportAccountName && (
                     <p className="mt-1 text-xs text-zinc-300">
                       Name:{' '}
                       <span className="font-semibold text-white">
-                        {artiste.support_account_name}
+                        {displaySupportAccountName}
                       </span>
                     </p>
                   )}

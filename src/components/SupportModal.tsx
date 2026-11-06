@@ -1,18 +1,40 @@
 import React, { useState } from 'react';
-import { X, HeartHandshake, Copy, Check } from 'lucide-react';
+import {
+  X,
+  HeartHandshake,
+  Copy,
+  Check,
+  Link,
+  Code2,
+} from 'lucide-react';
 
 interface SupportModalProps {
   isOpen: boolean;
   onClose: () => void;
+  // Optional: pass admin mode and artiste profile to render admin-only Paystack page/subaccount
+  isAdminViewer?: boolean;
+  artiste?: {
+    support_provider?: string;
+    support_number?: string;
+    support_account_name?: string;
+    stage_name?: string;
+  } | null;
 }
 
-export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) => {
+export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose, isAdminViewer, artiste }) => {
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
-  const copyMomo = () => {
-    navigator.clipboard.writeText('0557394159');
+  // Determine support details
+  const isSupportPaystack = isAdminViewer && artiste && artiste.support_provider === 'Paystack Payment Page';
+  const supportNumber = isSupportPaystack ? artiste.support_number : '0557394159';
+  const supportAccountName = isSupportPaystack ? artiste.support_account_name : 'Desmond Kofi Antwi';
+  const reference = isSupportPaystack ? 'gyidi-artiste' : 'gyidi';
+  const stageTitle = artiste?.stage_name || 'Gyidi Nwom';
+
+  const copySupport = () => {
+    navigator.clipboard.writeText(supportNumber || '');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -33,8 +55,8 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
             <HeartHandshake className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Support Gyidi Nwom</h2>
-            <p className="text-xs text-zinc-400">Help sustain & expand our SCG music library</p>
+            <h2 className="text-lg font-bold text-white">Support {stageTitle}</h2>
+            <p className="text-xs text-zinc-400">Help sustain &amp; expand our SCG music library</p>
           </div>
         </div>
 
@@ -45,37 +67,65 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
 
         <div className="mt-4 rounded-xl border border-amber-500/30 bg-zinc-950 p-4 space-y-2">
           <p className="text-xs uppercase tracking-wider text-amber-400 font-bold">
-            MTN Mobile Money (MoMo)
+            {isSupportPaystack ? 'Paystack Payment Page' : 'MTN Mobile Money (MoMo)'}
           </p>
+          
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-extrabold tracking-wide text-white tabular-nums">
-              0557394159
-            </span>
-            <button
-              onClick={copyMomo}
-              className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 text-xs font-semibold text-amber-200 hover:bg-amber-500/30 transition cursor-pointer"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5" />
-                  Copy Number
-                </>
-              )}
-            </button>
+            {isSupportPaystack ? (
+              <>
+                <span className="text-sm font-bold text-white break-all">
+                  {supportNumber}
+                </span>
+                <button
+                  onClick={copySupport}
+                  className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 text-xs font-semibold text-amber-200 hover:bg-amber-500/30 transition cursor-pointer"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Link className="w-3.5 h-3.5" />
+                      Copy URL
+                    </>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="text-2xl font-extrabold tracking-wide text-white tabular-nums">
+                  {supportNumber}
+                </span>
+                <button
+                  onClick={copySupport}
+                  className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30 px-3 py-1.5 text-xs font-semibold text-amber-200 hover:bg-amber-500/30 transition cursor-pointer"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      Copy Number
+                    </>
+                  )}
+                </button>
+              </>
+            )}
           </div>
+          
           <div className="pt-2 border-t border-white/10 flex flex-col gap-1 text-xs text-zinc-300">
             <div>
               <span className="text-zinc-500">Account Name: </span>
-              <span className="font-bold text-white">Desmond Kofi Antwi</span>
+              <span className="font-bold text-white">{supportAccountName}</span>
             </div>
             <div>
               <span className="text-zinc-500">Reference: </span>
-              <span className="font-semibold text-emerald-400">gyidi</span>
+              <span className="font-semibold text-emerald-400">{reference}</span>
             </div>
           </div>
         </div>
