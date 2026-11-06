@@ -71,6 +71,8 @@ import { MessagesView } from './components/MessagesView';
 import { EditArtisteModal } from './components/EditArtisteModal';
 import { AuthModal } from './components/AuthModal';
 import { UploadModal } from './components/UploadModal';
+import { SupportCheckout } from './components/SupportCheckout';
+import { ThemeToggle } from './components/ThemeToggle';
 import { SupportModal } from './components/SupportModal';
 import { DeveloperModal } from './components/DeveloperModal';
 import { PlaylistModal } from './components/PlaylistModal';
@@ -1145,6 +1147,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             </div>
           </div>
 
+          <ThemeToggle />
+
           <div className="ml-auto hidden sm:flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 max-w-full">
             {!isAppInstalled && (
               <button
@@ -2048,37 +2052,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </p>
                   </div>
 
-                  <div className="w-full md:w-auto rounded-2xl border border-amber-500/30 bg-zinc-950 px-5 py-4 min-w-[270px]">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
-                      MTN Mobile Money (MoMo)
-                    </p>
-                    <div className="mt-1 flex items-center justify-between gap-3">
-                      <span className="text-xl font-extrabold text-white tabular-nums">
-                        0557394159
-                      </span>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText('0557394159');
-                          setCopiedInlineMomo(true);
-                          setTimeout(() => setCopiedInlineMomo(false), 2000);
-                        }}
-                        className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-xs font-semibold text-white hover:bg-white/15 cursor-pointer"
-                      >
-                        {copiedInlineMomo ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-400" /> Copied
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5" /> Copy
-                          </>
-                        )}
-                      </button>
-                    </div>
-                    <p className="text-xs text-zinc-300 mt-1">
-                      Account Name: <strong className="text-white">Desmond Kofi Antwi</strong>
-                    </p>
-                  </div>
+                  <div className="w-full md:max-w-sm"><SupportCheckout target="gyidi" name="Gyidi Nwom" /></div>
                 </div>
               </section>
 
