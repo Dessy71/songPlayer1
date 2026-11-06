@@ -196,7 +196,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
@@ -212,7 +212,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             className="h-11 w-11 rounded-xl object-cover border border-white/10"
           />
           <div>
-            <h2 className="text-lg font-bold text-white">
+            <h2 id="auth-modal-title" className="text-lg font-bold text-white">
               {mode === 'signup' ? 'Create Your Free Account' : 'Sign In to Gyidi Nwom'}
             </h2>
             <p className="text-xs text-zinc-400">
@@ -233,6 +233,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             type="button"
             onClick={() => {
               setMode('signup');
+              setAccountType(defaultSignupArtiste ? 'artiste' : 'listener');
               setError(null);
             }}
             className={`rounded-lg py-2 text-xs font-semibold transition cursor-pointer ${
@@ -261,10 +262,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
           {mode === 'signup' && (
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setAccountType('listener')}
+                aria-pressed={accountType === 'listener'}
                 className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition cursor-pointer ${
                   accountType === 'listener'
                     ? 'border-amber-400 bg-amber-500/15 text-white'
@@ -274,15 +276,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <Headphones className="w-4 h-4 text-amber-400" />
                 <div>
                   <p className="text-xs font-bold">Listener</p>
-                  <p className="text-[10px] text-zinc-400">Stream & download</p>
+                  <p className="text-[10px] text-zinc-400">Listen & explore</p>
                 </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => setAccountType('artiste')}
+                aria-pressed={accountType !== 'listener'}
                 className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition cursor-pointer ${
-                  accountType === 'artiste'
+                  accountType !== 'listener'
                     ? 'border-pink-400 bg-pink-500/15 text-white'
                     : 'border-white/10 bg-zinc-950 text-zinc-400 hover:text-white'
                 }`}
@@ -293,49 +296,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <p className="text-[10px] text-zinc-400">SCG / SACSU</p>
                 </div>
               </button>
-
-              <button
-                type="button"
-                onClick={() => setAccountType('claim')}
-                className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition cursor-pointer ${
-                  accountType === 'claim'
-                    ? 'border-emerald-400 bg-emerald-500/15 text-white'
-                    : 'border-white/10 bg-zinc-950 text-zinc-400 hover:text-white'
-                }`}
-              >
-                <KeyRound className="w-4 h-4 text-emerald-400" />
-                <div>
-                  <p className="text-xs font-bold">Claim Profile</p>
-                  <p className="text-[10px] text-zinc-400">Pre-created code</p>
-                </div>
-              </button>
-            </div>
-          )}
-
-          {mode === 'signup' && accountType === 'claim' && (
-            <div className="space-y-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
-              <p className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-                <KeyRound className="w-4 h-4" />
-                Claim Your Pre-Created Artiste Profile
-              </p>
-              <p className="text-[11px] text-zinc-300 leading-relaxed">
-                Already have songs on Gyidi Nwom (e.g. Obogu Seth, Yaw Baidoo, Osiem Choir)? Enter
-                the <strong>Claim Code</strong> provided by the Admin plus your preferred login
-                email & password below.
-              </p>
-              <div>
-                <label className="block text-[11px] font-bold text-emerald-200 mb-1">
-                  Admin Claim Code *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={claimCode}
-                  onChange={(e) => setClaimCode(e.target.value.toUpperCase())}
-                  placeholder="e.g. GN-OBOGU-B15A"
-                  className="w-full rounded-xl border border-emerald-400/40 bg-zinc-950 px-3.5 py-2 text-sm font-mono font-bold tracking-wider text-emerald-300 placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
-                />
-              </div>
             </div>
           )}
 
@@ -493,6 +453,46 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   onChange={(e) => setSupportAccountName(e.target.value)}
                   placeholder="Account Name *"
                   className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                />
+              </div>
+            </div>
+          )}
+
+          {mode === 'signup' && accountType === 'artiste' && (
+            <section aria-label="Existing artiste profile" className="space-y-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
+              <h3 className="text-sm font-bold text-emerald-300">Have a Pre-Created Profile Claim Code?</h3>
+              <p className="text-xs text-zinc-300">If Admin already created your artiste profile, claim it instead of creating a duplicate.</p>
+              <button type="button" onClick={() => { setAccountType('claim'); setError(null); }}
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-zinc-950">
+                <KeyRound className="h-4 w-4" /> Claim Profile
+              </button>
+            </section>
+          )}
+
+          {mode === 'signup' && accountType === 'claim' && (
+            <div className="space-y-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
+              <p className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                <KeyRound className="w-4 h-4" />
+                Claim Your Pre-Created Artiste Profile
+              </p>
+              <button type="button" onClick={() => { setAccountType('artiste'); setError(null); }}
+                className="min-h-11 text-xs font-bold text-amber-300 hover:underline">← Create a new artiste profile instead</button>
+              <p className="text-[11px] text-zinc-300 leading-relaxed">
+                Already have songs on Gyidi Nwom (e.g. Obogu Seth, Yaw Baidoo, Osiem Choir)? Enter
+                the <strong>Claim Code</strong> provided by the Admin plus your preferred login
+                email & password below.
+              </p>
+              <div>
+                <label className="block text-[11px] font-bold text-emerald-200 mb-1">
+                  Admin Claim Code *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={claimCode}
+                  onChange={(e) => setClaimCode(e.target.value.toUpperCase())}
+                  placeholder="e.g. GN-OBOGU-B15A"
+                  className="w-full rounded-xl border border-emerald-400/40 bg-zinc-950 px-3.5 py-2 text-sm font-mono font-bold tracking-wider text-emerald-300 placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
                 />
               </div>
             </div>

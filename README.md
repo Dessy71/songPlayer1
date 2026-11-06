@@ -59,8 +59,10 @@ npm run build
 
 ## Compact homepage and iPhone audio controls
 
-The Discover page uses one 96px rotating Church Spotlight (welcome/catalog count, Daily Verse, upcoming Live/Radio, and active notices), followed immediately by three playable tracks with visible actions. The old tall intro and its playback/shuffle/upload buttons were removed; upload remains available in the header/sidebar. Rotation pauses on interaction, can be toggled explicitly, and respects reduced motion.
+The Discover page uses one 96px rotating Church Spotlight (welcome/catalog count, Daily Verse, upcoming Live/Radio, scheduled premieres, and active notices), followed immediately by the Trending & What Everyone Is Listening To chart with visible track actions. The separate Listen Now and stacked homepage premiere sections were removed; the carousel opens the full Upcoming page. The old tall intro and its playback/shuffle/upload buttons were removed. Premium, Daily Word, and Upload are no longer header buttons; their destinations remain in the sidebar. Rotation pauses on interaction, can be toggled explicitly, and respects reduced motion.
 
 On iPhone/iPad, native HTML media loudness is controlled with hardware buttons or Control Center. The app displays device-volume guidance instead of a slider that iOS ignores. Native mute/unmute works in the app, including the expanded player and guest preview. Desktop keeps the loudness slider. No Web Audio routing was added, to avoid compromising background/lock-screen playback.
 
-Optional browser regression: with Playwright installed and port 5173 running, `node tests/homepage-layout.mjs`. It checks above-the-fold song controls, fixed slide size, pause/resume/reduced motion, and native mute with simulated iPhone volume restrictions. Physical iOS Safari/audio testing is still required.
+Optional browser regression: with Playwright installed and port 5173 running, `node tests/homepage-layout.mjs`. It checks above-the-fold trending controls and the nested artiste claim flow, fixed slide size, pause/resume/reduced motion, and native mute with simulated iPhone volume restrictions. Physical iOS Safari/audio testing is still required.
+
+Create Account offers Listener and New Artiste. The Claim Profile option appears below the New Artiste form, with a return path to create a new profile. Claim-code verification and the signed-in listener-to-artiste claim flow are unchanged.
