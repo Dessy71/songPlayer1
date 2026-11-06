@@ -11,9 +11,11 @@ Deno.serve(async (req) => {
     const userClient = createClient(url, Deno.env.get('SUPABASE_ANON_KEY')!, { global: { headers: { Authorization: authorization } } });
     const { data: { user }, error: authError } = await userClient.auth.getUser();
     if (authError || !user) return json({ error: 'Sign in required' }, 401);
+    const payload = await req.json();
     const secret = Deno.env.get('PAYSTACK_SECRET_KEY');
     if (!secret) return json({ error: 'Payment verification is not configured. Contact the administrator with your payment reference.' }, 503);
-    const { reference, plan } = await req.json();
+    if (payload.action === 'readiness') return json({ ready: true });
+    const { reference, plan } = payload;
     if (typeof reference !== 'string' || !/^[a-zA-Z0-9_-]{4,150}$/.test(reference) || !['monthly', 'yearly'].includes(plan)) return json({ error: 'Invalid payment details' }, 400);
     const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const { data: settings, error: settingsError } = await admin.from('platform_settings').select('premium_monthly_price_ghs,premium_yearly_price_ghs').eq('id', 'global').single();

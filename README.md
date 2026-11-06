@@ -49,3 +49,14 @@ npm run build
 - Plans currently use prepaid, manually renewed monthly/yearly access, not recurring direct debits. Live Video/Radio remains an upcoming feature; Premium does not imply a live broadcast is available today.
 - Offline Save keeps audio in browser-managed in-app storage on the current device, not in Downloads. The saved track list syncs to the account; another device still needs to cache the stream. Browser storage eviction can remove offline audio.
 - Payments cannot be fully tested until both Paystack keys are configured. Use matching test keys first, verify success/cancellation/duplicate-reference behavior, then switch to matching live keys.
+
+### Recover a charged payment that did not activate Premium
+
+1. Set the matching Paystack secret key securely in Supabase → Edge Functions → Secrets as `PAYSTACK_SECRET_KEY` (live secret for a live charge). Do not paste secrets into chat or frontend settings.
+2. Sign in to the same Gyidi Nwom account used at checkout.
+3. Open Premium & Billing → **Already paid? Verify existing payment**, paste the transaction reference from the Paystack receipt, select the plan paid for, and verify. This does not make a new charge.
+4. Only a server-verified active profile triggers the confetti success dialog. The app reloads after 3.5 seconds to refresh account entitlements.
+
+Failed callback references are retained locally per account for retry. Checkout checks verifier configuration before opening Paystack. Lyrics and song sharing are Premium features.
+
+Payment helper regression tests: `node --experimental-vm-modules --test tests/premiumPayment.test.mjs`.
