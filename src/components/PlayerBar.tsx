@@ -63,6 +63,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
     bufferedPercent,
     volume,
     isMuted,
+    systemVolumeControlled,
     shuffle,
     repeat,
     playbackRate,
@@ -82,6 +83,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
 
   const [expanded, setExpanded] = useState(false);
   const [savingOffline, setSavingOffline] = useState(false);
+  const [volumeHelp, setVolumeHelp] = useState(false);
 
   if (!currentSong) {
     return null;
@@ -390,6 +392,11 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               </button>
             )}
           </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-zinc-300">
+            <button type="button" onClick={toggleMute} className="min-h-11 rounded-full bg-white/10 px-4">{isMuted ? 'Unmute audio' : 'Mute audio'}</button>
+            {systemVolumeControlled ? <span>Adjust loudness with your iPhone volume buttons or Control Center.</span> :
+              <input aria-label="Expanded playback volume" type="range" min={0} max={1} step={0.02} value={isMuted ? 0 : volume} onChange={(event) => setVolume(Number(event.target.value))} className="w-28 accent-amber-400" />}
+          </div>
         </div>
       )}
 
@@ -685,12 +692,12 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 )}
               </button>
 
-              {/* Volume Slider — Visible on Every Screen */}
-              <div className="flex items-center gap-1.5 w-24">
+              {/* Native iPhone loudness is controlled by the device, not HTMLMediaElement.volume. */}
+              <div className={`relative flex items-center gap-1.5 ${systemVolumeControlled ? 'w-28' : 'w-24'}`}>
                 <button
                   type="button"
                   onClick={toggleMute}
-                  className="p-1 text-zinc-300 hover:text-white transition cursor-pointer"
+                  className="min-h-11 min-w-8 p-1 text-zinc-300 hover:text-white transition cursor-pointer"
                   title={isMuted ? 'Unmute' : 'Mute'}
                 >
                   {isMuted || volume === 0 ? (
@@ -699,15 +706,18 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                     <Volume2 className="w-4 h-4" />
                   )}
                 </button>
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.02}
-                  value={isMuted ? 0 : volume}
-                  onChange={(e) => setVolume(parseFloat(e.target.value))}
-                  className="w-full accent-amber-400 h-1 cursor-pointer"
-                />
+                {systemVolumeControlled ? (
+                  <>
+                    <button type="button" onClick={() => setVolumeHelp((value) => !value)}
+                      aria-label="iPhone volume instructions" aria-expanded={volumeHelp}
+                      className="min-h-8 text-[10px] font-semibold leading-tight text-amber-200">Device volume</button>
+
+                  </>
+                ) : (
+                  <input aria-label="Playback volume" type="range" min={0} max={1} step={0.02}
+                    value={isMuted ? 0 : volume} onChange={(e) => setVolume(parseFloat(e.target.value))}
+                    className="w-full accent-amber-400 h-1 cursor-pointer" />
+                )}
               </div>
 
               {/* Expand Fullscreen Player */}
@@ -721,6 +731,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               </button>
             </div>
           </div>
+          {systemVolumeControlled && volumeHelp && <p role="status" className="mt-1 rounded-lg bg-amber-400/10 px-2 py-1 text-[11px] text-amber-200">Use your iPhone’s side volume buttons or Control Center for loudness. The speaker button mutes or unmutes this app.</p>}
         </div>
       </div>
     </>
