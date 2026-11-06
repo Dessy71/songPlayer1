@@ -50,7 +50,6 @@ interface PlayerContextValue {
   warmTrack: (song: Song) => void;
   addToQueue: (song: Song) => void;
   removeFromQueue: (songId: string) => void;
-  downloadSong: (song: Song) => Promise<void>;
 }
 
 const PlayerContext = createContext<PlayerContextValue | null>(null);
@@ -244,11 +243,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
         }
       };
 
-      if (!navigator.onLine) {
-        resolvePlayableAudioUrl(song).then(startPlaybackWithUrl);
-      } else {
-        startPlaybackWithUrl(song.stream_url);
-      }
+      resolvePlayableAudioUrl(song).then(startPlaybackWithUrl);
 
       if (!prelisten) {
         recordRecent(song.id);
@@ -450,33 +445,6 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
     setQueue((prev) => prev.filter((s) => s.id !== songId));
   }, []);
 
-  // GATED for guests: Downloading
-  const downloadSong = useCallback(
-    async (song: Song) => {
-      if (!isAuthenticated) {
-        onRequireAccount('Create a free account to download songs & sermons!');
-        return;
-      }
-      if (!isSongPubliclyPlayable(song)) return;
-      try {
-        const res = await fetch(song.stream_url);
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const safeName = `${song.title} - ${song.artist}`.replace(/[/\\?%*:|"<>]/g, '').trim();
-        a.download = `${safeName || song.slug}.mp3`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-      } catch {
-        window.open(song.stream_url, '_blank', 'noopener,noreferrer');
-      }
-    },
-    [isAuthenticated, onRequireAccount]
-  );
-
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -675,7 +643,6 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
         warmTrack,
         addToQueue,
         removeFromQueue,
-        downloadSong,
       }}
     >
       {children}

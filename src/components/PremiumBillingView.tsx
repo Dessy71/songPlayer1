@@ -1,0 +1,546 @@
+import React, { useEffect, useState } from 'react';
+import {
+  Crown,
+  CheckCircle2,
+  CloudDownload,
+  Heart,
+  ListPlus,
+  Wallet,
+  BookOpen,
+  Video,
+  CreditCard,
+  ShieldCheck,
+  Sparkles,
+  Loader2,
+  Receipt,
+  Settings,
+  AlertCircle,
+} from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { openPaystackCheckout } from '../lib/paystack';
+import {
+  PlatformSettings,
+  PremiumSubscription,
+  UserProfile,
+  isUserPremiumActive,
+} from '../types/music';
+
+interface PremiumBillingViewProps {
+  userId: string | null;
+  userEmail: string | null;
+  profile: UserProfile | null;
+  platformSettings: PlatformSettings | null;
+  promptReason?: string | null;
+  onOpenAuth: (reason?: string) => void;
+  onSubscriptionActivated: (updatedProfile: UserProfile) => void;
+  onOpenAdminPremiumSettings?: () => void;
+}
+
+export const PREMIUM_BENEFITS = [
+  {
+    icon: CloudDownload,
+    title: 'In-App Offline Profile Vault',
+    description:
+      'Save unlimited songs & convention sermons directly to your Gyidi Nwom profile for zero-data offline listening inside the app — without downloading files to your phone storage.',
+    accent: 'text-emerald-400 bg-emerald-500/15 border-emerald-400/30',
+  },
+  {
+    icon: Heart,
+    title: 'Like & Curate Favorite Songs',
+    description:
+      'Heart your favorite SCG & SACSU hymns and access your personal Liked Songs library across every device.',
+    accent: 'text-pink-400 bg-pink-500/15 border-pink-400/30',
+  },
+  {
+    icon: ListPlus,
+    title: 'Create & Add to Custom Playlists',
+    description:
+      'Build unlimited Sabbath worship sets, branch choir collections, and convention sermon study playlists.',
+    accent: 'text-amber-400 bg-amber-500/15 border-amber-400/30',
+  },
+  {
+    icon: Wallet,
+    title: 'Direct Support for SCG & SACSU Artistes',
+    description:
+      'Unlock verified Artiste Mobile Money & Bank account details to send direct ministry love and support to choirs & singers.',
+    accent: 'text-cyan-400 bg-cyan-500/15 border-cyan-400/30',
+  },
+  {
+    icon: BookOpen,
+    title: 'Daily Bible Verse Flyers & Devotionals',
+    description:
+      'Receive and browse scheduled daily church Scripture flyers, memory verses, and spiritual encouragement.',
+    accent: 'text-violet-400 bg-violet-500/15 border-violet-400/30',
+  },
+  {
+    icon: Video,
+    title: 'Live Convention Video & Sabbath Radio',
+    description:
+      'Priority access & early broadcaster/viewer privileges for HD Live Convention Video streams and low-data Sabbath Radio.',
+    accent: 'text-rose-400 bg-rose-500/15 border-rose-400/30',
+  },
+];
+
+export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
+  userId,
+  userEmail,
+  profile,
+  platformSettings,
+  promptReason,
+  onOpenAuth,
+  onSubscriptionActivated,
+  onOpenAdminPremiumSettings,
+}) => {
+  const [subscriptions, setSubscriptions] = useState<PremiumSubscription[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [payingPlan, setPayingPlan] = useState<'monthly' | 'yearly' | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{
+    type: 'ok' | 'err';
+    text: string;
+  } | null>(null);
+
+  const monthlyPrice = Number(platformSettings?.premium_monthly_price_ghs ?? 5);
+  const yearlyPrice = Number(platformSettings?.premium_yearly_price_ghs ?? 50);
+  const currency = platformSettings?.premium_currency || 'GHS';
+  const paystackPublicKey = (
+    platformSettings?.paystack_public_key ||
+    import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ||
+    ''
+  ).trim();
+
+  const isPremium = isUserPremiumActive(profile, platformSettings);
+  const isAdmin = profile?.role === 'admin';
+
+  const yearlySavingsPercent =
+    monthlyPrice > 0 && yearlyPrice < monthlyPrice * 12
+      ? Math.round(((monthlyPrice * 12 - yearlyPrice) / (monthlyPrice * 12)) * 100)
+      : 0;
+
+  const loadSubscriptions = async () => {
+    if (!userId) {
+      setSubscriptions([]);
+      return;
+    }
+    setLoadingHistory(true);
+    const { data } = await supabase
+      .from('premium_subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (data) setSubscriptions(data as PremiumSubscription[]);
+    setLoadingHistory(false);
+  };
+
+  useEffect(() => {
+    loadSubscriptions();
+  }, [userId]);
+
+  const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
+    setStatusMessage(null);
+
+    if (!userId || !userEmail) {
+      onOpenAuth('Create or sign in to your free Gyidi Nwom account first to subscribe to Premium.');
+      return;
+    }
+
+    if (!paystackPublicKey) {
+      setStatusMessage({
+        type: 'err',
+        text: isAdmin
+          ? 'Paystack Public Key (pk_live_... or pk_test_...) has not been added yet. Click "Admin: Configure Prices & Paystack" above to paste your Paystack Public Key.'
+          : 'Paystack checkout is being finalized by the platform administrator. Please check back shortly.',
+      });
+      return;
+    }
+
+    const amountGhs = plan === 'yearly' ? yearlyPrice : monthlyPrice;
+    setPayingPlan(plan);
+
+    try {
+      await openPaystackCheckout({
+        publicKey: paystackPublicKey,
+        email: userEmail,
+        amountGhs,
+        currency,
+        planInterval: plan,
+        userId,
+        onSuccess: async (reference) => {
+          try {
+            const { data, error } = await supabase.functions.invoke('verify-premium-payment', {
+              body: { plan, reference },
+            });
+            if (error) throw error;
+            if (data) {
+              onSubscriptionActivated(data as UserProfile);
+            }
+            await loadSubscriptions();
+            setStatusMessage({
+              type: 'ok',
+              text: `Medaase! Your Gyidi Nwom Premium (${
+                plan === 'yearly' ? 'Yearly' : 'Monthly'
+              }) membership is now active! Ref: ${reference}`,
+            });
+          } catch (err) {
+            setStatusMessage({
+              type: 'err',
+              text:
+                err instanceof Error
+                  ? err.message
+                  : 'Payment completed, please refresh to sync your Premium status.',
+            });
+          } finally {
+            setPayingPlan(null);
+          }
+        },
+        onClose: () => {
+          setPayingPlan(null);
+        },
+      });
+    } catch (err) {
+      setPayingPlan(null);
+      setStatusMessage({
+        type: 'err',
+        text: err instanceof Error ? err.message : 'Unable to launch Paystack checkout.',
+      });
+    }
+  };
+
+  return (
+    <div className="max-w-[1250px] mx-auto space-y-6 pb-8">
+      {/* Contextual Gated Feature Banner */}
+      {promptReason && !isPremium && (
+        <div className="rounded-2xl border border-amber-400/45 bg-gradient-to-r from-amber-500/20 via-pink-500/15 to-zinc-900 px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 text-xs sm:text-sm text-amber-100">
+            <Crown className="w-5 h-5 text-amber-400 flex-shrink-0" />
+            <span>
+              <strong className="text-amber-300">Premium Feature:</strong> {promptReason}
+            </span>
+          </div>
+          <span className="rounded-full bg-amber-400/20 border border-amber-300/40 px-3 py-1 text-[11px] font-extrabold text-amber-200">
+            From {currency} {monthlyPrice.toFixed(2)} / month
+          </span>
+        </div>
+      )}
+
+      {/* Hero Header */}
+      <section className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/20 via-pink-600/15 to-zinc-950 p-5 sm:p-8">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div className="space-y-2.5 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-400/40 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-300">
+              <Crown className="w-3.5 h-3.5" />
+              Gyidi Nwom Premium • Pricing &amp; Billing
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Unlock Offline Listening, Playlists, Likes, Daily Verses &amp; Live Streams
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+              Pay securely in Ghana Cedis ({currency}) via{' '}
+              <strong className="text-white">
+                Paystack (MTN Mobile Money, Telecel Cash, AT Money, or Bank Card)
+              </strong>{' '}
+              to unlock every Premium feature while sustaining the SCG &amp; SACSU digital gospel
+              ministry.
+            </p>
+          </div>
+
+          {/* Current Account Plan Badge */}
+          <div className="rounded-2xl border border-white/15 bg-zinc-950/90 p-4 sm:p-5 min-w-[250px] space-y-2">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+              Your Current Plan
+            </p>
+            {isPremium ? (
+              <>
+                <div className="flex items-center gap-2 text-emerald-300 font-extrabold text-base">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                  {isAdmin && !profile?.is_premium
+                    ? 'Master Admin (Full Access)'
+                    : `Premium (${(profile?.premium_plan || 'Active').toUpperCase()})`}
+                </div>
+                {profile?.premium_until && (
+                  <p className="text-xs text-zinc-400">
+                    Active until{' '}
+                    <strong className="text-white">
+                      {new Date(profile.premium_until).toLocaleDateString()}
+                    </strong>
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="text-base font-extrabold text-white">
+                  {userId ? 'Free Listener Plan' : 'Guest Preview'}
+                </p>
+                <p className="text-xs text-zinc-400">
+                  Upgrade below to unlock all 6 Premium features immediately.
+                </p>
+              </>
+            )}
+
+            {isAdmin && onOpenAdminPremiumSettings && (
+              <button
+                type="button"
+                onClick={onOpenAdminPremiumSettings}
+                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500/20 border border-amber-400/40 px-3 py-2 text-xs font-bold text-amber-200 hover:bg-amber-500/30 cursor-pointer"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                Admin: Edit Prices &amp; Paystack Key
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {statusMessage && (
+        <div
+          className={`rounded-2xl border p-4 text-xs sm:text-sm flex items-start gap-2.5 ${
+            statusMessage.type === 'ok'
+              ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-100'
+              : 'border-rose-500/40 bg-rose-500/15 text-rose-100'
+          }`}
+        >
+          {statusMessage.type === 'ok' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+          ) : (
+            <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
+          )}
+          <span>{statusMessage.text}</span>
+        </div>
+      )}
+
+      {/* PRICING PLANS: MONTHLY (GHS 5) & YEARLY (GHS 50) */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Monthly Plan */}
+        <div className="rounded-3xl border border-white/15 bg-zinc-900/70 p-6 flex flex-col justify-between space-y-5">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-zinc-200">
+                Monthly Plan
+              </span>
+              <span className="text-xs text-zinc-400">Flexible 30-day billing</span>
+            </div>
+
+            <div className="flex items-baseline gap-1.5 pt-1">
+              <span className="text-sm font-bold text-amber-400">{currency}</span>
+              <span className="text-4xl sm:text-5xl font-extrabold text-white tabular-nums">
+                {Number.isInteger(monthlyPrice) ? monthlyPrice : monthlyPrice.toFixed(2)}
+              </span>
+              <span className="text-sm text-zinc-400 font-medium">/ month</span>
+            </div>
+
+            <p className="text-xs text-zinc-300 leading-relaxed">
+              Plans are prepaid memberships, renewed manually at expiry (no automatic charges). Full access to Offline Profile Vault, Liked Songs, Unlimited Playlists, Artiste
+              Support details, Daily Bible Verses, and Live Convention Video &amp; Radio.
+            </p>
+
+            <ul className="space-y-2 pt-2 text-xs text-zinc-200">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                Save songs to your profile for in-app offline listening
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                Like songs, build playlists &amp; view Daily Bible Verse flyers
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                Support Artistes &amp; access Live Video / Sabbath Radio
+              </li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            disabled={payingPlan !== null}
+            onClick={() => handleSubscribe('monthly')}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-amber-100 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
+          >
+            {payingPlan === 'monthly' ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Opening Paystack...
+              </>
+            ) : (
+              <>
+                <CreditCard className="w-4 h-4" />
+                {isPremium && profile?.is_premium
+                  ? `Extend Monthly (${currency} ${monthlyPrice})`
+                  : `Subscribe Monthly — ${currency} ${monthlyPrice}`}
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Yearly Plan */}
+        <div className="relative rounded-3xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-500/15 via-zinc-900 to-pink-600/15 p-6 flex flex-col justify-between space-y-5 shadow-xl shadow-amber-500/10">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400 px-3 py-1 text-xs font-extrabold text-zinc-950">
+                <Sparkles className="w-3.5 h-3.5" />
+                Yearly Plan • Best Value
+              </span>
+              {yearlySavingsPercent > 0 && (
+                <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-300">
+                  Save {yearlySavingsPercent}% (2 Months Free)
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-baseline gap-1.5 pt-1">
+              <span className="text-sm font-bold text-amber-300">{currency}</span>
+              <span className="text-4xl sm:text-5xl font-extrabold text-white tabular-nums">
+                {Number.isInteger(yearlyPrice) ? yearlyPrice : yearlyPrice.toFixed(2)}
+              </span>
+              <span className="text-sm text-zinc-300 font-medium">/ year</span>
+            </div>
+
+            <p className="text-xs text-zinc-200 leading-relaxed">
+              12 full months of uninterrupted Gyidi Nwom Premium across conventions, Sabbath study,
+              and offline listening — at just{' '}
+              <strong className="text-amber-300">
+                {currency} {(yearlyPrice / 12).toFixed(2)}/month
+              </strong>
+              .
+            </p>
+
+            <ul className="space-y-2 pt-2 text-xs text-zinc-100">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                Everything in Monthly Premium for 365 days
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                Unlimited Offline Profile Vault for hymns &amp; long sermons
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                Priority convention live video &amp; Sabbath radio access
+              </li>
+            </ul>
+          </div>
+
+          <button
+            type="button"
+            disabled={payingPlan !== null}
+            onClick={() => handleSubscribe('yearly')}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-pink-500 hover:opacity-95 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
+          >
+            {payingPlan === 'yearly' ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Opening Paystack...
+              </>
+            ) : (
+              <>
+                <Crown className="w-4 h-4" />
+                {isPremium && profile?.is_premium
+                  ? `Extend Yearly (${currency} ${yearlyPrice})`
+                  : `Subscribe Yearly — ${currency} ${yearlyPrice}`}
+              </>
+            )}
+          </button>
+        </div>
+      </section>
+
+      {/*Paystack Security Strip*/}
+      <div className="rounded-2xl border border-white/10 bg-zinc-900/50 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
+        <span className="inline-flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          Secured by <strong className="text-zinc-200">Paystack</strong> • Pay with MTN MoMo,
+          Telecel Cash, AT Money, Visa, or Mastercard
+        </span>
+        <span>Instant activation upon payment confirmation</span>
+      </div>
+
+      {/* ALL BENEFITS OF GYIDI NWOM PREMIUM */}
+      <section className="space-y-4">
+        <div>
+          <h3 className="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
+            <Crown className="w-5 h-5 text-amber-400" />
+            Everything Included in Gyidi Nwom Premium
+          </h3>
+          <p className="text-xs text-zinc-400 mt-0.5">
+            Every Monthly ({currency} {monthlyPrice}) and Yearly ({currency} {yearlyPrice}) plan
+            unlocks all 6 Premium capabilities:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PREMIUM_BENEFITS.map((b) => {
+            const Icon = b.icon;
+            return (
+              <div
+                key={b.title}
+                className="rounded-2xl border border-white/10 bg-zinc-900/55 p-4 space-y-2.5"
+              >
+                <div
+                  className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border ${b.accent}`}
+                >
+                  <Icon className="w-5 h-5" />
+                </div>
+                <h4 className="text-sm font-extrabold text-white">{b.title}</h4>
+                <p className="text-xs text-zinc-400 leading-relaxed">{b.description}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* BILLING & RECEIPTS HISTORY */}
+      {userId && (
+        <section className="rounded-2xl border border-white/10 bg-zinc-900/50 p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+              <Receipt className="w-4 h-4 text-amber-400" />
+              Billing &amp; Payment History
+            </h3>
+            <span className="text-[11px] text-zinc-500">{userEmail}</span>
+          </div>
+
+          {loadingHistory ? (
+            <p className="text-xs text-zinc-400 py-4">Loading billing history...</p>
+          ) : subscriptions.length === 0 ? (
+            <p className="text-xs text-zinc-500 py-3">
+              No Paystack subscription receipts recorded on this account yet.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-white/10 text-zinc-400">
+                    <th className="py-2 pr-3">Date</th>
+                    <th className="py-2 pr-3">Plan</th>
+                    <th className="py-2 pr-3">Amount</th>
+                    <th className="py-2 pr-3">Valid Until</th>
+                    <th className="py-2">Reference</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-zinc-200">
+                  {subscriptions.map((sub) => (
+                    <tr key={sub.id}>
+                      <td className="py-2.5 pr-3 whitespace-nowrap">
+                        {new Date(sub.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="py-2.5 pr-3 capitalize font-semibold text-amber-300">
+                        {sub.plan_interval}
+                      </td>
+                      <td className="py-2.5 pr-3 font-bold whitespace-nowrap">
+                        {sub.currency} {Number(sub.amount_ghs).toFixed(2)}
+                      </td>
+                      <td className="py-2.5 pr-3 whitespace-nowrap">
+                        {new Date(sub.expires_at).toLocaleDateString()}
+                      </td>
+                      <td className="py-2.5 font-mono text-[11px] text-zinc-400">
+                        {sub.paystack_reference}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
+    </div>
+  );
+};

@@ -14,13 +14,20 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
+  Crown,
+  CreditCard,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { Announcement, DailyVerseFlyer, PlatformSettings } from '../types/music';
+import {
+  Announcement,
+  DailyVerseFlyer,
+  PlatformSettings,
+  PremiumSubscription,
+} from '../types/music';
 import { extractAdSenseClientId } from './GoogleAdBanner';
 
 interface AdminContentMonetizationPanelProps {
-  mode: 'verses' | 'announcements' | 'adsense';
+  mode: 'verses' | 'announcements' | 'adsense' | 'premium';
   adminProfileId: string;
   onRefreshGlobal: () => Promise<void>;
   onPreviewDailyFeed?: (tab: 'verse' | 'announcements') => void;
@@ -79,19 +86,33 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
   const [adsHomeSlot, setAdsHomeSlot] = useState('');
   const [adsSidebarSlot, setAdsSidebarSlot] = useState('');
 
+  // Premium & Paystack state
+  const [premiumEnabled, setPremiumEnabled] = useState(true);
+  const [monthlyPriceInput, setMonthlyPriceInput] = useState('5');
+  const [yearlyPriceInput, setYearlyPriceInput] = useState('50');
+  const [paystackKeyInput, setPaystackKeyInput] = useState('');
+  const [subscriptions, setSubscriptions] = useState<PremiumSubscription[]>([]);
+
   const loadData = async () => {
     setLoading(true);
-    const [{ data: fData }, { data: aData }, { data: sData }] = await Promise.all([
-      supabase
-        .from('daily_verse_flyers')
-        .select('*')
-        .order('scheduled_date', { ascending: true }),
-      supabase.from('announcements').select('*').order('publish_at', { ascending: false }),
-      supabase.from('platform_settings').select('*').eq('id', 'global').maybeSingle(),
-    ]);
+    const [{ data: fData }, { data: aData }, { data: sData }, { data: subData }] =
+      await Promise.all([
+        supabase
+          .from('daily_verse_flyers')
+          .select('*')
+          .order('scheduled_date', { ascending: true }),
+        supabase.from('announcements').select('*').order('publish_at', { ascending: false }),
+        supabase.from('platform_settings').select('*').eq('id', 'global').maybeSingle(),
+        supabase
+          .from('premium_subscriptions')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(50),
+      ]);
 
     if (fData) setFlyers(fData as DailyVerseFlyer[]);
     if (aData) setAnnouncements(aData as Announcement[]);
+    if (subData) setSubscriptions(subData as PremiumSubscription[]);
     if (sData) {
       const cfg = sData as PlatformSettings;
       setSettings(cfg);
@@ -100,6 +121,10 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
       setAdsAutoAds(cfg.adsense_auto_ads !== false);
       setAdsHomeSlot(cfg.adsense_home_slot_id || '');
       setAdsSidebarSlot(cfg.adsense_sidebar_slot_id || '');
+      setPremiumEnabled(cfg.premium_enabled !== false);
+      setMonthlyPriceInput(String(cfg.premium_monthly_price_ghs ?? 5));
+      setYearlyPriceInput(String(cfg.premium_yearly_price_ghs ?? 50));
+      setPaystackKeyInput(cfg.paystack_public_key || '');
     }
     setLoading(false);
   };
@@ -332,16 +357,18 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
         );
       }
 
-      const { error: upErr } = await supabase.from('platform_settings').upsert({
-        id: 'global',
-        adsense_enabled: adsEnabled,
-        adsense_publisher_id: normalizedKey || null,
-        adsense_auto_ads: adsAutoAds,
-        adsense_home_slot_id: adsHomeSlot.trim() || null,
-        adsense_sidebar_slot_id: adsSidebarSlot.trim() || null,
-        updated_by: adminProfileId,
-        updated_at: new Date().toISOString(),
-      });
+      const { error: upErr } = await supabase
+        .from('platform_settings')
+        .update({
+          adsense_enabled: adsEnabled,
+          adsense_publisher_id: normalizedKey || null,
+          adsense_auto_ads: adsAutoAds,
+          adsense_home_slot_id: adsHomeSlot.trim() || null,
+          adsense_sidebar_slot_id: adsSidebarSlot.trim() || null,
+          updated_by: adminProfileId,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', 'global');
       if (upErr) throw upErr;
 
       if (normalizedKey) setAdsPublisherInput(normalizedKey);
@@ -357,6 +384,60 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
       setFeedback({
         type: 'err',
         text: err instanceof Error ? err.message : 'Failed to save Google AdSense settings.',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSavePremiumSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const mPrice = parseFloat(monthlyPriceInput);
+      const yPrice = parseFloat(yearlyPriceInput);
+      if (!Number.isFinite(mPrice) || mPrice <= 0) {
+        throw new Error('Monthly Premium price must be a positive amount in GHS (e.g. 5).');
+      }
+      if (!Number.isFinite(yPrice) || yPrice <= 0) {
+        throw new Error('Yearly Premium price must be a positive amount in GHS (e.g. 50).');
+      }
+      const cleanPaystackKey = paystackKeyInput.trim();
+      if (cleanPaystackKey && !cleanPaystackKey.startsWith('pk_')) {
+        throw new Error(
+          'Paystack Public Key must start with pk_live_ or pk_test_ (from Paystack Dashboard → Settings → API Keys).'
+        );
+      }
+
+      const { error: upErr } = await supabase
+        .from('platform_settings')
+        .update({
+          premium_enabled: premiumEnabled,
+          premium_monthly_price_ghs: Number(mPrice.toFixed(2)),
+          premium_yearly_price_ghs: Number(yPrice.toFixed(2)),
+          paystack_public_key: cleanPaystackKey || null,
+          premium_currency: 'GHS',
+          updated_by: adminProfileId,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', 'global');
+      if (upErr) throw upErr;
+
+      await loadData();
+      await onRefreshGlobal();
+      setFeedback({
+        type: 'ok',
+        text: `Premium pricing updated! Monthly: GHS ${mPrice.toFixed(
+          2
+        )} • Yearly: GHS ${yPrice.toFixed(2)}${
+          cleanPaystackKey ? ' • Paystack Key saved!' : ''
+        }`,
+      });
+    } catch (err: unknown) {
+      setFeedback({
+        type: 'err',
+        text: err instanceof Error ? err.message : 'Failed to save Premium & Paystack settings.',
       });
     } finally {
       setSaving(false);
@@ -1118,6 +1199,205 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 for the Home Feed and Sidebar.
               </li>
             </ol>
+          </div>
+        </div>
+      )}
+
+      {/* ==================== MODE 4: PREMIUM PRICING & PAYSTACK BILLING ==================== */}
+      {mode === 'premium' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <form
+              onSubmit={handleSavePremiumSettings}
+              className="lg:col-span-7 rounded-3xl border border-amber-500/35 bg-gradient-to-br from-amber-500/12 via-zinc-900 to-zinc-950 p-6 space-y-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-11 w-11 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center">
+                  <Crown className="w-6 h-6 text-amber-300" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold text-white">
+                    Gyidi Nwom Premium Pricing &amp; Paystack Integration
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Edit Monthly &amp; Yearly prices in Ghana Cedis (GHS) and configure your
+                    Paystack Public Key.
+                  </p>
+                </div>
+              </div>
+
+              <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-zinc-950/80 p-4 cursor-pointer">
+                <div>
+                  <p className="text-sm font-bold text-white">Enable Gyidi Nwom Premium Gating</p>
+                  <p className="text-xs text-zinc-400">
+                    Gates Offline Saved, Liked Songs, Playlists, Artiste Support, Daily Verses &amp;
+                    Live Video/Radio behind Premium
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={premiumEnabled}
+                  onChange={(e) => setPremiumEnabled(e.target.checked)}
+                  className="h-5 w-5 accent-amber-400 rounded cursor-pointer"
+                />
+              </label>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-amber-300 mb-1">
+                    Monthly Price (GHS — Cedis) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    value={monthlyPriceInput}
+                    onChange={(e) => setMonthlyPriceInput(e.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-zinc-950 px-4 py-2.5 text-sm font-extrabold text-white focus:border-amber-400 focus:outline-none"
+                  />
+                  <p className="text-[11px] text-zinc-400 mt-1">Default: 5.00 GHS / month</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-amber-300 mb-1">
+                    Yearly Price (GHS — Cedis) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    value={yearlyPriceInput}
+                    onChange={(e) => setYearlyPriceInput(e.target.value)}
+                    className="w-full rounded-xl border border-white/15 bg-zinc-950 px-4 py-2.5 text-sm font-extrabold text-white focus:border-amber-400 focus:outline-none"
+                  />
+                  <p className="text-[11px] text-zinc-400 mt-1">Default: 50.00 GHS / year</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-emerald-300 mb-1">
+                  Paystack Public Key (pk_live_... or pk_test_...)
+                </label>
+                <input
+                  type="text"
+                  value={paystackKeyInput}
+                  onChange={(e) => setPaystackKeyInput(e.target.value)}
+                  placeholder="pk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  className="w-full rounded-xl border border-white/15 bg-zinc-950 px-4 py-2.5 text-sm font-mono text-white placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
+                />
+                <p className="text-[11px] text-zinc-400 mt-1">
+                  Copy your Public Key from{' '}
+                  <strong className="text-zinc-200">
+                    Paystack Dashboard → Settings → API Keys &amp; Webhooks
+                  </strong>
+                  . Supports MTN MoMo, Telecel Cash, AT Money, and Cards in GHS!
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 py-3 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer disabled:opacity-50"
+              >
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Save Premium Pricing &amp; Paystack Settings
+              </button>
+            </form>
+
+            <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-zinc-900/60 p-6 space-y-4">
+              <div className="flex items-center gap-2 text-sm font-extrabold text-white">
+                <CreditCard className="w-4 h-4 text-amber-400" />
+                Paystack Subscription Summary
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-white/10 bg-zinc-950 p-3.5">
+                  <p className="text-[11px] text-zinc-400">Total Payments</p>
+                  <p className="text-2xl font-extrabold text-white mt-0.5">
+                    {subscriptions.length}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-3.5">
+                  <p className="text-[11px] text-emerald-300">Gross Revenue</p>
+                  <p className="text-2xl font-extrabold text-white mt-0.5">
+                    GHS{' '}
+                    {subscriptions
+                      .reduce((sum, s) => sum + Number(s.amount_ghs || 0), 0)
+                      .toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-xs text-zinc-300 leading-relaxed pt-1">
+                <p className="font-bold text-amber-300">How Paystack Works on Gyidi Nwom:</p>
+                <ol className="list-decimal list-inside space-y-1.5 text-zinc-400">
+                  <li>
+                    Paste your <code className="text-emerald-300">pk_test_...</code> (testing) or{' '}
+                    <code className="text-emerald-300">pk_live_...</code> (production) key from
+                    Paystack Ghana.
+                  </li>
+                  <li>
+                    Adjust the Monthly (default GHS 5) or Yearly (default GHS 50) prices anytime —
+                    the Pricing &amp; Billing page updates immediately.
+                  </li>
+                  <li>
+                    You can also grant complimentary Premium to any user/artiste in the{' '}
+                    <strong>Artistes &amp; Users</strong> tab.
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Paystack Transactions */}
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-5 space-y-3">
+            <h4 className="text-sm font-extrabold text-white">
+              Recent Paystack Subscription Payments ({subscriptions.length})
+            </h4>
+            {subscriptions.length === 0 ? (
+              <p className="text-xs text-zinc-500">No subscription transactions yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-white/10 text-zinc-400">
+                      <th className="py-2 pr-3">Date</th>
+                      <th className="py-2 pr-3">Member Email</th>
+                      <th className="py-2 pr-3">Plan</th>
+                      <th className="py-2 pr-3">Amount</th>
+                      <th className="py-2 pr-3">Expires</th>
+                      <th className="py-2">Paystack Ref</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-zinc-200">
+                    {subscriptions.map((sub) => (
+                      <tr key={sub.id}>
+                        <td className="py-2 pr-3 whitespace-nowrap">
+                          {new Date(sub.created_at).toLocaleString()}
+                        </td>
+                        <td className="py-2 pr-3">{sub.user_email || sub.user_id.slice(0, 8)}</td>
+                        <td className="py-2 pr-3 capitalize text-amber-300 font-semibold">
+                          {sub.plan_interval}
+                        </td>
+                        <td className="py-2 pr-3 font-bold">
+                          {sub.currency} {Number(sub.amount_ghs).toFixed(2)}
+                        </td>
+                        <td className="py-2 pr-3 whitespace-nowrap">
+                          {new Date(sub.expires_at).toLocaleDateString()}
+                        </td>
+                        <td className="py-2 font-mono text-[11px] text-zinc-400">
+                          {sub.paystack_reference}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}

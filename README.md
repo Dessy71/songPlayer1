@@ -40,3 +40,12 @@ npm run dev
 ```bash
 npm run build
 ```
+
+## Premium billing configuration (Phase 7)
+
+- Master Admin → Premium & Paystack: set the Paystack **public** key and monthly/yearly GHS prices (defaults: GHS 5 / GHS 50).
+- Supabase → Edge Function Secrets: configure `PAYSTACK_SECRET_KEY` securely. Never place the secret in Vite variables, the settings table, or source control.
+- `verify-premium-payment` checks the authenticated user, Paystack success status, currency, exact amount, account email and plan/user metadata before allowing activation. Client callbacks alone cannot grant Premium. References cannot extend a membership twice.
+- Plans currently use prepaid, manually renewed monthly/yearly access, not recurring direct debits. Live Video/Radio remains an upcoming feature; Premium does not imply a live broadcast is available today.
+- Offline Save keeps audio in browser-managed in-app storage on the current device, not in Downloads. The saved track list syncs to the account; another device still needs to cache the stream. Browser storage eviction can remove offline audio.
+- Payments cannot be fully tested until both Paystack keys are configured. Use matching test keys first, verify success/cancellation/duplicate-reference behavior, then switch to matching live keys.
