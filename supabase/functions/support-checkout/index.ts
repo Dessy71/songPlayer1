@@ -214,13 +214,17 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     // delivery attempts all failed. Read-only apart from the adoption itself.
     const {data:profile,error:profileError}=await admin.from('profiles').select('role').eq('id',user.id).maybeSingle();
     if(profileError)throw profileError;
-    if(profile?.role!=='admin')return json({error:'Admins only.'},403);
+    if(profile?.role!=='admin'){
+     console.warn('reconcile rejected: caller is not an admin',{userId:user.id,role:profile?.role ?? null});
+     return json({error:'Admins only.'},403);
+    }
     const days=Number.isSafeInteger(body.days)?Math.min(Math.max(body.days,1),90):30;
     const from=new Date(Date.now()-days*86400000).toISOString().slice(0,10);
     const {data:configs,error:configError}=await admin.from('support_checkout_config')
       .select('subaccount_code').eq('enabled',true).not('subaccount_code','is',null);
     if(configError)throw configError;
     const linked=new Set((configs||[]).map((c:any)=>c.subaccount_code).filter((c:unknown):c is string=>typeof c==='string'));
+    console.log('reconcile start',{days,from,linkedSubaccounts:[...linked],configCount:configs?.length ?? 0});
     if(linked.size===0)return json({adopted:0,scanned:0,skipped:[]});
     let scanned=0,adopted=0;const skipped:string[]=[];
     for(let page=1;page<=5;page++){
@@ -243,10 +247,15 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
      }
      if(list.length<100)break;
     }
+    console.log('reconcile finished',{days,from,linkedSubaccounts:[...linked],scanned,adopted,skipped:skipped.slice(0,20)});
     return json({adopted,scanned,skipped:skipped.slice(0,20)});
    }
    return json({error:'Unknown action.'},400);
-  }catch{
+  }catch(error){
+   // Previously this swallowed the cause, so the only signal in the function
+   // logs was a bare 503. Log it so the real failure is visible in
+   // Dashboard -> Edge Functions -> support-checkout -> Logs.
+   console.error('support-checkout failed:', error instanceof Error ? (error.stack || error.message) : error);
    return json({error:'Support payment service is unavailable. If charged, check your existing payment; do not pay again.'},503);
   }
  };
