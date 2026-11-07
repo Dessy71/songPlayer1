@@ -6,7 +6,6 @@ import {
   Loader2,
   GraduationCap,
   MapPin,
-  Wallet,
   Mail,
   CheckCircle2,
   AlertCircle,
@@ -40,6 +39,9 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
     artiste?.tertiary_institution || ''
   );
   const [bio, setBio] = useState(artiste?.bio || '');
+  const [bankName, setBankName] = useState(artiste?.bank_name || '');
+  const [bankAccountNumber, setBankAccountNumber] = useState(artiste?.bank_account_number || '');
+  const [bankAccountName, setBankAccountName] = useState(artiste?.bank_account_name || '');
 
   const [avatarUrl, setAvatarUrl] = useState(artiste?.avatar_url || '');
   const [assignEmail, setAssignEmail] = useState(artiste?.email || '');
@@ -57,6 +59,9 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
       setIsSacsu(Boolean(artiste.is_sacsu));
       setTertiaryInstitution(artiste.tertiary_institution || '');
       setBio(artiste.bio || '');
+      setBankName(artiste.bank_name || '');
+      setBankAccountNumber(artiste.bank_account_number || '');
+      setBankAccountName(artiste.bank_account_name || '');
       setAvatarUrl(artiste.avatar_url || '');
       setAssignEmail(artiste.email || '');
     }
@@ -159,6 +164,16 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
         });
         if (linkErr) throw linkErr;
         if (linkedData) savedProfile = linkedData as UserProfile;
+      }
+
+      // Save bank details to the restricted payout table (service_role only)
+      if (bankName.trim() || bankAccountNumber.trim() || bankAccountName.trim()) {
+        const { error: bankErr } = await supabase.rpc('artiste_set_bank_details', {
+          p_bank_name: bankName.trim(),
+          p_bank_account_number: bankAccountNumber.trim(),
+          p_bank_account_name: bankAccountName.trim(),
+        });
+        if (bankErr) throw bankErr;
       }
 
       onSaved?.(savedProfile);
@@ -312,21 +327,39 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             />
           </div>
 
-          {/* Payout details deliberately live in the Support Details modal, not here:
-              that path is audited and writes to the restricted payout table. */}
-          {isAdminViewer && (
-            <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3">
-              <p className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-                <Wallet className="w-4 h-4" />
-                Paystack Payout Configuration
-              </p>
-              <p className="mt-1 text-[11px] leading-relaxed text-zinc-300">
-                Payment page URL, subaccount code and profile approval are managed from
-                <strong className="text-white"> Admin &rarr; Users &rarr; Support Details</strong>
-                {' '}(or the Artiste Profile queue in Approvals), where they stay private and audited.
-              </p>
+          {/* Bank Account Details (used by Admin to create Paystack payment pages & subaccounts) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Bank Name</label>
+              <input
+                type="text"
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                placeholder="e.g. GCB Bank, Ecobank, Fidelity Bank"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+              />
             </div>
-          )}
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Account Number</label>
+              <input
+                type="text"
+                value={bankAccountNumber}
+                onChange={(e) => setBankAccountNumber(e.target.value)}
+                placeholder="e.g. 1234567890"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Account Name</label>
+              <input
+                type="text"
+                value={bankAccountName}
+                onChange={(e) => setBankAccountName(e.target.value)}
+                placeholder="e.g. Seth Boateng"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+              />
+            </div>
+          </div>
 
           {/* Admin: Link / Assign Profile to Artiste&apos;s Login Email */}
           {isAdminViewer && (
