@@ -64,9 +64,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [scgBranch, setScgBranch] = useState('');
   const [isSacsu, setIsSacsu] = useState(false);
   const [tertiaryInstitution, setTertiaryInstitution] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'bank' | 'momo' | null>(null);
   const [bankName, setBankName] = useState('');
   const [bankAccountNumber, setBankAccountNumber] = useState('');
   const [bankAccountName, setBankAccountName] = useState('');
+  const [momoOperator, setMomoOperator] = useState('');
+  const [momoPhoneNumber, setMomoPhoneNumber] = useState('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -171,12 +174,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }
           }
 
-          // Save bank details to the restricted payout table (service_role only)
-          if (bankName.trim() || bankAccountNumber.trim() || bankAccountName.trim()) {
-            const { error: bankErr } = await supabase.rpc('artiste_set_bank_details', {
+          // Save payout details to the restricted payout table (service_role only)
+          if (paymentMethod && (bankName.trim() || bankAccountNumber.trim() || bankAccountName.trim() || momoOperator.trim() || momoPhoneNumber.trim())) {
+            const { error: bankErr } = await supabase.rpc('artiste_set_payout_details', {
+              p_payment_method: paymentMethod,
               p_bank_name: bankName.trim(),
               p_bank_account_number: bankAccountNumber.trim(),
               p_bank_account_name: bankAccountName.trim(),
+              p_momo_operator: momoOperator.trim(),
+              p_momo_phone_number: momoPhoneNumber.trim(),
             });
             if (bankErr) throw bankErr;
           }
@@ -455,39 +461,118 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {/* Bank Account Details (used by Admin to create Paystack payment pages & subaccounts during approval) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-300 mb-1">Bank Name</label>
-              <input
-                type="text"
-                value={bankName}
-                onChange={(e) => setBankName(e.target.value)}
-                placeholder="e.g. GCB Bank, Ecobank"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
-              />
+          {/* Payout Details - Artiste signup only */}
+          {mode === 'signup' && accountType === 'artiste' && (
+            <div className="rounded-xl border border-white/10 bg-zinc-950/60 p-3 space-y-3">
+              <label className="block text-xs font-bold text-zinc-300 mb-2">Payout Method</label>
+              <div className="flex gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === 'bank'}
+                    onChange={() => setPaymentMethod('bank')}
+                    className="rounded accent-amber-400"
+                  />
+                  <span className="text-xs font-medium text-zinc-200">Bank Account</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={paymentMethod === 'momo'}
+                    onChange={() => setPaymentMethod('momo')}
+                    className="rounded accent-emerald-400"
+                  />
+                  <span className="text-xs font-medium text-zinc-200">Mobile Money</span>
+                </label>
+              </div>
+
+              {paymentMethod === 'bank' && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">Bank *</label>
+                    <select
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                    >
+                      <option value="">Select a bank</option>
+                      <option value="GCB Bank">GCB Bank</option>
+                      <option value="Ecobank Ghana">Ecobank Ghana</option>
+                      <option value="Fidelity Bank">Fidelity Bank</option>
+                      <option value="Absa Bank Ghana">Absa Bank Ghana</option>
+                      <option value="Stanbic Bank Ghana">Stanbic Bank Ghana</option>
+                      <option value="Standard Chartered Bank Ghana">Standard Chartered Bank Ghana</option>
+                      <option value="Societe Generale Ghana">Societe Generale Ghana</option>
+                      <option value="Zenith Bank Ghana">Zenith Bank Ghana</option>
+                      <option value="Access Bank Ghana">Access Bank Ghana</option>
+                      <option value="UBA Ghana">UBA Ghana</option>
+                      <option value="Cal Bank">Cal Bank</option>
+                      <option value="Republic Bank (HFC)">Republic Bank (HFC)</option>
+                      <option value="Prudential Bank">Prudential Bank</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">Account Number *</label>
+                    <input
+                      type="text"
+                      value={bankAccountNumber}
+                      onChange={(e) => setBankAccountNumber(e.target.value)}
+                      placeholder="e.g. 1234567890"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">Account Name *</label>
+                    <input
+                      type="text"
+                      value={bankAccountName}
+                      onChange={(e) => setBankAccountName(e.target.value)}
+                      placeholder="e.g. Seth Boateng"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {paymentMethod === 'momo' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">MoMo Operator *</label>
+                    <select
+                      value={momoOperator}
+                      onChange={(e) => setMomoOperator(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+                    >
+                      <option value="">Select an operator</option>
+                      <option value="MTN">MTN Mobile Money</option>
+                      <option value="Telecel">Telecel Cash</option>
+                      <option value="AT">AT Money</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">Phone Number *</label>
+                    <input
+                      type="text"
+                      value={momoPhoneNumber}
+                      onChange={(e) => setMomoPhoneNumber(e.target.value)}
+                      placeholder="e.g. 024XXXXXXX"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-emerald-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-medium text-zinc-300 mb-1">Account Name *</label>
+                    <input
+                      type="text"
+                      value={bankAccountName}
+                      onChange={(e) => setBankAccountName(e.target.value)}
+                      placeholder="e.g. Seth Boateng"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-300 mb-1">Account Number</label>
-              <input
-                type="text"
-                value={bankAccountNumber}
-                onChange={(e) => setBankAccountNumber(e.target.value)}
-                placeholder="e.g. 1234567890"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-300 mb-1">Account Name</label>
-              <input
-                type="text"
-                value={bankAccountName}
-                onChange={(e) => setBankAccountName(e.target.value)}
-                placeholder="e.g. Seth Boateng"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
-              />
-            </div>
-          </div>
+          )}
 
           {mode === 'signup' && accountType === 'artiste' && (
             <section aria-label="Existing artiste profile" className="space-y-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
