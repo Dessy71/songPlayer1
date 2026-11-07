@@ -7,7 +7,19 @@
 -- supporter display use case -- the RPC only returns non-sensitive fields
 -- (display_name, avatar_url, total_amount_subunits), never payment amounts
 -- or contact details.
-CREATE POLICY "Verified supporters visible to all"
-  ON public.support_payment_orders
-  FOR SELECT TO anon, authenticated
-  USING (status = 'verified');
+-- Guarded so the file can be re-run (e.g. pasted into the SQL editor twice)
+-- without failing on "policy already exists".
+DO $migration$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'support_payment_orders'
+      AND policyname = 'Verified supporters visible to all'
+  ) THEN
+    CREATE POLICY "Verified supporters visible to all"
+      ON public.support_payment_orders
+      FOR SELECT TO anon, authenticated
+      USING (status = 'verified');
+  END IF;
+END $migration$;
