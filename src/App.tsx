@@ -71,7 +71,7 @@ import { MessagesView } from './components/MessagesView';
 import { EditArtisteModal } from './components/EditArtisteModal';
 import { AuthModal } from './components/AuthModal';
 import { UploadModal } from './components/UploadModal';
-import { SupportCheckout } from './components/SupportCheckout';
+import { SupportGyidiButton } from './components/SupportGyidiButton';
 import { ThemeToggle } from './components/ThemeToggle';
 import { SupportModal } from './components/SupportModal';
 import { DeveloperModal } from './components/DeveloperModal';
@@ -2052,7 +2052,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </p>
                   </div>
 
-                  <div className="w-full md:max-w-sm"><SupportCheckout target="gyidi" name="Gyidi Nwom" /></div>
+                  <div className="w-full md:max-w-sm">
+                    {/* Same wallet redirect as artiste support: no hard-coded amount. */}
+                    <SupportGyidiButton />
+                  </div>
                 </div>
               </section>
 
