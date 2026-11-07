@@ -11,7 +11,7 @@ import {
   BadgeCheck,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { UserProfile, isProfileApproved } from '../types/music';
+import { UserProfile, isProfileApproved, isPaystackPageUrl } from '../types/music';
 import { SupportCheckout } from './SupportCheckout';
 
 interface SupportModalProps {
@@ -54,8 +54,10 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 
   const isApproved = isProfileApproved(artiste);
   const hasDetails = Boolean(supportUrl && subaccountCode);
-  // Support Badge: shown once approved with Paystack details. Profile pictures only.
-  const hasSupportBadge = isApproved && hasDetails;
+  // A legacy MoMo number must never be opened as a payment page.
+  const hasPaystackPage = isPaystackPageUrl(supportUrl);
+  // Support Badge: shown once approved with a real Paystack page. Profile pictures only.
+  const hasSupportBadge = isApproved && hasPaystackPage;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -76,8 +78,8 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   };
 
   const openPaymentPage = () => {
-    if (!supportUrl) return;
-    window.open(supportUrl, '_blank', 'noopener,noreferrer');
+    if (!isPaystackPageUrl(supportUrl)) return;
+    window.open(supportUrl.trim(), '_blank', 'noopener,noreferrer');
   };
 
   const saveDetails = async (approve: boolean) => {
@@ -365,7 +367,9 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                   ? 'This profile is pending admin approval. Support opens once the admin adds the Paystack page and approves it.'
                   : artiste?.approval_status === 'rejected'
                     ? 'Support is not available for this profile.'
-                    : 'Support details have not been configured yet.'}
+                    : supportUrl && !hasPaystackPage
+                      ? 'Mobile Money details on file have been retired. A Paystack payment page is being set up.'
+                      : 'Support details have not been configured yet.'}
               </div>
             )}
           </div>

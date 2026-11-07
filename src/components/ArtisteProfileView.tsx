@@ -26,6 +26,8 @@ import {
   isSongPubliclyPlayable,
   isSongUpcomingPremiere,
   isProfileApproved,
+  hasApprovedSupportPage,
+  isPaystackPageUrl,
 } from '../types/music';
 import { SongRow } from './SongRow';
 import { PremiereCard } from './PremiereCard';
@@ -96,8 +98,11 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   // Rows from before the approval column existed stay visible (grandfathered).
   const isApproved = isProfileApproved(artiste);
   // Support Badge: approved + Paystack details present. Shown as a profile picture only.
-  const showSupportBadge =
-    isApproved && Boolean(artiste.support_number) && Boolean(artiste.support_account_name);
+  // Only a real Paystack page URL qualifies. Legacy rows hold a MoMo phone number in
+  // support_number, which must never be opened as a link or shown as a badge.
+  const showSupportBadge = hasApprovedSupportPage(artiste);
+  const hasLegacyPayoutDetails =
+    Boolean(artiste.support_number) && !isPaystackPageUrl(artiste.support_number);
 
   const artisteSongs = songs.filter(
     (s) =>
@@ -123,8 +128,8 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   const totalPlays = releasedSongs.reduce((sum, s) => sum + (s.plays_count || 0), 0);
 
   const openPaymentPage = () => {
-    if (!artiste.support_number) return;
-    window.open(artiste.support_number, '_blank', 'noopener,noreferrer');
+    if (!isPaystackPageUrl(artiste.support_number)) return;
+    window.open((artiste.support_number || '').trim(), '_blank', 'noopener,noreferrer');
   };
 
   const requireSupportAccess = () => {
@@ -330,8 +335,12 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               <div className="rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   {isAdminViewer
-                    ? 'Profile approved. Add the Paystack payment page URL so listeners can support this artiste.'
-                    : 'Approved profile — support details are being finalised.'}
+                    ? hasLegacyPayoutDetails
+                      ? 'This profile still holds legacy MoMo details. Replace them with a Paystack payment page URL and subaccount to open listener support.'
+                      : 'Profile approved. Add the Paystack payment page URL so listeners can support this artiste.'
+                    : hasLegacyPayoutDetails
+                      ? 'Mobile Money support has been retired for this artiste. Premium checkout is being set up.'
+                      : 'Approved profile — support details are being finalised.'}
                 </p>
                 {isAdminViewer && (
                   <button
