@@ -218,7 +218,21 @@ export const SupportModal: React.FC<SupportModalProps> = ({
         'support-checkout',
         { body: { action: 'reconcile', days: 30 } }
       );
-      if (invokeError) throw invokeError;
+      // functions.invoke throws a generic "non-2xx status code" error and keeps the
+      // real JSON body on error.context (a Response). Dig it out so the message
+      // explains what actually went wrong.
+      if (invokeError) {
+        let detail = invokeError.message || '';
+        try {
+          const body = await (
+            invokeError as unknown as { context?: Response }
+          )?.context?.json();
+          if (body?.error) detail = String(body.error);
+        } catch {
+          /* keep the generic message */
+        }
+        throw new Error(detail || 'Sync failed.');
+      }
       if (data?.error) throw new Error(String(data.error));
       const count = Number(data?.adopted ?? 0);
       setSyncResult(
@@ -231,7 +245,13 @@ export const SupportModal: React.FC<SupportModalProps> = ({
       setSyncResult(
         /unknown action/i.test(message)
           ? 'The deployed function is out of date. Run: npx supabase functions deploy support-checkout'
-          : message || 'Could not sync Paystack payments.'
+          : /admins only/i.test(message)
+            ? 'Only an admin account can run the sync. Your profile role is not "admin".'
+            : /not configured/i.test(message)
+              ? 'PAYSTACK_SECRET_KEY is not set. Run: npx supabase secrets set PAYSTACK_SECRET_KEY=sk_live_...'
+              : /non-2xx|Failed to (send|fetch)|unavailable/i.test(message)
+                ? `${message} — check Dashboard → Edge Functions → support-checkout → Logs for the full error.`
+                : message || 'Could not sync Paystack payments.'
       );
     } finally {
       setIsSyncing(false);

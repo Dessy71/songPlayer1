@@ -65,6 +65,9 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
    const PROVIDER_REFERENCE = /^[A-Za-z0-9_-]{6,64}$/;
    const SUBACCOUNT = /^ACCT_[a-zA-Z0-9]+$/;
    const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+   // Migration 202611070003 seeds every artiste with this shared fake subaccount.
+   // It identifies nobody, so a charge against it must never become a badge.
+   const PLACEHOLDER_SUBACCOUNT = 'ACCT_placeholder0000';
 
    // trustProvider is only safe for charges read straight back from the Paystack API
    // (the admin sync); a webhook body is attacker-supplied until re-verified.
@@ -79,9 +82,28 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     if (typeof subaccountCode !== 'string' || !SUBACCOUNT.test(subaccountCode)) return { adopted: false, reason: 'unlinked-artiste' };
     if (typeof email !== 'string' || !EMAIL.test(email)) return { adopted: false, reason: 'missing-email' };
 
-    const { data: config, error: configError } = await admin.from('support_checkout_config')
-      .select('artiste_id, subaccount_code').eq('subaccount_code', subaccountCode).maybeSingle();
-    if (configError || !config?.artiste_id) return { adopted: false, reason: 'unlinked-artiste' };
+    if (subaccountCode === PLACEHOLDER_SUBACCOUNT) return { adopted: false, reason: 'placeholder-subaccount' };
+
+    // subaccount_code is NOT unique, so never use maybeSingle() here: several
+    // artistes can point at the same code and PostgREST would error out.
+    const { data: candidates, error: configError } = await admin.from('support_checkout_config')
+      .select('target, artiste_id, subaccount_code, payment_page_url').eq('subaccount_code', subaccountCode);
+    if (configError) throw configError;
+    // target 'gyidi' is platform-level support and legitimately has a NULL
+    // artiste_id, so rows are not filtered on artiste_id here.
+    if (!candidates || candidates.length === 0) return { adopted: false, reason: 'unlinked-artiste' };
+
+    // Paystack puts the storefront a charge came from in metadata.referrer
+    // (https://paystack.shop/pay/<tag>). Prefer that exact page when it is present.
+    const referrer = payment?.metadata?.referrer;
+    const byPage = typeof referrer === 'string'
+      ? candidates.find((c: any) => typeof c.payment_page_url === 'string' && c.payment_page_url === referrer)
+      : undefined;
+    // Refuse to guess when a shared subaccount leaves more than one candidate.
+    if (!byPage && candidates.length > 1) return { adopted: false, reason: 'ambiguous-artiste' };
+    const config = byPage ?? candidates[0];
+    const isPlatformTarget = config?.target === 'gyidi';
+    if (!isPlatformTarget && !config?.artiste_id) return { adopted: false, reason: 'unlinked-artiste' };
 
     const { data: existing, error: existingError } = await admin.from('support_payment_orders')
       .select('reference,status').eq('reference', reference).maybeSingle();
@@ -119,7 +141,8 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     const { error: insertError } = await admin.from('support_payment_orders').insert({
       reference,
       user_id: userId,
-      artiste_id: config.artiste_id,
+      // NULL for the platform-level 'gyidi' target, matching the initialize action.
+      artiste_id: config.artiste_id ?? null,
       amount_subunits: Number(payment.amount),
       customer_email: email.toLowerCase(),
       subaccount_code: subaccountCode,
@@ -214,13 +237,18 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     // delivery attempts all failed. Read-only apart from the adoption itself.
     const {data:profile,error:profileError}=await admin.from('profiles').select('role').eq('id',user.id).maybeSingle();
     if(profileError)throw profileError;
-    if(profile?.role!=='admin')return json({error:'Admins only.'},403);
+    if(profile?.role!=='admin'){
+     console.warn('reconcile rejected: caller is not an admin',{userId:user.id,role:profile?.role ?? null});
+     return json({error:'Admins only.'},403);
+    }
     const days=Number.isSafeInteger(body.days)?Math.min(Math.max(body.days,1),90):30;
     const from=new Date(Date.now()-days*86400000).toISOString().slice(0,10);
     const {data:configs,error:configError}=await admin.from('support_checkout_config')
       .select('subaccount_code').eq('enabled',true).not('subaccount_code','is',null);
     if(configError)throw configError;
-    const linked=new Set((configs||[]).map((c:any)=>c.subaccount_code).filter((c:unknown):c is string=>typeof c==='string'));
+    const linked=new Set((configs||[]).map((c:any)=>c.subaccount_code)
+      .filter((c:unknown):c is string=>typeof c==='string'&&c!==PLACEHOLDER_SUBACCOUNT));
+    console.log('reconcile start',{days,from,linkedSubaccounts:[...linked],configCount:configs?.length ?? 0,placeholderRowsExcluded:(configs||[]).filter((c:any)=>c.subaccount_code===PLACEHOLDER_SUBACCOUNT).length});
     if(linked.size===0)return json({adopted:0,scanned:0,skipped:[]});
     let scanned=0,adopted=0;const skipped:string[]=[];
     for(let page=1;page<=5;page++){
@@ -243,10 +271,15 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
      }
      if(list.length<100)break;
     }
+    console.log('reconcile finished',{days,from,linkedSubaccounts:[...linked],scanned,adopted,skipped:skipped.slice(0,20)});
     return json({adopted,scanned,skipped:skipped.slice(0,20)});
    }
    return json({error:'Unknown action.'},400);
-  }catch{
+  }catch(error){
+   // Previously this swallowed the cause, so the only signal in the function
+   // logs was a bare 503. Log it so the real failure is visible in
+   // Dashboard -> Edge Functions -> support-checkout -> Logs.
+   console.error('support-checkout failed:', error instanceof Error ? (error.stack || error.message) : error);
    return json({error:'Support payment service is unavailable. If charged, check your existing payment; do not pay again.'},503);
   }
  };
