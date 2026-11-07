@@ -55,6 +55,14 @@ import { SupportModal } from './SupportModal'; // NEW: SupportModal import
 import { formatBytes, formatDuration } from '../lib/format';
 import { usePlayer } from '../context/PlayerContext';
 
+const USER_TYPE_FILTERS: Array<{ id: 'all' | 'artiste' | 'listener' | 'sacsu' | 'admin'; label: string }> = [
+  { id: 'all', label: 'All Users' },
+  { id: 'artiste', label: 'Artistes' },
+  { id: 'listener', label: 'Listeners' },
+  { id: 'sacsu', label: 'SACSU' },
+  { id: 'admin', label: 'Admins' },
+];
+
 export type AdminSubTab =
   | 'analytics'
   | 'approvals'
@@ -110,6 +118,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [rejectReason, setRejectReason] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [userSearch, setUserSearch] = useState('');
+  const [userTypeFilter, setUserTypeFilter] = useState<
+    'all' | 'artiste' | 'listener' | 'sacsu' | 'admin'
+  >('all');
   const [catalogSearch, setCatalogSearch] = useState('');
 
   // NEW: Support Gyidi / Artiste Paystack URL & Subaccount Dashboard State
@@ -155,6 +166,26 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     () => new Map(adminProfiles.map((p) => [p.id, p])),
     [adminProfiles]
   );
+
+  const userRows = useMemo(() => {
+    const q = userSearch.trim().toLowerCase();
+    return adminProfiles.filter((p) => {
+      const roleMatch =
+        userTypeFilter === 'all' ||
+        p.role === userTypeFilter ||
+        (userTypeFilter === 'sacsu' && Boolean(p.is_sacsu));
+      if (!roleMatch) return false;
+      if (!q) return true;
+      return (
+        (p.stage_name || '').toLowerCase().includes(q) ||
+        (p.real_name || '').toLowerCase().includes(q) ||
+        (p.email || '').toLowerCase().includes(q) ||
+        (p.scg_zone || '').toLowerCase().includes(q) ||
+        (p.scg_branch || '').toLowerCase().includes(q) ||
+        (p.tertiary_institution || '').toLowerCase().includes(q)
+      );
+    });
+  }, [adminProfiles, userSearch, userTypeFilter]);
 
   // Redacted support summaries keyed by artiste id. Payout details are no longer on
   // profiles, so the dashboard reads this instead of the dropped columns.
@@ -1144,17 +1175,33 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="relative flex-1 max-w-md">
-              <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={userSearch}
-                onChange={(e) => setUserSearch(e.target.value)}
-                placeholder="Search artistes, SACSU campuses, SCG zones, emails..."
-                className="w-full rounded-full border border-white/10 bg-zinc-900 pl-10 pr-4 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-              />
+            <div className="flex flex-wrap items-center gap-2">
+              {USER_TYPE_FILTERS.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setUserTypeFilter(t.id)}
+                  className={`rounded-full border px-3 py-1 text-xs font-bold transition cursor-pointer ${
+                    userTypeFilter === t.id
+                      ? 'bg-amber-500 border-amber-500 text-zinc-950'
+                      : 'border-white/10 text-zinc-400 hover:text-zinc-200 hover:border-white/20'
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
             </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  placeholder="Search artistes, SACSU campuses, SCG zones, emails..."
+                  className="w-full rounded-full border border-white/10 bg-zinc-900 pl-10 pr-4 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                />
+              </div>
 
             <button
               onClick={() => {
@@ -1169,20 +1216,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            {adminProfiles
-              .filter((p) => {
-                const q = userSearch.trim().toLowerCase();
-                if (!q) return true;
-                return (
-                  (p.stage_name || '').toLowerCase().includes(q) ||
-                  (p.real_name || '').toLowerCase().includes(q) ||
-                  (p.email || '').toLowerCase().includes(q) ||
-                  (p.scg_zone || '').toLowerCase().includes(q) ||
-                  (p.scg_branch || '').toLowerCase().includes(q) ||
-                  (p.tertiary_institution || '').toLowerCase().includes(q)
-                );
-              })
-              .map((p) => {
+            {userRows.map((p) => {
                 const code = claimCodeMap.get(p.id);
                 return (
                   <div
@@ -1231,7 +1265,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         {p.real_name && <p className="text-xs text-zinc-300">{p.real_name}</p>}
                         {p.email && <p className="text-[11px] text-zinc-400 truncate">{p.email}</p>}
                         {p.is_precreated && !p.claimed_user_id && code && (
-                          <p className="text-[11px] font-mono font-bold text-amber-300 mt-0.5">
+                          <p
+                            className="text-[11px] font-mono font-bold text-amber-300 mt-0.5 truncate max-w-xs"
+                            title={`Claim Code: ${code}`}
+                          >
                             Claim Code: {code}
                           </p>
                         )}

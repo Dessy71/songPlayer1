@@ -304,6 +304,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   className="w-full rounded-xl border border-white/10 bg-zinc-950 pl-10 pr-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
                 />
               </div>
+
+              <div>
+                <label className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 hover:border-amber-400 cursor-pointer transition">
+                  <Camera className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                  <span className="truncate">
+                    {avatarFile ? `Photo: ${avatarFile.name}` : 'Add Profile Picture (Optional)'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
+                    className="hidden"
+                  />
+                </label>
+              </div>
             </div>
           )}
 
