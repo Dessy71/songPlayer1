@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
-import { X, HeartHandshake, Copy, Check, Wallet, AlertCircle, ShieldCheck } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {
+  X,
+  Copy,
+  Check,
+  Wallet,
+  AlertCircle,
+  ShieldCheck,
+  ExternalLink,
+  Loader2,
+  BadgeCheck,
+} from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { UserProfile, ApprovalStatus } from '../types/music';
+import { UserProfile, isProfileApproved } from '../types/music';
+import { SupportCheckout } from './SupportCheckout';
 
 interface SupportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  artiste: UserProfile; // Support Gyidi or specific Artiste
+  /** Target profile. Omit to configure platform-level "Support Gyidi Nwom". */
+  artiste?: UserProfile | null;
   isAdminViewer?: boolean;
-  onApproved?: (profile: UserProfile) => void; // Callback for approval after Paystack setup
+  /** Called after Paystack details are saved and/or the profile is approved. */
+  onApproved?: (profile: UserProfile) => void;
+  /** Called after any successful save (approval included). */
+  onSaved?: (profile: UserProfile | null) => void;
 }
+
+/** Platform-level target key used by support_checkout_config for "Support Gyidi Nwom". */
+const GYIDI_TARGET = 'gyidi';
+const SUBACCOUNT_PATTERN = /^ACCT_[A-Za-z0-9]+$/;
+const PAYSTACK_PAGE_PATTERN = /^https:\/\/([a-z0-9-]+\.)*paystack\.(com|shop)\//i;
 
 export const SupportModal: React.FC<SupportModalProps> = ({
   isOpen,
@@ -17,231 +37,339 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   artiste,
   isAdminViewer = false,
   onApproved,
+  onSaved,
 }) => {
-  const [formData, setFormData] = useState<Partial<UserProfile>>({ ...artiste });
+  const target = artiste?.id || GYIDI_TARGET;
+  const isGyidi = !artiste?.id;
+  const displayName = artiste?.display_name || artiste?.stage_name || 'Support Gyidi Nwom';
+
+  const [provider, setProvider] = useState('');
+  const [supportUrl, setSupportUrl] = useState('');
+  const [subaccountCode, setSubaccountCode] = useState('');
+  const [enabled, setEnabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showSupportBadge, setShowSupportBadge] = useState(!!artiste.support_number && !!artiste.support_account_name);
+  const [notice, setNotice] = useState<string | null>(null);
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const isApproved = isProfileApproved(artiste);
+  const hasDetails = Boolean(supportUrl && subaccountCode);
+  // Support Badge: shown once approved with Paystack details. Profile pictures only.
+  const hasSupportBadge = isApproved && hasDetails;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setError(null);
+    setNotice(null);
+    setCopied(false);
+    setProvider(artiste?.support_provider || 'Paystack Payment Page');
+    setSupportUrl(artiste?.support_number || '');
+    setSubaccountCode(artiste?.support_account_name || '');
+    setEnabled(true);
+  }, [isOpen, artiste?.id, artiste?.support_provider, artiste?.support_number, artiste?.support_account_name]);
+
+  const handleCopy = (text?: string | null) => {
+    if (!text) return;
+    void navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    window.setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmit = async (e: React.FormEvent, approve: boolean = false) => {
-    e.preventDefault();
-    setIsSaving(true);
+  const openPaymentPage = () => {
+    if (!supportUrl) return;
+    window.open(supportUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const saveDetails = async (approve: boolean) => {
+    if (!isAdminViewer) return;
     setError(null);
+    setNotice(null);
 
-    // Validation for Admin Approval: Must have Paystack URL and Subaccount Code
-    if (approve && isAdminViewer) {
-      if (!formData.support_number || !formData.support_account_name) {
-        setError('Admin must input Paystack Payment Page URL and Subaccount Code before approval.');
-        setIsSaving(false);
-        return;
-      }
+    const url = supportUrl.trim();
+    const sub = subaccountCode.trim();
+
+    if (approve && !isGyidi && (!url || !sub)) {
+      setError('Add the Paystack payment page URL and subaccount code before approving.');
+      return;
+    }
+    if (url && !PAYSTACK_PAGE_PATTERN.test(url)) {
+      setError('Enter the Paystack payment page URL, e.g. https://paystack.shop/pay/yourtag');
+      return;
+    }
+    if (sub && !SUBACCOUNT_PATTERN.test(sub)) {
+      setError('Enter the Paystack subaccount code exactly as issued (ACCT_...).');
+      return;
+    }
+    if (enabled && !isGyidi && !sub) {
+      setError('A Paystack subaccount code is required before listener support can be switched on.');
+      return;
     }
 
-    // Map Paystack fields to support_number and support_account_name
-    const updateData: Partial<UserProfile> = { ...formData };
-    if (approve) {
-      updateData.approval_status = 'approved';
-      // Optional: set approved_by/at if backend handles it, or just status here
-    }
-    
-    const { data, error } = await supabase
-      .from('profiles')
-      .update(updateData)
-      .eq('id', artiste.id)
-      .select('*')
-      .single();
+    setIsSaving(true);
+    try {
+      // support_checkout_config is service_role only, so this goes through a guarded RPC.
+      const { data, error: rpcError } = await supabase.rpc('admin_set_support_details', {
+        p_target: target,
+        p_provider: provider.trim() || 'Paystack Payment Page',
+        p_payment_page_url: url || null,
+        p_subaccount_code: sub || null,
+        p_approve: approve,
+        p_enabled: enabled,
+      });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      const savedProfile = data as UserProfile;
-      if (approve && onApproved) {
-        onApproved(savedProfile);
-      }
-      onClose();
+      if (rpcError) throw rpcError;
+
+      const savedProfile = (data as { profile?: UserProfile | null } | null)?.profile ?? null;
+      setNotice(
+        approve
+          ? 'Support page approved and Paystack details saved.'
+          : 'Paystack details saved.'
+      );
+      if (savedProfile) onSaved?.(savedProfile);
+      else onSaved?.(null);
+      if (approve && savedProfile) onApproved?.(savedProfile);
+      if (approve) window.setTimeout(onClose, 900);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Could not save the support details.';
+      setError(
+        /\bnot (?:found|exist)\b|does not exist|schema cache/i.test(message)
+          ? `${message} Apply the latest Supabase migration, then try again.`
+          : message
+      );
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   };
 
   if (!isOpen) return null;
 
-  // Determine provider display
-  const isPaystack = formData.support_provider?.toLowerCase().includes('paystack') || false;
-  const displayUrl = isPaystack ? formData.support_number : formData.support_number || 'N/A';
-  const displaySubaccount = isPaystack ? formData.support_account_name : '';
-
-  // Support Badge Logic: Only profile pictures (avatar_url) shown if approved and details exist
-  const hasSupportBadge = formData.approval_status === 'approved' && showSupportBadge;
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[80vh] overflow-y-auto">
+      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
         <button
           onClick={onClose}
+          aria-label="Close support details"
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2 mb-4">
+        {/* Header: badge shows profile picture only, never a name */}
+        <div className="flex items-center gap-2.5 pr-8">
           {hasSupportBadge && (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400">
-              <Wallet className="w-4 h-4" />
-            </div>
+            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-emerald-500/40 bg-emerald-500/15 text-emerald-400">
+              {artiste?.avatar_url ? (
+                <img src={artiste.avatar_url} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <BadgeCheck className="w-4 h-4" />
+              )}
+            </span>
           )}
-          <h3 className="text-lg font-bold text-white">Support Details: {artiste.display_name || artiste.email}</h3>
-          {hasSupportBadge && <ShieldCheck className="w-4 h-4 text-emerald-400 ml-2" title="Approved Support Badge" />}
+          <div className="min-w-0">
+            <h3 className="truncate text-lg font-bold text-white">Support {displayName}</h3>
+            <p className="text-[11px] text-zinc-400">
+              {isAdminViewer
+                ? 'Admin Paystack configuration and approval'
+                : hasSupportBadge
+                  ? 'Approved support page'
+                  : 'Support details'}
+            </p>
+          </div>
         </div>
 
-        {/* ADMIN-ONLY PAYSTACK FIELDS & APPROVAL */}
+        {/* ADMIN: Paystack configuration + approval */}
         {isAdminViewer && (
-          <div className="space-y-4 p-4 bg-amber-400/5 border border-amber-400/20 rounded-xl mb-4">
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase mb-2">
-              <AlertCircle className="w-3 h-3" />
-              Admin Paystack Configuration & Approval (Support Gyidi / Artiste)
+          <form
+            className="mt-4 space-y-4 rounded-xl border border-amber-400/20 bg-amber-400/5 p-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void saveDetails(false);
+            }}
+          >
+            <div className="flex items-center gap-2 text-xs font-bold uppercase text-amber-400">
+              <AlertCircle className="w-3.5 h-3.5" />
+              Paystack subaccount &amp; payment page
             </div>
-            <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
+
+            <div className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
-                  Paystack Payment Page URL <span className="text-[10px] text-amber-400">(Mapped to support_number)</span>
+                <label className="mb-1 block text-xs font-bold uppercase text-zinc-400">
+                  Paystack Payment Page URL
                 </label>
                 <div className="relative">
                   <input
-                    type="text"
-                    value={formData.support_number || ''}
-                    onChange={(e) => setFormData({ ...formData, support_number: e.target.value })}
-                    className="w-full bg-zinc-800/50 border border-amber-400/20 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-400 pr-10"
-                    placeholder="https://paystack.com/pay/..."
+                    type="url"
+                    inputMode="url"
+                    value={supportUrl}
+                    onChange={(e) => setSupportUrl(e.target.value)}
+                    className="w-full rounded-lg border border-amber-400/20 bg-zinc-800/50 px-3 py-2 pr-10 text-sm text-zinc-200 focus:border-amber-400 focus:outline-none"
+                    placeholder="https://paystack.shop/pay/..."
                   />
                   <button
                     type="button"
-                    onClick={() => formData.support_number && handleCopy(formData.support_number)}
-                    disabled={!formData.support_number}
-                    className="absolute right-2 top-2 p-1 text-zinc-400 hover:text-amber-400 disabled:opacity-30 transition-colors"
+                    onClick={() => handleCopy(supportUrl)}
+                    disabled={!supportUrl}
+                    aria-label="Copy payment page URL"
+                    className="absolute right-2 top-2 p-1 text-zinc-400 transition-colors hover:text-amber-400 disabled:opacity-30"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
-                    Subaccount Code <span className="text-[10px] text-amber-400">(Mapped to support_account_name)</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={formData.support_account_name || ''}
-                      onChange={(e) => setFormData({ ...formData, support_account_name: e.target.value })}
-                      className="w-full bg-zinc-800/50 border border-amber-400/20 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-400 pr-10"
-                      placeholder="SUB-xxxxxxxxxxxx"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => formData.support_account_name && handleCopy(formData.support_account_name)}
-                      disabled={!formData.support_account_name}
-                      className="absolute right-2 top-2 p-1 text-zinc-400 hover:text-amber-400 disabled:opacity-30 transition-colors"
-                    >
-                      {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-400 uppercase mb-1">
-                    Support Provider <span className="text-[10px] text-amber-400">(e.g., Paystack Payment Page, MTN Mobile Money)</span>
-                  </label>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-bold uppercase text-zinc-400">
+                  Subaccount Code
+                </label>
+                <div className="relative">
                   <input
                     type="text"
-                    value={formData.support_provider || 'Paystack Payment Page'}
-                    onChange={(e) => setFormData({ ...formData, support_provider: e.target.value })}
-                    className="w-full bg-zinc-800/50 border border-amber-400/20 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-400"
+                    value={subaccountCode}
+                    onChange={(e) => setSubaccountCode(e.target.value)}
+                    className="w-full rounded-lg border border-amber-400/20 bg-zinc-800/50 px-3 py-2 pr-10 font-mono text-sm text-zinc-200 focus:border-amber-400 focus:outline-none"
+                    placeholder="ACCT_xxxxxxxxxxxx"
+                    spellCheck={false}
                   />
-                </div>
-
-                <div className="flex justify-end gap-3 pt-2 border-t border-white/10">
                   <button
                     type="button"
-                    onClick={onClose}
-                    className="px-4 py-2 bg-zinc-800 border border-white/10 rounded-lg text-sm font-bold text-zinc-200 hover:bg-zinc-700 transition-colors"
+                    onClick={() => handleCopy(subaccountCode)}
+                    disabled={!subaccountCode}
+                    aria-label="Copy subaccount code"
+                    className="absolute right-2 top-2 p-1 text-zinc-400 transition-colors hover:text-amber-400 disabled:opacity-30"
                   >
-                    Cancel
+                    {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
-                  <button
-                    type="submit"
-                    disabled={isSaving}
-                    className="px-4 py-2 bg-amber-400 text-zinc-950 rounded-lg text-sm font-bold hover:bg-amber-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSaving ? 'Saving...' : 'Save Changes'}
-                  </button>
-                  {artiste.approval_status !== 'approved' && (
-                    <button
-                      type="button"
-                      onClick={(e) => handleSubmit(e, true)}
-                      disabled={isSaving}
-                      className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-bold hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isSaving ? 'Approving...' : 'Approve & Activate Support'}
-                    </button>
-                  )}
                 </div>
-              </form>
-            </div>
-          )}
+              </div>
 
-          {/* STANDARD VIEW (Non-Admin) */}
-          {!isAdminViewer && (
-            <div className="space-y-3 mt-4">
-              {hasSupportBadge ? (
-                <>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 overflow-hidden">
-                      {artiste.avatar_url ? (
-                        <img src={artiste.avatar_url} alt="Artiste" className="h-full w-full object-cover" />
-                      ) : (
-                        <Wallet className="w-5 h-5" />
-                      )}
-                    </div>
-                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                      Support {artiste.display_name || 'Artiste'}
-                    </span>
-                  </div>
-                  
-                  <div className="relative group cursor-pointer" onClick={() => window.open(displayUrl, '_blank')}>
-                    <div className="bg-zinc-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 pr-10 flex items-center justify-between">
-                      <span>{isPaystack ? 'Paystack Payment Page' : formData.support_provider}</span>
-                      <span className="text-emerald-400 font-bold">{displayUrl ? 'Click to Support' : 'N/A'}</span>
-                    </div>
-                    {displayUrl && (
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); handleCopy(displayUrl); }}
-                        className="absolute right-2 top-2 p-1 text-zinc-400 hover:text-emerald-400 transition-colors"
-                      >
-                        {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                  </div>
-                  {isPaystack && displaySubaccount && (
-                    <div className="mt-1 text-[10px] text-zinc-400 font-mono">
-                      Subaccount: {displaySubaccount}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="text-xs text-zinc-400 italic">
-                  {artiste.approval_status === 'pending' 
-                    ? 'Profile pending admin approval and Paystack setup.' 
-                    : 'Support details not configured.'}
-                </div>
+              <div>
+                <label className="mb-1 block text-xs font-bold uppercase text-zinc-400">
+                  Support Provider
+                </label>
+                <input
+                  type="text"
+                  value={provider}
+                  onChange={(e) => setProvider(e.target.value)}
+                  className="w-full rounded-lg border border-white/10 bg-zinc-800/50 px-3 py-2 text-sm text-zinc-200 focus:border-amber-400 focus:outline-none"
+                  placeholder="Paystack Payment Page"
+                />
+              </div>
+
+              <label className="flex items-start gap-2 rounded-lg border border-white/10 bg-zinc-950/40 p-2.5 text-[11px] text-zinc-300">
+                <input
+                  type="checkbox"
+                  checked={enabled}
+                  onChange={(e) => setEnabled(e.target.checked)}
+                  className="mt-0.5 accent-emerald-400"
+                />
+                <span>
+                  Enable listener checkout for this {isGyidi ? 'platform' : 'artiste'} once the
+                  subaccount is verified by Paystack.
+                </span>
+              </label>
+            </div>
+
+            {error && (
+              <p role="alert" className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-2.5 text-xs text-rose-300">
+                {error}
+              </p>
+            )}
+            {notice && (
+              <p role="status" className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-xs text-emerald-300">
+                {notice}
+              </p>
+            )}
+
+            <div className="flex flex-wrap justify-end gap-2 border-t border-white/10 pt-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg border border-white/10 bg-zinc-800 px-4 py-2 text-sm font-bold text-zinc-200 transition-colors hover:bg-zinc-700"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSaving}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400 px-4 py-2 text-sm font-bold text-zinc-950 transition-colors hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+              {!isGyidi && !isApproved && (
+                <button
+                  type="button"
+                  onClick={() => void saveDetails(true)}
+                  disabled={isSaving}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  {isSaving ? 'Approving...' : 'Approve & Activate Support'}
+                </button>
               )}
             </div>
-          )}
-        </form>
+          </form>
+        )}
+
+        {/* LISTENER / ARTISTE VIEW */}
+        {!isAdminViewer && isGyidi && (
+          <div className="mt-4">
+            {/* Platform-level support uses the verified server checkout, never a raw number. */}
+            <SupportCheckout target="gyidi" name="Gyidi Nwom" />
+          </div>
+        )}
+
+        {!isAdminViewer && !isGyidi && (
+          <div className="mt-4 space-y-3">
+            {hasSupportBadge ? (
+              <>
+                <p className="text-xs text-zinc-300">
+                  Support {displayName} directly — you authorize every payment on Paystack, and
+                  payout details stay private.
+                </p>
+                <button
+                  type="button"
+                  onClick={openPaymentPage}
+                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-3 text-left transition-colors hover:bg-emerald-500/20"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <Wallet className="w-5 h-5 flex-shrink-0 text-emerald-400" />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-bold text-emerald-300">
+                        Support {displayName}
+                      </span>
+                      <span className="block truncate text-[11px] text-zinc-400">
+                        {provider || 'Paystack Payment Page'}
+                      </span>
+                    </span>
+                  </span>
+                  <ExternalLink className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                </button>
+                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-zinc-800/60 px-3 py-2">
+                  <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-zinc-400">
+                    {supportUrl}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(supportUrl)}
+                    aria-label="Copy payment page URL"
+                    className="flex-shrink-0 p-1 text-zinc-400 transition-colors hover:text-emerald-400"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="rounded-xl border border-white/10 bg-zinc-950/60 p-3.5 text-xs italic text-zinc-400">
+                {artiste?.approval_status === 'pending'
+                  ? 'This profile is pending admin approval. Support opens once the admin adds the Paystack page and approves it.'
+                  : artiste?.approval_status === 'rejected'
+                    ? 'Support is not available for this profile.'
+                    : 'Support details have not been configured yet.'}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

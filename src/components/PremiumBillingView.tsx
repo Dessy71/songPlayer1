@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Crown,
   CheckCircle2,
@@ -17,7 +17,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { openPaystackCheckout } from '../lib/paystack';
+import { initializePremiumPayment, recoverPremiumAccount, pendingPayment, rememberPayment, verifyPremiumPayment, PremiumPlan } from '../lib/premiumPayment';
 import {
   PlatformSettings,
   PremiumSubscription,
@@ -37,6 +37,12 @@ interface PremiumBillingViewProps {
 }
 
 export const PREMIUM_BENEFITS = [
+  {
+    icon: Sparkles,
+    title: 'Song Lyrics & Sharing',
+    description: 'Read song lyrics and share songs or branded WhatsApp Status cards with your community.',
+    accent: 'text-sky-400 bg-sky-500/15 border-sky-400/30',
+  },
   {
     icon: CloudDownload,
     title: 'In-App Offline Profile Vault',
@@ -91,6 +97,23 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
   onSubscriptionActivated,
   onOpenAdminPremiumSettings,
 }) => {
+  const autoVerifiedAccount = useRef<string | null>(null);
+  const verificationInFlight = useRef(false);
+  const [celebrating, setCelebrating] = useState(false);
+  const [recoveryReference, setRecoveryReference] = useState('');
+  const [recoveryPlan, setRecoveryPlan] = useState<PremiumPlan>('monthly');
+  const [verifying, setVerifying] = useState(false);
+  useEffect(() => {
+    const pending = userId ? pendingPayment(userId) : null;
+    setRecoveryReference(pending?.reference || '');
+    setRecoveryPlan(pending?.plan || 'monthly');
+  }, [userId]);
+  useEffect(() => {
+    if (!celebrating) return;
+    const timeout = window.setTimeout(() => window.location.reload(), 3500);
+    return () => window.clearTimeout(timeout);
+  }, [celebrating]);
+
   const [subscriptions, setSubscriptions] = useState<PremiumSubscription[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [payingPlan, setPayingPlan] = useState<'monthly' | 'yearly' | null>(null);
@@ -102,12 +125,6 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
   const monthlyPrice = Number(platformSettings?.premium_monthly_price_ghs ?? 5);
   const yearlyPrice = Number(platformSettings?.premium_yearly_price_ghs ?? 50);
   const currency = platformSettings?.premium_currency || 'GHS';
-  const paystackPublicKey = (
-    platformSettings?.paystack_public_key ||
-    import.meta.env.VITE_PAYSTACK_PUBLIC_KEY ||
-    ''
-  ).trim();
-
   const isPremium = isUserPremiumActive(profile, platformSettings);
   const isAdmin = profile?.role === 'admin';
 
@@ -136,6 +153,66 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
     loadSubscriptions();
   }, [userId]);
 
+  const activatePayment = async (reference: string, plan: PremiumPlan) => {
+    if (!userId) {
+      onOpenAuth('Sign in to the account used for this payment.');
+      return;
+    }
+    if (verificationInFlight.current) return;
+    verificationInFlight.current = true;
+    setVerifying(true);
+    setStatusMessage(null);
+    setRecoveryReference(reference);
+    setRecoveryPlan(plan);
+    rememberPayment(userId, { reference, plan });
+    try {
+      const updatedProfile = await verifyPremiumPayment({ reference, plan });
+      onSubscriptionActivated(updatedProfile);
+      rememberPayment(userId, null);
+      setStatusMessage({ type: 'ok', text: `Premium activated! Payment reference: ${reference}` });
+      setCelebrating(true);
+    } catch (error) {
+      setStatusMessage({ type: 'err', text: `${error instanceof Error ? error.message : 'Unable to verify payment.'} Reference: ${reference}. Do not pay again; use Verify existing payment below.` });
+    } finally {
+      verificationInFlight.current = false;
+      setVerifying(false);
+      setPayingPlan(null);
+    }
+  };
+
+  const recoverAccount = async () => {
+    if (!userId) { onOpenAuth('Sign in to the same account used for payment.'); return; }
+    if (verificationInFlight.current) return;
+    verificationInFlight.current = true;
+    setVerifying(true);
+    setStatusMessage(null);
+    try {
+      const { profile: recovered, pending } = await recoverPremiumAccount();
+      onSubscriptionActivated(recovered);
+      if (isUserPremiumActive(recovered, platformSettings)) {
+        setStatusMessage({ type: 'ok', text: 'Your active subscription has been restored from your account.' });
+        if (new URLSearchParams(window.location.search).has('payment_return')) {
+          window.history.replaceState(null, '', window.location.pathname);
+          setCelebrating(true);
+        }
+      } else {
+        setStatusMessage({ type: 'err', text: pending ? 'Your payment has not been confirmed yet. If you were debited, do not pay again; check your payment again shortly.' : 'No active paid subscription was found for this account. Sign in to the account used at checkout.' });
+      }
+    } catch (error) {
+      setStatusMessage({ type: 'err', text: error instanceof Error ? error.message : 'Unable to recover membership. Please retry.' });
+    } finally { verificationInFlight.current = false; setVerifying(false); }
+  };
+
+  useEffect(() => {
+    if (!userId) { autoVerifiedAccount.current = null; return; }
+    if (autoVerifiedAccount.current === userId) return;
+    autoVerifiedAccount.current = userId;
+    // Legacy local references remain a fallback for older Inline checkouts.
+    const pending = pendingPayment(userId);
+    if (pending) void activatePayment(pending.reference, pending.plan);
+    else void recoverAccount();
+  }, [userId]);
+
   const handleSubscribe = async (plan: 'monthly' | 'yearly') => {
     setStatusMessage(null);
 
@@ -144,59 +221,12 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
       return;
     }
 
-    if (!paystackPublicKey) {
-      setStatusMessage({
-        type: 'err',
-        text: isAdmin
-          ? 'Paystack Public Key (pk_live_... or pk_test_...) has not been added yet. Click "Admin: Configure Prices & Paystack" above to paste your Paystack Public Key.'
-          : 'Paystack checkout is being finalized by the platform administrator. Please check back shortly.',
-      });
-      return;
-    }
-
-    const amountGhs = plan === 'yearly' ? yearlyPrice : monthlyPrice;
     setPayingPlan(plan);
-
     try {
-      await openPaystackCheckout({
-        publicKey: paystackPublicKey,
-        email: userEmail,
-        amountGhs,
-        currency,
-        planInterval: plan,
-        userId,
-        onSuccess: async (reference) => {
-          try {
-            const { data, error } = await supabase.functions.invoke('verify-premium-payment', {
-              body: { plan, reference },
-            });
-            if (error) throw error;
-            if (data) {
-              onSubscriptionActivated(data as UserProfile);
-            }
-            await loadSubscriptions();
-            setStatusMessage({
-              type: 'ok',
-              text: `Medaase! Your Gyidi Nwom Premium (${
-                plan === 'yearly' ? 'Yearly' : 'Monthly'
-              }) membership is now active! Ref: ${reference}`,
-            });
-          } catch (err) {
-            setStatusMessage({
-              type: 'err',
-              text:
-                err instanceof Error
-                  ? err.message
-                  : 'Payment completed, please refresh to sync your Premium status.',
-            });
-          } finally {
-            setPayingPlan(null);
-          }
-        },
-        onClose: () => {
-          setPayingPlan(null);
-        },
-      });
+      const checkout = await initializePremiumPayment(plan);
+      // Convenience only: account recovery and webhook delivery do not need this.
+      rememberPayment(userId, { reference: checkout.reference, plan });
+      window.location.assign(checkout.authorization_url);
     } catch (err) {
       setPayingPlan(null);
       setStatusMessage({
@@ -208,6 +238,22 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
 
   return (
     <div className="max-w-[1250px] mx-auto space-y-6 pb-8">
+      {celebrating && (
+        <div className="safe-overlay fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-5" role="dialog" aria-modal="true" aria-labelledby="premium-success-title">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+            {Array.from({ length: 65 }, (_, i) => (
+              <span key={i} className="premium-confetti" style={{ left: `${(i * 37) % 100}%`, backgroundColor: ['#fbbf24', '#f472b6', '#34d399', '#60a5fa'][i % 4], animationDelay: `${(i % 13) * 0.07}s`, transform: `rotate(${i * 29}deg)` }} />
+            ))}
+          </div>
+          <div className="relative max-w-md rounded-3xl border border-amber-400/50 bg-zinc-900 p-8 text-center shadow-2xl" role="status">
+            <Crown className="mx-auto mb-4 h-14 w-14 text-amber-400" />
+            <h2 id="premium-success-title" className="text-2xl font-extrabold text-white">Welcome to Premium!</h2>
+            <p className="mt-3 text-zinc-300">Medaase! Your payment is verified and your Premium membership is active.</p>
+            <p className="mt-3 text-sm text-amber-200">Refreshing to unlock your Premium experience…</p>
+            <button onClick={() => window.location.reload()} className="mt-5 rounded-full bg-amber-400 px-5 py-2 font-bold text-zinc-950">Continue now</button>
+          </div>
+        </div>
+      )}
       {/* Contextual Gated Feature Banner */}
       {promptReason && !isPremium && (
         <div className="rounded-2xl border border-amber-400/45 bg-gradient-to-r from-amber-500/20 via-pink-500/15 to-zinc-900 px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
@@ -222,6 +268,24 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
           </span>
         </div>
       )}
+
+      <section className="rounded-2xl border border-white/15 bg-zinc-900 p-5 space-y-3">
+        <h3 className="font-bold text-white">Already paid? Check my payment</h3>
+        <button type="button" disabled={verifying || payingPlan !== null || celebrating}
+          onClick={() => void recoverAccount()}
+          className="rounded-xl bg-emerald-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
+          {verifying ? 'Checking your account…' : 'Restore my subscription — no reference needed'}
+        </button>
+        <p className="text-sm text-zinc-300">Sign in to the same account on any device. Payments are saved securely to your account, even if browser data was cleared or the app was reinstalled.</p>
+        <p className="text-sm text-zinc-300">Older payment not found? The reference form below is an optional support fallback for payments made before account-linked checkout. Recovery and verification never charge you.</p>
+        <form className="flex flex-wrap gap-3" onSubmit={(event) => { event.preventDefault(); void activatePayment(recoveryReference.trim(), recoveryPlan); }}>
+          <input required aria-label="Paystack payment reference" placeholder="Paystack payment reference" value={recoveryReference} onChange={(event) => setRecoveryReference(event.target.value)} className="min-w-0 flex-1 rounded-xl border border-white/20 bg-zinc-950 p-3 text-white" />
+          <select aria-label="Paid plan" value={recoveryPlan} onChange={(event) => setRecoveryPlan(event.target.value as PremiumPlan)} className="rounded-xl border border-white/20 bg-zinc-950 p-3 text-white">
+            <option value="monthly">Monthly</option><option value="yearly">Yearly</option>
+          </select>
+          <button disabled={verifying || payingPlan !== null || celebrating} className="rounded-xl bg-amber-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">{verifying ? 'Verifying…' : 'Verify existing payment'}</button>
+        </form>
+      </section>
 
       {/* Hero Header */}
       <section className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/20 via-pink-600/15 to-zinc-950 p-5 sm:p-8">
@@ -351,7 +415,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
 
           <button
             type="button"
-            disabled={payingPlan !== null}
+            disabled={payingPlan !== null || verifying || celebrating}
             onClick={() => handleSubscribe('monthly')}
             className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-amber-100 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
           >
@@ -421,7 +485,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
 
           <button
             type="button"
-            disabled={payingPlan !== null}
+            disabled={payingPlan !== null || verifying || celebrating}
             onClick={() => handleSubscribe('yearly')}
             className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-pink-500 hover:opacity-95 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
           >

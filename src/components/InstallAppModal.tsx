@@ -46,7 +46,7 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-md rounded-3xl border border-amber-400/30 bg-zinc-950 p-6 shadow-2xl space-y-5">
         <button
           onClick={onClose}

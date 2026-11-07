@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Camera,
@@ -9,6 +9,7 @@ import {
   Wallet,
   Mail,
   CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { UserProfile } from '../types/music';
@@ -18,7 +19,7 @@ interface EditArtisteModalProps {
   onClose: () => void;
   artiste: UserProfile | null; // null = create new pre-created Artiste / SACSU profile (Admin)
   isAdminViewer: boolean;
-  onSaved: (saved: UserProfile) => void;
+  onSaved?: (saved: UserProfile) => void;
 }
 
 export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
@@ -39,13 +40,16 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
     artiste?.tertiary_institution || ''
   );
   const [bio, setBio] = useState(artiste?.bio || '');
+
+  // NEW: Admin-only Paystack fields mapped to support_number and support_account_name
   const [supportProvider, setSupportProvider] = useState(
-    artiste?.support_provider || 'MTN Mobile Money (MoMo)'
+    artiste?.support_provider || (isAdminViewer ? 'Paystack Payment Page' : 'MTN Mobile Money (MoMo)')
   );
   const [supportNumber, setSupportNumber] = useState(artiste?.support_number || '');
   const [supportAccountName, setSupportAccountName] = useState(
     artiste?.support_account_name || ''
   );
+
   const [avatarUrl, setAvatarUrl] = useState(artiste?.avatar_url || '');
   const [assignEmail, setAssignEmail] = useState(artiste?.email || '');
 
@@ -53,7 +57,22 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen && artiste) {
+      setRealName(artiste.real_name || '');
+      setStageName(artiste.stage_name || artiste.display_name || '');
+      setScgZone(artiste.scg_zone || '');
+      setScgBranch(artiste.scg_branch || '');
+      setIsSacsu(Boolean(artiste.is_sacsu));
+      setTertiaryInstitution(artiste.tertiary_institution || '');
+      setBio(artiste.bio || '');
+      setSupportProvider(artiste.support_provider || (isAdminViewer ? 'Paystack Payment Page' : 'MTN Mobile Money (MoMo)'));
+      setSupportNumber(artiste.support_number || '');
+      setSupportAccountName(artiste.support_account_name || '');
+      setAvatarUrl(artiste.avatar_url || '');
+      setAssignEmail(artiste.email || '');
+    }
+  }, [isOpen, artiste, isAdminViewer]);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,6 +93,16 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
       setSaving(false);
     }
   };
+
+  // Paystack payout fields are admin-only: never send them from a non-admin save,
+  // and never overwrite stored details with blanks from an admin edit.
+  const adminSupportFields = isAdminViewer
+    ? {
+        support_provider: supportProvider.trim() || null,
+        support_number: supportNumber.trim() || null,
+        support_account_name: supportAccountName.trim() || null,
+      }
+    : {};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,11 +140,9 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             scg_zone: scgZone.trim() || null,
             scg_branch: scgBranch.trim() || null,
             is_sacsu: isSacsu,
-            tertiary_institution: isSacsu ? tertiaryInstitution.trim() : tertiaryInstitution.trim() || null,
+            tertiary_institution: tertiaryInstitution.trim() || null,
             bio: bio.trim() || null,
-            support_provider: supportNumber.trim() ? supportProvider : null,
-            support_number: supportNumber.trim() || null,
-            support_account_name: supportAccountName.trim() || null,
+            ...adminSupportFields,
             avatar_url: avatarUrl || null,
             is_precreated: true,
             is_verified_artiste: true,
@@ -137,9 +164,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             is_sacsu: isSacsu,
             tertiary_institution: tertiaryInstitution.trim() || null,
             bio: bio.trim() || null,
-            support_provider: supportNumber.trim() ? supportProvider : null,
-            support_number: supportNumber.trim() || null,
-            support_account_name: supportAccountName.trim() || null,
+            ...adminSupportFields,
             avatar_url: avatarUrl || null,
           })
           .eq('id', artiste.id)
@@ -160,7 +185,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
         if (linkedData) savedProfile = linkedData as UserProfile;
       }
 
-      onSaved(savedProfile);
+      onSaved?.(savedProfile);
       setOkMsg('Artiste profile saved!');
       setTimeout(() => {
         setOkMsg(null);
@@ -173,12 +198,14 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white cursor-pointer"
+          className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -293,7 +320,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                 value={tertiaryInstitution}
                 onChange={(e) => setTertiaryInstitution(e.target.value)}
                 placeholder="e.g. KNUST, University of Ghana (Legon), UCC, UEW, UENR..."
-                className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
               />
             </div>
           </div>
@@ -309,41 +336,43 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             />
           </div>
 
-          {/* Fan Support Account Details */}
-          <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-3 space-y-2.5">
-            <p className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-              <Wallet className="w-4 h-4" />
-              Fan Financial Support Account Details
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <select
-                value={supportProvider}
-                onChange={(e) => setSupportProvider(e.target.value)}
-                className="rounded-xl border border-white/10 bg-zinc-950 px-2.5 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-              >
-                <option value="MTN Mobile Money (MoMo)">MTN MoMo</option>
-                <option value="Telecel Cash">Telecel Cash</option>
-                <option value="AT Money">AT Money</option>
-                <option value="Bank Account">Bank Account</option>
-              </select>
-              <input
-                type="text"
-                value={supportNumber}
-                onChange={(e) => setSupportNumber(e.target.value)}
-                placeholder="MoMo / Account No."
-                className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-              />
-              <input
-                type="text"
-                value={supportAccountName}
-                onChange={(e) => setSupportAccountName(e.target.value)}
-                placeholder="Account Holder Name"
-                className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-              />
+          {/* FAN SUPPORT ACCOUNT DETAILS (ADMIN-ONLY PAYSTACK FIELDS) */}
+          {isAdminViewer && (
+            <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 space-y-2.5">
+              <p className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                <Wallet className="w-4 h-4" />
+                Admin Paystack Configuration (Payment Page URL & Subaccount)
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <select
+                  value={supportProvider}
+                  onChange={(e) => setSupportProvider(e.target.value)}
+                  className="rounded-xl border border-white/10 bg-zinc-950 px-2.5 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                >
+                  <option value="Paystack Payment Page">Paystack Payment Page</option>
+                  <option value="MTN Mobile Money (MoMo)">MTN MoMo</option>
+                  <option value="Telecel Cash">Telecel Cash</option>
+                  <option value="Bank Account">Bank Account</option>
+                </select>
+                <input
+                  type="text"
+                  value={supportNumber}
+                  onChange={(e) => setSupportNumber(e.target.value)}
+                  placeholder="https://paystack.shop/pay/..."
+                  className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                />
+                <input
+                  type="text"
+                  value={supportAccountName}
+                  onChange={(e) => setSupportAccountName(e.target.value)}
+                  placeholder="ACCT_xxxxxxxxxxxx"
+                  className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Admin: Link / Assign Profile to Artiste's Login Email */}
+          {/* Admin: Link / Assign Profile to Artiste&apos;s Login Email */}
           {isAdminViewer && (
             <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 space-y-1.5">
               <label className="block text-xs font-bold text-amber-300">

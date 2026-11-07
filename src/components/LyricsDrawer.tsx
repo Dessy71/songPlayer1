@@ -84,7 +84,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm">
+    <div className="safe-overlay fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm">
       <div className="w-full max-w-xl bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-l border-white/10 h-full flex flex-col pb-24 shadow-2xl">
         {/* Go Back & Close Bar */}
         <div className="flex items-center justify-between gap-2 px-5 py-2.5 border-b border-white/10 bg-zinc-950/90">

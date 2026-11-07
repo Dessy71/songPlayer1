@@ -85,6 +85,8 @@ export interface UserProfile {
   is_sacsu?: boolean;
   tertiary_institution?: string | null;
   is_precreated?: boolean;
+  /** Admin-controlled: a support page only goes live once approved with Paystack details. */
+  approval_status?: ApprovalStatus;
   support_provider?: string | null;
   support_number?: string | null;
   support_account_name?: string | null;
@@ -229,6 +231,16 @@ export type NavTab =
   | 'artiste-studio'
   | 'admin';
 
+/**
+ * A profile is publishable once an admin approved it. Rows created before the
+ * approval column existed have no status and stay visible (grandfathered), so the
+ * existing catalogue never disappears before the migration backfills them.
+ */
+export function isProfileApproved(profile: Pick<UserProfile, 'approval_status'> | null | undefined): boolean {
+  if (!profile) return false;
+  return profile.approval_status !== 'pending' && profile.approval_status !== 'rejected';
+}
+
 export function isUserPremiumActive(
   profile: UserProfile | null,
   settings?: PlatformSettings | null,
@@ -236,9 +248,9 @@ export function isUserPremiumActive(
 ): boolean {
   if (!profile) return false;
   if (profile.role === 'admin') return true;
-  if (settings && settings.premium_enabled === false) return true;
   if (!profile.is_premium) return false;
-  if (profile.premium_plan === 'lifetime' || !profile.premium_until) return true;
+  if (profile.premium_plan === 'lifetime') return true;
+  if (!profile.premium_until) return false;
   return new Date(profile.premium_until).getTime() > nowMs;
 }
 
