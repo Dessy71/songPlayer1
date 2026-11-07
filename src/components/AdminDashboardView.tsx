@@ -1262,27 +1262,37 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             </span>
                           )}
                         </div>
-                        {p.real_name && <p className="text-xs text-zinc-300 truncate max-w-xs">{p.real_name}</p>}
-                        {p.email && <p className="text-[11px] text-zinc-400 truncate max-w-xs">{p.email}</p>}
-                        {p.is_precreated && !p.claimed_user_id && code && (
-                          <p
-                            className="text-[11px] font-mono font-bold text-amber-300 mt-0.5 truncate max-w-xs"
-                            title={`Claim Code: ${code}`}
-                          >
-                            Claim Code: {code}
-                          </p>
-                        )}
-                        {p.tertiary_institution && (
-                          <p className="text-[11px] text-cyan-300 mt-0.5">
-                            <GraduationCap className="w-3 h-3 inline mr-1" />
-                            {p.tertiary_institution}
-                          </p>
-                        )}
-                        {(p.scg_zone || p.scg_branch) && (
-                          <p className="text-[11px] text-amber-300 mt-0.5">
-                            {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}
-                          </p>
-                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mt-1.5">
+                          {p.real_name && (
+                            <span className="text-xs text-zinc-300 truncate block">
+                              {p.real_name}
+                            </span>
+                          )}
+                          {p.email && (
+                            <span className="text-[11px] text-zinc-400 truncate block">
+                              {p.email}
+                            </span>
+                          )}
+                          {p.is_precreated && !p.claimed_user_id && code && (
+                            <span
+                              className="text-[11px] font-mono font-bold text-amber-300 truncate block"
+                              title={`Claim Code: ${code}`}
+                            >
+                              Claim Code: {code}
+                            </span>
+                          )}
+                          {p.tertiary_institution && (
+                            <span className="text-[11px] text-cyan-300 flex items-center gap-1 block">
+                              <GraduationCap className="w-3 h-3 shrink-0" />
+                              {p.tertiary_institution}
+                            </span>
+                          )}
+                          {(p.scg_zone || p.scg_branch) && (
+                            <span className="text-[11px] text-amber-300 flex items-center gap-1 block">
+                              {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}
+                            </span>
+                          )}
+                        </div>
                         {/* Admin-only approval state + Paystack payout configuration */}
                         {(p.role === 'artiste' || p.role === 'admin') && (
                           <div className="mt-1 flex flex-wrap items-center gap-1.5 min-w-0">
