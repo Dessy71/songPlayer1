@@ -5,6 +5,7 @@ export interface PaystackCheckoutOptions {
   currency?: string;
   planInterval: 'monthly' | 'yearly';
   userId: string;
+  onReferenceCreated: (reference: string) => void;
   onSuccess: (reference: string) => void;
   onClose: () => void;
 }
@@ -63,6 +64,9 @@ export async function openPaystackCheckout(opts: PaystackCheckoutOptions): Promi
     .toUpperCase()}`;
 
   const amountInSubunits = Math.max(100, Math.round(Number(opts.amountGhs) * 100));
+
+  // Persist the reference before Paystack can collect any money.
+  opts.onReferenceCreated(ref);
 
   const handler = window.PaystackPop.setup({
     key: opts.publicKey.trim(),

@@ -1121,7 +1121,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           </p>
                         )}
                         {/* NEW: Admin-only Paystack URL & Subaccount Display in List */}
-                        {p.role === 'artiste' || p.id === 'support-gyidi' && (
+                        {(p.role === 'artiste' || p.id === 'support-gyidi') && (
                           <p className="text-[11px] text-amber-400 mt-0.5 font-mono">
                             {p.support_provider || 'Paystack Payment Page'}: {p.support_number || 'N/A'}
                             {p.support_account_name && ` (Sub: ${p.support_account_name})`}
@@ -1166,7 +1166,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         </button>
 
                         {/* NEW: Support Details Button for Admin */}
-                        {p.role === 'artiste' || p.id === 'support-gyidi' && (
+                        {(p.role === 'artiste' || p.id === 'support-gyidi') && (
                           <button
                             onClick={() => {
                               setSelectedArtisteForSupport(p);
