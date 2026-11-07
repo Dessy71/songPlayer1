@@ -65,6 +65,9 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
    const PROVIDER_REFERENCE = /^[A-Za-z0-9_-]{6,64}$/;
    const SUBACCOUNT = /^ACCT_[a-zA-Z0-9]+$/;
    const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+   // Migration 202611070003 seeds every artiste with this shared fake subaccount.
+   // It identifies nobody, so a charge against it must never become a badge.
+   const PLACEHOLDER_SUBACCOUNT = 'ACCT_placeholder0000';
 
    // trustProvider is only safe for charges read straight back from the Paystack API
    // (the admin sync); a webhook body is attacker-supplied until re-verified.
@@ -79,9 +82,25 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     if (typeof subaccountCode !== 'string' || !SUBACCOUNT.test(subaccountCode)) return { adopted: false, reason: 'unlinked-artiste' };
     if (typeof email !== 'string' || !EMAIL.test(email)) return { adopted: false, reason: 'missing-email' };
 
-    const { data: config, error: configError } = await admin.from('support_checkout_config')
-      .select('artiste_id, subaccount_code').eq('subaccount_code', subaccountCode).maybeSingle();
-    if (configError || !config?.artiste_id) return { adopted: false, reason: 'unlinked-artiste' };
+    if (subaccountCode === PLACEHOLDER_SUBACCOUNT) return { adopted: false, reason: 'placeholder-subaccount' };
+
+    // subaccount_code is NOT unique, so never use maybeSingle() here: several
+    // artistes can point at the same code and PostgREST would error out.
+    const { data: candidates, error: configError } = await admin.from('support_checkout_config')
+      .select('artiste_id, subaccount_code, payment_page_url').eq('subaccount_code', subaccountCode).not('artiste_id', 'is', null);
+    if (configError) throw configError;
+    if (!candidates || candidates.length === 0) return { adopted: false, reason: 'unlinked-artiste' };
+
+    // Paystack puts the storefront a charge came from in metadata.referrer
+    // (https://paystack.shop/pay/<tag>). Prefer that exact page when it is present.
+    const referrer = payment?.metadata?.referrer;
+    const byPage = typeof referrer === 'string'
+      ? candidates.find((c: any) => typeof c.payment_page_url === 'string' && c.payment_page_url === referrer)
+      : undefined;
+    // Refuse to guess when a shared subaccount leaves more than one candidate.
+    if (!byPage && candidates.length > 1) return { adopted: false, reason: 'ambiguous-artiste' };
+    const config = byPage ?? candidates[0];
+    if (!config?.artiste_id) return { adopted: false, reason: 'unlinked-artiste' };
 
     const { data: existing, error: existingError } = await admin.from('support_payment_orders')
       .select('reference,status').eq('reference', reference).maybeSingle();
@@ -223,8 +242,9 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     const {data:configs,error:configError}=await admin.from('support_checkout_config')
       .select('subaccount_code').eq('enabled',true).not('subaccount_code','is',null);
     if(configError)throw configError;
-    const linked=new Set((configs||[]).map((c:any)=>c.subaccount_code).filter((c:unknown):c is string=>typeof c==='string'));
-    console.log('reconcile start',{days,from,linkedSubaccounts:[...linked],configCount:configs?.length ?? 0});
+    const linked=new Set((configs||[]).map((c:any)=>c.subaccount_code)
+      .filter((c:unknown):c is string=>typeof c==='string'&&c!==PLACEHOLDER_SUBACCOUNT));
+    console.log('reconcile start',{days,from,linkedSubaccounts:[...linked],configCount:configs?.length ?? 0,placeholderRowsExcluded:(configs||[]).filter((c:any)=>c.subaccount_code===PLACEHOLDER_SUBACCOUNT).length});
     if(linked.size===0)return json({adopted:0,scanned:0,skipped:[]});
     let scanned=0,adopted=0;const skipped:string[]=[];
     for(let page=1;page<=5;page++){
