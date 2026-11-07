@@ -71,8 +71,8 @@ import { MessagesView } from './components/MessagesView';
 import { EditArtisteModal } from './components/EditArtisteModal';
 import { AuthModal } from './components/AuthModal';
 import { UploadModal } from './components/UploadModal';
-import { SupportGyidiButton } from './components/SupportGyidiButton';
 import { ThemeToggle } from './components/ThemeToggle';
+import { SupportGyidiButton } from './components/SupportGyidiButton';
 import { SupportModal } from './components/SupportModal';
 import { DeveloperModal } from './components/DeveloperModal';
 import { PlaylistModal } from './components/PlaylistModal';
@@ -2053,8 +2053,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   </div>
 
                   <div className="w-full md:max-w-sm">
-                    {/* Same wallet redirect as artiste support: no hard-coded amount. */}
-                    <SupportGyidiButton />
+                    {/* Same surface as the sidebar entry: one wallet button that
+                        opens the support modal and goes straight to the Paystack
+                        payment page. No hard-coded amount. */}
+                    <SupportGyidiButton onOpenSupport={() => setSupportOpen(true)} />
                   </div>
                 </div>
               </section>

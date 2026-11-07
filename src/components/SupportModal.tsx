@@ -18,7 +18,6 @@ import {
   isProfileApproved,
   isPaystackPageUrl,
 } from '../types/music';
-import { SupportCheckout } from './SupportCheckout';
 
 interface SupportModalProps {
   isOpen: boolean;
@@ -60,6 +59,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   const [notice, setNotice] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
+  const [platformLoading, setPlatformLoading] = useState(false);
 
   const isApproved = isProfileApproved(artiste);
   // A legacy MoMo number must never be opened as a payment page.
@@ -454,7 +454,13 @@ export const SupportModal: React.FC<SupportModalProps> = ({
             subaccount code are never rendered for a non-admin. */}
         {!isAdminViewer && (
           <div className="mt-4 space-y-3">
-            {canShowSupportButton ? (
+            {/* Without this guard the first open flashes "not configured yet"
+                while platform_support_summary() is still in flight. */}
+            {platformLoading && !platform ? (
+              <div className="flex items-center justify-center rounded-xl border border-white/10 bg-zinc-950/60 px-3.5 py-4">
+                <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
+              </div>
+            ) : canShowSupportButton ? (
               <>
                 <p className="text-xs text-zinc-300">
                   {isGyidi
