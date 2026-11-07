@@ -269,24 +269,6 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
         </div>
       )}
 
-      <section className="rounded-2xl border border-white/15 bg-zinc-900 p-5 space-y-3">
-        <h3 className="font-bold text-white">Already paid? Check my payment</h3>
-        <button type="button" disabled={verifying || payingPlan !== null || celebrating}
-          onClick={() => void recoverAccount()}
-          className="rounded-xl bg-emerald-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
-          {verifying ? 'Checking your account…' : 'Restore my subscription — no reference needed'}
-        </button>
-        <p className="text-sm text-zinc-300">Sign in to the same account on any device. Payments are saved securely to your account, even if browser data was cleared or the app was reinstalled.</p>
-        <p className="text-sm text-zinc-300">Older payment not found? The reference form below is an optional support fallback for payments made before account-linked checkout. Recovery and verification never charge you.</p>
-        <form className="flex flex-wrap gap-3" onSubmit={(event) => { event.preventDefault(); void activatePayment(recoveryReference.trim(), recoveryPlan); }}>
-          <input required aria-label="Paystack payment reference" placeholder="Paystack payment reference" value={recoveryReference} onChange={(event) => setRecoveryReference(event.target.value)} className="min-w-0 flex-1 rounded-xl border border-white/20 bg-zinc-950 p-3 text-white" />
-          <select aria-label="Paid plan" value={recoveryPlan} onChange={(event) => setRecoveryPlan(event.target.value as PremiumPlan)} className="rounded-xl border border-white/20 bg-zinc-950 p-3 text-white">
-            <option value="monthly">Monthly</option><option value="yearly">Yearly</option>
-          </select>
-          <button disabled={verifying || payingPlan !== null || celebrating} className="rounded-xl bg-amber-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">{verifying ? 'Verifying…' : 'Verify existing payment'}</button>
-        </form>
-      </section>
-
       {/* Hero Header */}
       <section className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/20 via-pink-600/15 to-zinc-950 p-5 sm:p-8">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
@@ -515,6 +497,27 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
         </span>
         <span>Instant activation upon payment confirmation</span>
       </div>
+
+      {/* ALREADY PAID? CHECK MY PAYMENT */}
+      {userId && (
+        <section className="rounded-2xl border border-white/15 bg-zinc-900 p-5 space-y-3">
+          <h3 className="font-bold text-white">Already paid? Check my payment</h3>
+          <button type="button" disabled={verifying || payingPlan !== null || celebrating}
+            onClick={() => void recoverAccount()}
+            className="rounded-xl bg-emerald-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
+            {verifying ? 'Checking your account…' : 'Restore my subscription — no reference needed'}
+          </button>
+          <p className="text-sm text-zinc-300">Sign in to the same account on any device. Payments are saved securely to your account, even if browser data was cleared or the app was reinstalled.</p>
+          <p className="text-sm text-zinc-300">Older payment not found? The reference form below is an optional support fallback for payments made before account-linked checkout. Recovery and verification never charge you.</p>
+          <form className="flex flex-wrap gap-3" onSubmit={(event) => { event.preventDefault(); void activatePayment(recoveryReference.trim(), recoveryPlan); }}>
+            <input required aria-label="Paystack payment reference" placeholder="Paystack payment reference" value={recoveryReference} onChange={(event) => setRecoveryReference(event.target.value)} className="min-w-0 flex-1 rounded-xl border border-white/20 bg-zinc-950 p-3 text-white" />
+            <select aria-label="Paid plan" value={recoveryPlan} onChange={(event) => setRecoveryPlan(event.target.value as PremiumPlan)} className="rounded-xl border border-white/20 bg-zinc-950 p-3 text-white">
+              <option value="monthly">Monthly</option><option value="yearly">Yearly</option>
+            </select>
+            <button disabled={verifying || payingPlan !== null || celebrating} className="rounded-xl bg-amber-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">{verifying ? 'Verifying…' : 'Verify existing payment'}</button>
+          </form>
+        </section>
+      )}
 
       {/* ALL BENEFITS OF GYIDI NWOM PREMIUM */}
       <section className="space-y-4">
