@@ -85,10 +85,13 @@ export interface UserProfile {
   is_sacsu?: boolean;
   tertiary_institution?: string | null;
   is_precreated?: boolean;
-  /** Bank account details collected during signup, used by Admin to create Paystack payment pages/subaccounts. */
+  /** Payout details collected during signup, used by Admin to create Paystack payment pages/subaccounts. */
+  payment_method?: 'bank' | 'momo' | null;
   bank_name?: string | null;
   bank_account_number?: string | null;
   bank_account_name?: string | null;
+  momo_operator?: string | null;
+  momo_phone_number?: string | null;
   /** Admin-controlled: a support page only goes live once approved with Paystack details. */
   approval_status?: ApprovalStatus;
   is_verified_artiste?: boolean;
