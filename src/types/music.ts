@@ -241,6 +241,24 @@ export function isProfileApproved(profile: Pick<UserProfile, 'approval_status'> 
   return profile.approval_status !== 'pending' && profile.approval_status !== 'rejected';
 }
 
+/**
+ * Legacy rows stored a MoMo number plus an account NAME in the two support columns.
+ * Only a real Paystack page URL is safe to open or show as a support badge; a phone
+ * number must never be treated as a checkout link or advertised publicly.
+ */
+export function isPaystackPageUrl(value?: string | null): boolean {
+  if (!value) return false;
+  return /^https:\/\/([a-z0-9-]+\.)*paystack\.(com|shop)\//i.test(value.trim());
+}
+
+/** A profile can show the support badge only when approved AND a Paystack page exists. */
+export function hasApprovedSupportPage(
+  profile: Pick<UserProfile, 'approval_status' | 'support_number'> | null | undefined
+): boolean {
+  if (!profile) return false;
+  return isProfileApproved(profile) && isPaystackPageUrl(profile.support_number);
+}
+
 export function isUserPremiumActive(
   profile: UserProfile | null,
   settings?: PlatformSettings | null,
