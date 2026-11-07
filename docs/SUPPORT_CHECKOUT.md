@@ -43,14 +43,41 @@ NOT been moved out of the public profile API: database-level payout-detail priva
 requires a follow-up migration and updates to legacy artiste/admin forms. Do not
 claim full API-level privacy is complete.
 
-## Remaining product work
+## Admin approval and Paystack configuration (implemented)
 
-- Admin UI for approval and payment configuration (currently server-only seed for
-  the one artiste explicitly supplied by the owner).
+Artiste support pages are now approved from the app instead of a server-only seed.
+
+- `profiles.approval_status` (`pending` / `approved` / `rejected`) gates a profile.
+  Listeners cannot open a pending or rejected profile, and its support card never
+  renders a payment link. Existing rows were backfilled to `approved` so no live
+  artiste lost support access.
+- `admin_set_support_details(target, provider, payment_page_url, subaccount_code,
+  approve, enabled)` is the single admin action. It is `SECURITY DEFINER`, refuses
+  every non-admin caller, validates the Paystack page URL and `ACCT_` subaccount
+  code, refuses approval without both values, writes the public profile fields
+  (`support_provider`, `support_number`, `support_account_name`, `approval_status`)
+  and syncs the trusted `support_checkout_config` row the checkout function reads.
+  Without that sync the listener button would have no working checkout.
+- Paystack subaccount codes are **case-sensitive**; they are trimmed but never
+  upper-cased.
+- `guard_profile_updates` now also pins `approval_status` and the three support
+  columns for non-admin writers, so an artiste cannot self-approve or swap payout
+  details. `guard_profile_approval_insert` forces `pending` on non-admin inserts.
+- Admin entry points: **Admin → Approvals** has an Artiste Profile queue, and
+  **Admin → Users** has a per-artiste Support Details button. Both open the same
+  modal where an admin saves the URL/subaccount and clicks *Approve & Activate*.
+- The listener Support card shows a Support Badge with the artiste's profile
+  picture only (no names). Clicking the money icon opens the Paystack payment page
+  URL in a new tab. Platform-level "Support Gyidi Nwom" keeps using the verified
+  server checkout, never a raw number.
+
+## Remaining product work
 - Automatic webhook verification and refunds/disputes/reversal recognition handling.
 - Profile photo upload/edit after signup (existing avatar_url is displayed only).
 - Artiste-private supporter/payment history and anonymous display rules.
 - Move legacy payout fields to private storage and remove collection from signup.
+  Note: `support_number` / `support_account_name` are still readable through the
+  public profiles API until that privacy migration lands.
 - End-to-end live payment validation. Local tests use mocks/isolated PostgreSQL,
   not real money. No charge was made by the agent.
 

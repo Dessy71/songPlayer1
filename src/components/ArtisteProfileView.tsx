@@ -4,8 +4,6 @@ import {
   BadgeCheck,
   MapPin,
   Wallet,
-  Copy,
-  Check,
   Play,
   Calendar,
   Music2,
@@ -15,6 +13,9 @@ import {
   Edit3,
   Crown,
   X,
+  ShieldCheck,
+  Clock,
+  ExternalLink,
 } from 'lucide-react';
 import {
   Album,
@@ -24,6 +25,7 @@ import {
   isAlbumUpcomingPremiere,
   isSongPubliclyPlayable,
   isSongUpcomingPremiere,
+  isProfileApproved,
 } from '../types/music';
 import { SongRow } from './SongRow';
 import { PremiereCard } from './PremiereCard';
@@ -32,6 +34,7 @@ import { CoverArt } from './CoverArt';
 import { EditArtisteModal } from './EditArtisteModal';
 import { EditReleaseModal } from './EditReleaseModal';
 import { usePlayer } from '../context/PlayerContext';
+import { SupportModal } from './SupportModal';
 
 interface ArtisteProfileViewProps {
   artiste: UserProfile;
@@ -79,15 +82,22 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   onRefreshCatalog,
 }) => {
   const { playSong, isAuthenticated, requireAccount } = usePlayer();
-  const [copiedSupport, setCopiedSupport] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editingSong, setEditingSong] = useState<Song | null>(null);
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [editReleaseOpen, setEditReleaseOpen] = useState(false);
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
 
+  const isAdminViewer = viewerProfile?.role === 'admin';
   const stageTitle = artiste.stage_name || artiste.display_name || 'SCG Artiste';
-  const canEditThisArtiste =
-    viewerProfile?.role === 'admin' || viewerProfile?.id === artiste.id;
+  const canEditThisArtiste = isAdminViewer || viewerProfile?.id === artiste.id;
+
+  // Approval gate: a profile is only reachable/supportable once an admin approved it.
+  // Rows from before the approval column existed stay visible (grandfathered).
+  const isApproved = isProfileApproved(artiste);
+  // Support Badge: approved + Paystack details present. Shown as a profile picture only.
+  const showSupportBadge =
+    isApproved && Boolean(artiste.support_number) && Boolean(artiste.support_account_name);
 
   const artisteSongs = songs.filter(
     (s) =>
@@ -97,7 +107,9 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           s.artist.toLowerCase() === artiste.stage_name.trim().toLowerCase()))
   );
 
-  const artisteAlbums = albums.filter((a) => a.approval_status === 'approved' && a.artiste_id === artiste.id);
+  const artisteAlbums = albums.filter(
+    (a) => a.approval_status === 'approved' && a.artiste_id === artiste.id
+  );
 
   const upcomingAlbums = artisteAlbums.filter((a) => isAlbumUpcomingPremiere(a));
   const releasedAlbums = artisteAlbums.filter((a) => isAlbumPubliclyPlayable(a));
@@ -110,12 +122,47 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   const releasedSongs = artisteSongs.filter((s) => isSongPubliclyPlayable(s));
   const totalPlays = releasedSongs.reduce((sum, s) => sum + (s.plays_count || 0), 0);
 
-  const copyAccount = () => {
+  const openPaymentPage = () => {
     if (!artiste.support_number) return;
-    navigator.clipboard.writeText(artiste.support_number);
-    setCopiedSupport(true);
-    setTimeout(() => setCopiedSupport(false), 2000);
+    window.open(artiste.support_number, '_blank', 'noopener,noreferrer');
   };
+
+  const requireSupportAccess = () => {
+    if (!isAuthenticated) {
+      requireAccount('Create an account & upgrade to Premium to support Artistes!');
+      return;
+    }
+    onRequirePremium?.(
+      `Upgrade to Gyidi Nwom Premium to view ${stageTitle}'s direct support details!`
+    );
+  };
+
+  // Pending / rejected profiles stay closed to the public until an admin approves them.
+  if (!isApproved && !isAdminViewer && viewerProfile?.id !== artiste.id) {
+    return (
+      <div className="mx-auto max-w-xl space-y-4 py-10">
+        <div className="rounded-3xl border border-white/10 bg-zinc-900/70 p-8 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-300">
+            <Clock className="w-7 h-7" />
+          </div>
+          <h2 className="mt-4 text-xl font-extrabold text-white">Profile Not Available Yet</h2>
+          <p className="mt-2 text-sm text-zinc-400">
+            {artiste.approval_status === 'rejected'
+              ? 'This artiste profile was not approved for publication.'
+              : 'This artiste profile is awaiting admin approval and will appear here once it goes live.'}
+          </p>
+          <button
+            type="button"
+            onClick={onBack}
+            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-white/15 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[1400px] mx-auto space-y-8">
@@ -210,12 +257,6 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 </span>
               </div>
 
-              {artiste.bio && (
-                <p className="mt-3 max-w-xl text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                  {artiste.bio}
-                </p>
-              )}
-
               {releasedSongs.length > 0 && (
                 <button
                   onClick={() => playSong(releasedSongs[0], releasedSongs)}
@@ -228,92 +269,128 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             </div>
           </div>
 
-          {/* Fan Support Card (Gated behind Gyidi Nwom Premium / Admin View) */}
-          <div className="w-full md:w-80 rounded-2xl border border-emerald-500/30 bg-zinc-900/90 p-4 shadow-xl">
+          {/* Fan Support Card (Approval + Gyidi Nwom Premium gated, admin always visible) */}
+          <div className="w-full md:w-80 rounded-2xl border border-emerald-500/30 bg-zinc-950/90 p-4 shadow-xl">
             <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                 <Wallet className="w-4 h-4" />
                 Support {stageTitle}
               </div>
               {isAdminViewer && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/35 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
-                  Admin View
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${
+                    isApproved
+                      ? 'bg-emerald-500/20 border-emerald-400/35 text-emerald-300'
+                      : 'bg-rose-500/20 border-rose-400/35 text-rose-300'
+                  }`}
+                >
+                  {isApproved ? 'Approved' : 'Pending Approval'}
                 </span>
               )}
             </div>
 
-            {!artiste.support_number && !isAdminViewer ? (
-              <div className="mt-3 rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
+            {/* Support Badge: profile pictures only, no names */}
+            {showSupportBadge && (
+              <div className="mb-3 flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+                <span className="flex -space-x-2">
+                  <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-950 bg-emerald-500/20">
+                    {artiste.avatar_url ? (
+                      <img src={artiste.avatar_url} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <User className="w-4 h-4 text-emerald-300" />
+                    )}
+                  </span>
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Support Badge
+                </span>
+              </div>
+            )}
+
+            {!isApproved ? (
+              <div className="rounded-xl bg-zinc-900 border border-amber-400/25 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
-                  Direct Artiste Fan Support (verified Mobile Money &amp; Bank details) is a{' '}
-                  <strong className="text-amber-300">Gyidi Nwom Premium</strong> feature.
+                  {isAdminViewer
+                    ? 'Add the Paystack payment page URL and subaccount code, then approve this profile to open listener support.'
+                    : `Support for ${stageTitle} opens once an admin approves this profile.`}
+                </p>
+                {isAdminViewer && (
+                  <button
+                    type="button"
+                    onClick={() => setSupportModalOpen(true)}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Configure Paystack &amp; Approve
+                  </button>
+                )}
+              </div>
+            ) : !showSupportBadge ? (
+              <div className="rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  {isAdminViewer
+                    ? 'Profile approved. Add the Paystack payment page URL so listeners can support this artiste.'
+                    : 'Approved profile — support details are being finalised.'}
+                </p>
+                {isAdminViewer && (
+                  <button
+                    type="button"
+                    onClick={() => setSupportModalOpen(true)}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-400/15 border border-amber-400/30 px-3.5 py-2 text-xs font-extrabold text-amber-300 hover:bg-amber-400/25 cursor-pointer"
+                  >
+                    <Wallet className="w-3.5 h-3.5" />
+                    Add Paystack Details
+                  </button>
+                )}
+              </div>
+            ) : !isPremium && !canEditThisArtiste ? (
+              <div className="rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  Direct Artiste Fan Support is part of{' '}
+                  <strong className="text-amber-300">Gyidi Nwom Premium</strong>.
                 </p>
                 <button
                   type="button"
-                  onClick={() => {
-                    if (!isAuthenticated) {
-                      requireAccount('Create an account & upgrade to Premium to support Artistes!');
-                      return;
-                    }
-                    onRequirePremium?.(
-                      `Upgrade to Gyidi Nwom Premium to view ${stageTitle}'s direct MoMo/Bank support details!`
-                    );
-                  }}
-                  className="w-full inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
+                  onClick={requireSupportAccess}
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
                 >
                   <Crown className="w-3.5 h-3.5" />
                   Unlock Artiste Support
                 </button>
               </div>
-            ) : artiste.support_number ? (
-              <>
-                <p className="text-[11px] text-zinc-400 mt-1">
-                  Send fan love & ministry support directly to this artiste:
-                </p>
-                <div className="mt-3 rounded-xl bg-zinc-900 border border-white/10 p-3">
-                  {/* NEW: Paystack Provider Detection */}
-                  <p className="text-[10px] uppercase font-bold text-amber-400">
-                    {artiste.support_provider || 'MTN Mobile Money (MoMo)'}
-                  </p>
-                  <div className="mt-1 flex items-center justify-between gap-2">
-                    <span className="text-lg font-extrabold text-white tabular-nums break-all">
-                      {artiste.support_number}
-                    </span>
-                    <button
-                      onClick={copyAccount}
-                      disabled={!artiste.support_number}
-                      className={`p-2 rounded-lg transition-colors ${
-                        copiedSupport
-                          ? 'bg-green-500/20 text-green-300'
-                          : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
-                      }`}
-                    >
-                      {copiedSupport ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                  {artiste.support_account_name && (
-                    <p className="mt-1 text-xs text-zinc-300 font-mono">
-                      Subaccount: {artiste.support_account_name}
-                    </p>
-                  )}
-                </div>
-              </>
             ) : (
-              <div className="mt-2 rounded-xl bg-zinc-900/80 border border-dashed border-white/10 p-3 text-xs text-zinc-400">
-                Direct fan support MoMo / bank details will appear here once updated on this
-                profile.
-                {canEditThisArtiste && (
-                  <button
-                    onClick={() => setEditOpen(true)}
-                    className="mt-2 block text-amber-300 font-bold hover:underline cursor-pointer"
-                  >
-                    + Add Support Account Details
-                  </button>
-                )}
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={openPaymentPage}
+                  className="flex w-full items-center justify-between gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-3 text-left hover:bg-emerald-500/20 transition cursor-pointer"
+                >
+                  <span className="flex items-center gap-2.5 min-w-0">
+                    <Wallet className="w-5 h-5 flex-shrink-0 text-emerald-400" />
+                    <span className="min-w-0">
+                      <span className="block text-xs font-extrabold uppercase tracking-wider text-emerald-300">
+                        Support {stageTitle}
+                      </span>
+                      <span className="block truncate text-[11px] text-zinc-400">
+                        {artiste.support_provider || 'Paystack Payment Page'}
+                      </span>
+                    </span>
+                  </span>
+                  <ExternalLink className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSupportModalOpen(true)}
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] font-bold text-zinc-300 hover:bg-zinc-800 cursor-pointer"
+                >
+                  View support details
+                </button>
               </div>
             )}
           </div>
         </div>
+      </div>
 
       {/* Upcoming Album & Song Premieres */}
       {(upcomingAlbums.length > 0 || upcomingSingles.length > 0) && (
@@ -323,7 +400,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             <div>
               <h3 className="text-lg font-extrabold text-white">Upcoming Premieres</h3>
               <p className="text-xs text-zinc-400">
-                Approved albums & singles counting down to public launch
+                Approved albums &amp; singles counting down to public launch
               </p>
             </div>
           </div>
@@ -367,21 +444,49 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           <div className="flex items-center gap-2">
             <Disc3 className="w-5 h-5 text-violet-400" />
             <h3 className="text-lg font-extrabold text-white">
-              Albums & EPs ({releasedAlbums.length})
+              Albums &amp; EPs ({releasedAlbums.length})
             </h3>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {releasedAlbums.map((alb) => (
-              <AlbumPremiereCard
-                key={alb.id}
-                album={alb}
-                tracks={artisteSongs.filter((s) => s.album_id === alb.id)}
-                artiste={artiste}
-                onOpenAlbum={onOpenAlbum}
-                onUnlocked={onRefreshCatalog}
-              />
-            ))}
+            {releasedAlbums.map((alb) => {
+              const albTracks = releasedSongs.filter((s) => s.album_id === alb.id);
+              return (
+                <div
+                  key={alb.id}
+                  onClick={() => onOpenAlbum(alb.id)}
+                  className="group relative rounded-2xl border border-white/10 bg-zinc-900/55 p-3 hover:bg-zinc-900 hover:border-amber-500/40 transition cursor-pointer"
+                >
+                  <CoverArt
+                    title={alb.title}
+                    category={alb.category}
+                    theme={alb.cover_theme}
+                    coverUrl={alb.cover_url}
+                    size="lg"
+                    className="w-full aspect-square rounded-xl"
+                  />
+                  {canEditThisArtiste && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingSong(null);
+                        setEditingAlbum(alb);
+                        setEditReleaseOpen(true);
+                      }}
+                      className="absolute top-4 right-4 rounded-full bg-black/75 p-2 text-amber-300 hover:bg-black cursor-pointer"
+                      title="Edit or delete album"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                  <h4 className="mt-2.5 text-sm font-bold text-white truncate group-hover:text-amber-300">
+                    {alb.title}
+                  </h4>
+                  <p className="text-[11px] text-zinc-400">{albTracks.length} tracks • Album</p>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
@@ -391,7 +496,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
         <div className="flex items-center gap-2">
           <Music2 className="w-5 h-5 text-pink-400" />
           <h3 className="text-lg font-extrabold text-white">
-            Tracks & Preachings ({releasedSongs.length})
+            Tracks &amp; Preachings ({releasedSongs.length})
           </h3>
         </div>
 
@@ -413,23 +518,28 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 onToggleOfflineSave={onToggleOfflineSave}
                 onOpenLyrics={onOpenLyrics}
                 onOpenShareCard={onOpenShareCard}
-                onToggleReminder={onToggleReminder}
                 onOpenPlaylistModal={onOpenPlaylistModal}
-                onArtisteUpdated={onArtisteUpdated}
-                onRefreshCatalog={onRefreshCatalog}
+                onEditSong={
+                  canEditThisArtiste
+                    ? (s) => {
+                        setEditingAlbum(null);
+                        setEditingSong(s);
+                        setEditReleaseOpen(true);
+                      }
+                    : undefined
+                }
               />
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
-      {/* Edit Modal */}
       {editOpen && (
         <EditArtisteModal
           isOpen={true}
           onClose={() => setEditOpen(false)}
           artiste={artiste}
-          isAdminViewer={viewerProfile?.role === 'admin'}
+          isAdminViewer={isAdminViewer}
           onSaved={(saved) => {
             onArtisteUpdated(saved);
             onRefreshCatalog();
@@ -437,28 +547,29 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
         />
       )}
 
-      {editingSong && (
+      {editReleaseOpen && (
         <EditReleaseModal
           isOpen={true}
-          onClose={() => setEditingSong(null)}
+          onClose={() => setEditReleaseOpen(false)}
           song={editingSong}
+          album={editingAlbum}
+          albumTracks={editingAlbum ? songs.filter((s) => s.album_id === editingAlbum.id) : []}
           onSaved={onRefreshCatalog}
           onDeleted={onRefreshCatalog}
         />
       )}
 
-      {editingAlbum && (
-        <EditReleaseModal
-          isOpen={true}
-          onClose={() => setEditingAlbum(null)}
-          album={editingAlbum}
-          albumTracks={artisteSongs.filter((s) => s.album_id === editingAlbum.id)}
-          onSaved={onRefreshCatalog}
-          onDeleted={onRefreshCatalog}
-        />
-      )}
+      <SupportModal
+        isOpen={supportModalOpen}
+        onClose={() => setSupportModalOpen(false)}
+        artiste={artiste}
+        isAdminViewer={isAdminViewer}
+        onApproved={(updated) => {
+          onArtisteUpdated(updated);
+          onRefreshCatalog();
+        }}
+        onSaved={() => onRefreshCatalog()}
+      />
     </div>
   );
 };
-
-       

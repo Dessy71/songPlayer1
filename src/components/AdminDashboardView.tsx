@@ -41,6 +41,7 @@ import {
   UserRole,
   isAlbumUpcomingPremiere,
   isSongUpcomingPremiere,
+  isProfileApproved,
 } from '../types/music';
 import { CoverArt } from './CoverArt';
 import { CountdownBadge } from './CountdownBadge';
@@ -91,6 +92,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   onOpenArtiste,
   onPreviewDailyFeed,
 }) => {
+  const refreshAdminData = () => {
+    void loadFullAdminData();
+    void onRefreshAll();
+  };
   const { currentSong, isPlaying, playSong, togglePlay } = usePlayer();
 
   const [subTab, setSubTab] = useState<AdminSubTab>(initialSubTab || 'analytics');
@@ -157,7 +162,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
     const pendingSingles = adminSongs.filter((s) => !s.album_id && s.approval_status === 'pending');
     const pendingAlbums = adminAlbums.filter((a) => a.approval_status === 'pending');
-    const pendingTotal = pendingSingles.length + pendingAlbums.length;
+    const pendingProfiles = adminProfiles.filter(
+      (p) => p.role === 'artiste' && p.approval_status === 'pending'
+    );
+    const pendingTotal = pendingSingles.length + pendingAlbums.length + pendingProfiles.length;
 
     const approvedSongs = adminSongs.filter((s) => s.approval_status === 'approved');
     const upcomingPremieres =
@@ -339,6 +347,15 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         return new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime();
       });
   }, [adminSongs, approvalFilter]);
+
+  // Artiste profile approval queue (support pages). Approved profiles are grandfathered
+  // rows that already have support details configured.
+  const profileApprovalQueue = useMemo(() => {
+    const artistes = adminProfiles.filter((p) => p.role === 'artiste');
+    if (approvalFilter === 'pending') return artistes.filter((p) => p.approval_status === 'pending');
+    if (approvalFilter === 'rejected') return artistes.filter((p) => p.approval_status === 'rejected');
+    return artistes.filter((p) => isProfileApproved(p) && Boolean(p.support_number));
+  }, [adminProfiles, approvalFilter]);
 
   const storageQuotaPercent = Math.min(100, (stats.totalBytes / (1000 * 1024 * 1024)) * 100);
   const maxBucket = Math.max(1, ...stats.dailyBuckets.map((b) => b.count));
@@ -655,6 +672,73 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               Pre-listen to every submitted single or album track before approving.
             </p>
           </div>
+
+          {/* ARTISTE PROFILE APPROVAL QUEUE (Paystack support pages) */}
+          {profileApprovalQueue.length > 0 && (
+            <section className="space-y-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-4">
+              <div className="flex items-center gap-2">
+                <Wallet className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-sm font-extrabold text-white">
+                  Artiste Profile {approvalFilter === 'approved' ? 'Support Pages' : 'Approval Queue'} (
+                  {profileApprovalQueue.length})
+                </h3>
+              </div>
+              <p className="text-xs text-zinc-400">
+                Add the Paystack payment page URL and subaccount code, then approve so listeners can
+                support this artiste.
+              </p>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {profileApprovalQueue.map((p) => (
+                  <div
+                    key={p.id}
+                    className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-zinc-950/60 p-3"
+                  >
+                    <div className="flex items-start gap-2.5 min-w-0">
+                      {p.avatar_url ? (
+                        <img
+                          src={p.avatar_url}
+                          alt=""
+                          className="h-10 w-10 flex-shrink-0 rounded-xl object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-xs font-bold text-amber-300">
+                          {(p.stage_name || p.display_name || 'A')[0]?.toUpperCase()}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-bold text-white">
+                          {p.stage_name || p.display_name || p.email || 'Artiste'}
+                        </p>
+                        <p className="truncate text-[11px] text-zinc-400">
+                          {p.support_number
+                            ? `${p.support_provider || 'Paystack'}: ${p.support_number}`
+                            : 'No Paystack page configured'}
+                        </p>
+                        {p.support_account_name && (
+                          <p className="truncate font-mono text-[10px] text-zinc-500">
+                            {p.support_account_name}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedArtisteForSupport(p);
+                        setSupportModalOpen(true);
+                      }}
+                      className="inline-flex flex-shrink-0 items-center gap-1 rounded-lg border border-emerald-400/30 bg-emerald-500/15 px-2.5 py-1.5 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25 cursor-pointer"
+                    >
+                      <Wallet className="w-3 h-3" />
+                      {isProfileApproved(p) ? 'Edit Paystack' : 'Configure & Approve'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {filteredAlbumQueue.length === 0 && filteredSingleQueue.length === 0 ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-14 text-center">
@@ -1120,12 +1204,35 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}
                           </p>
                         )}
-                        {/* NEW: Admin-only Paystack URL & Subaccount Display in List */}
-                        {(p.role === 'artiste' || p.id === 'support-gyidi') && (
-                          <p className="text-[11px] text-amber-400 mt-0.5 font-mono">
-                            {p.support_provider || 'Paystack Payment Page'}: {p.support_number || 'N/A'}
-                            {p.support_account_name && ` (Sub: ${p.support_account_name})`}
-                          </p>
+                        {/* Admin-only approval state + Paystack payout configuration */}
+                        {(p.role === 'artiste' || p.role === 'admin') && (
+                          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                                isProfileApproved(p)
+                                  ? 'bg-emerald-500/15 text-emerald-300'
+                                  : p.approval_status === 'rejected'
+                                    ? 'bg-rose-500/15 text-rose-300'
+                                    : 'bg-amber-500/15 text-amber-300'
+                              }`}
+                            >
+                              {isProfileApproved(p)
+                                ? 'Support Approved'
+                                : p.approval_status === 'rejected'
+                                  ? 'Support Rejected'
+                                  : 'Pending Approval'}
+                            </span>
+                            {p.support_number ? (
+                              <span className="truncate font-mono text-[10px] text-zinc-400">
+                                {p.support_provider || 'Paystack'}: {p.support_number}
+                                {p.support_account_name ? ` · ${p.support_account_name}` : ''}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-zinc-500">
+                                No Paystack page configured
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -1166,7 +1273,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         </button>
 
                         {/* NEW: Support Details Button for Admin */}
-                        {(p.role === 'artiste' || p.id === 'support-gyidi') && (
+                        {p.role === 'artiste' && (
                           <button
                             onClick={() => {
                               setSelectedArtisteForSupport(p);
@@ -1289,8 +1396,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         key={selectedArtisteForSupport?.id || 'support-gyidi'}
         isOpen={supportModalOpen}
         onClose={() => { setSupportModalOpen(false); setSelectedArtisteForSupport(null); }}
-        artiste={selectedArtisteForSupport || { id: 'support-gyidi', display_name: 'Support Gyidi', role: 'admin', approval_status: 'approved' } as UserProfile}
+        artiste={selectedArtisteForSupport}
         isAdminViewer={true}
+        onSaved={(saved) => {
+          if (!saved) return;
+          setAdminProfiles((prev) => prev.map((x) => (x.id === saved.id ? saved : x)));
+          setSelectedArtisteForSupport(saved);
+        }}
+        onApproved={(saved) => {
+          setAdminProfiles((prev) => prev.map((x) => (x.id === saved.id ? saved : x)));
+          setSelectedArtisteForSupport(saved);
+          refreshAdminData();
+        }}
       />
 
       <EditArtisteModal

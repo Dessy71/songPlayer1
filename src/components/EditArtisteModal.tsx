@@ -94,6 +94,16 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
     }
   };
 
+  // Paystack payout fields are admin-only: never send them from a non-admin save,
+  // and never overwrite stored details with blanks from an admin edit.
+  const adminSupportFields = isAdminViewer
+    ? {
+        support_provider: supportProvider.trim() || null,
+        support_number: supportNumber.trim() || null,
+        support_account_name: supportAccountName.trim() || null,
+      }
+    : {};
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -132,10 +142,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             is_sacsu: isSacsu,
             tertiary_institution: tertiaryInstitution.trim() || null,
             bio: bio.trim() || null,
-            // NEW: Paystack Mapping
-            support_provider: (isAdminViewer && supportNumber.trim()) ? supportProvider : (supportProvider || null),
-            support_number: (isAdminViewer && supportNumber.trim()) ? supportNumber : (supportNumber || null),
-            support_account_name: (isAdminViewer && supportAccountName.trim()) ? supportAccountName : (supportAccountName || null),
+            ...adminSupportFields,
             avatar_url: avatarUrl || null,
             is_precreated: true,
             is_verified_artiste: true,
@@ -157,10 +164,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             is_sacsu: isSacsu,
             tertiary_institution: tertiaryInstitution.trim() || null,
             bio: bio.trim() || null,
-            // NEW: Paystack Mapping (Admin Only)
-            support_provider: (isAdminViewer && supportNumber.trim()) ? supportProvider : (supportProvider || null),
-            support_number: (isAdminViewer && supportNumber.trim()) ? supportNumber : (supportNumber || null),
-            support_account_name: (isAdminViewer && supportAccountName.trim()) ? supportAccountName : (supportAccountName || null),
+            ...adminSupportFields,
             avatar_url: avatarUrl || null,
           })
           .eq('id', artiste.id)
@@ -337,7 +341,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 space-y-2.5">
               <p className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
                 <Wallet className="w-4 h-4" />
-                Admin Paystack Configuration (URL & Subaccount)
+                Admin Paystack Configuration (Payment Page URL & Subaccount)
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <select
@@ -354,19 +358,19 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                   type="text"
                   value={supportNumber}
                   onChange={(e) => setSupportNumber(e.target.value)}
-                  placeholder="Paystack URL / MoMo No."
+                  placeholder="https://paystack.shop/pay/..."
                   className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
                 />
                 <input
                   type="text"
                   value={supportAccountName}
                   onChange={(e) => setSupportAccountName(e.target.value)}
-                  placeholder="Subaccount Code / Account Name"
+                  placeholder="ACCT_xxxxxxxxxxxx"
                   className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
                 />
               </div>
             </div>
-          </div>
+          )}
 
           {/* Admin: Link / Assign Profile to Artiste&apos;s Login Email */}
           {isAdminViewer && (

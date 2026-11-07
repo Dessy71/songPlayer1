@@ -25,6 +25,17 @@ This checkout extends the existing Phase 7 database; it is not a complete bootst
 
 The server function and migrations were applied during implementation. No real charge or dashboard webhook delivery was performed by the agent. Frontend release status is reported separately.
 
+## Admin approval for artiste support pages
+
+`202611070001_admin_support_approval.sql` must be applied with the other migrations.
+It adds `profiles.approval_status`, extends `guard_profile_updates` to pin
+`approval_status` and the three `support_*` columns for non-admin writers, and adds
+`admin_set_support_details(...)`. That RPC is the only supported way for an admin to
+save a Paystack payment page URL / subaccount code and approve a profile: it
+validates both values, refuses approval without them, and keeps the
+`support_checkout_config` row that `support-checkout` reads in sync. Subaccount
+codes are treated as case-sensitive.
+
 ## Architecture
 
 - `initialize`: authenticated server computes the price from `platform_settings`, creates a random reference, saves an immutable account/plan/price/email snapshot in `premium_payment_orders`, and calls Paystack transaction initialization. Returns only the hosted checkout URL and reference. The browser cannot supply an amount or customer ID. Five checkout attempts per account in ten minutes are permitted by a best-effort check; use gateway rate limits for strict distributed abuse controls.

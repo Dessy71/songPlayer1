@@ -2576,7 +2576,12 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         }}
       />
 
-      <SupportModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
+      <SupportModal
+        isOpen={supportOpen}
+        onClose={() => setSupportOpen(false)}
+        isAdminViewer={userProfile?.role === 'admin'}
+        onSaved={() => fetchPlatformData()}
+      />
       <DeveloperModal isOpen={developerOpen} onClose={() => setDeveloperOpen(false)} />
 
       <PlaylistModal
