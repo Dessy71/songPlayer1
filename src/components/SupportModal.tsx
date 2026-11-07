@@ -227,8 +227,11 @@ export const SupportModal: React.FC<SupportModalProps> = ({
           : `No new payments to match (${Number(data?.scanned ?? 0)} checked).`
       );
     } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '';
       setSyncResult(
-        err instanceof Error ? err.message : 'Could not sync Paystack payments.'
+        /unknown action/i.test(message)
+          ? 'The deployed function is out of date. Run: npx supabase functions deploy support-checkout'
+          : message || 'Could not sync Paystack payments.'
       );
     } finally {
       setIsSyncing(false);
