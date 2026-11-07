@@ -87,8 +87,10 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     // subaccount_code is NOT unique, so never use maybeSingle() here: several
     // artistes can point at the same code and PostgREST would error out.
     const { data: candidates, error: configError } = await admin.from('support_checkout_config')
-      .select('artiste_id, subaccount_code, payment_page_url').eq('subaccount_code', subaccountCode).not('artiste_id', 'is', null);
+      .select('target, artiste_id, subaccount_code, payment_page_url').eq('subaccount_code', subaccountCode);
     if (configError) throw configError;
+    // target 'gyidi' is platform-level support and legitimately has a NULL
+    // artiste_id, so rows are not filtered on artiste_id here.
     if (!candidates || candidates.length === 0) return { adopted: false, reason: 'unlinked-artiste' };
 
     // Paystack puts the storefront a charge came from in metadata.referrer
@@ -100,7 +102,8 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     // Refuse to guess when a shared subaccount leaves more than one candidate.
     if (!byPage && candidates.length > 1) return { adopted: false, reason: 'ambiguous-artiste' };
     const config = byPage ?? candidates[0];
-    if (!config?.artiste_id) return { adopted: false, reason: 'unlinked-artiste' };
+    const isPlatformTarget = config?.target === 'gyidi';
+    if (!isPlatformTarget && !config?.artiste_id) return { adopted: false, reason: 'unlinked-artiste' };
 
     const { data: existing, error: existingError } = await admin.from('support_payment_orders')
       .select('reference,status').eq('reference', reference).maybeSingle();
@@ -138,7 +141,8 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     const { error: insertError } = await admin.from('support_payment_orders').insert({
       reference,
       user_id: userId,
-      artiste_id: config.artiste_id,
+      // NULL for the platform-level 'gyidi' target, matching the initialize action.
+      artiste_id: config.artiste_id ?? null,
       amount_subunits: Number(payment.amount),
       customer_email: email.toLowerCase(),
       subaccount_code: subaccountCode,
