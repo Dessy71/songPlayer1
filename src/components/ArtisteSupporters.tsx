@@ -3,13 +3,19 @@ import { supabase } from '../lib/supabase';
 
 /**
  * Verified listeners who chose to share their support for an artiste.
- * Their profile pictures stack behind one another, each one slightly
- * offset so about half of the previous picture still shows.
+ *
+ * Supporters are ranked by the total amount they have given (highest first).
+ * The top three get a medal badge: gold, silver, bronze. Everyone after that
+ * continues in descending contribution order without a medal.
+ *
+ * Their profile pictures stack behind one another, each one slightly offset
+ * so about half of the previous picture still shows.
  */
 export function ArtisteSupporters({ artisteId }: { artisteId: string }) {
   const [supporters, setSupporters] = useState<{
     display_name: string;
     avatar_url: string | null;
+    total_amount_subunits: number;
   }[]>([]);
 
   useEffect(() => {
@@ -17,7 +23,17 @@ export function ArtisteSupporters({ artisteId }: { artisteId: string }) {
     void supabase
       .rpc('artiste_supporters', { p_artiste_id: artisteId })
       .then(({ data }) => {
-        if (active) setSupporters(data || []);
+        if (active) {
+          const rows = (data || []) as Array<{
+            display_name: string;
+            avatar_url: string | null;
+            total_amount_subunits: number;
+          }>;
+          // Safety sort by contribution (highest first) in case the RPC
+          // ordering ever changes.
+          rows.sort((a, b) => b.total_amount_subunits - a.total_amount_subunits);
+          setSupporters(rows);
+        }
       });
     return () => {
       active = false;
@@ -25,6 +41,8 @@ export function ArtisteSupporters({ artisteId }: { artisteId: string }) {
   }, [artisteId]);
 
   if (!supporters.length) return null;
+
+  const medalByRank = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
   const MAX_VISIBLE = 6;
   const visible = supporters.slice(0, MAX_VISIBLE);
@@ -42,29 +60,41 @@ export function ArtisteSupporters({ artisteId }: { artisteId: string }) {
       </div>
 
       <div className="flex items-center gap-2">
-        {visible.map((s, i) => (
-          <div
-            key={i}
-            className="relative"
-            style={{ transform: `translateX(${i * offsetStep}px)` }}
-          >
-            {s.avatar_url ? (
-              <img
-                src={s.avatar_url}
-                alt={s.display_name}
-                className="h-10 w-10 rounded-full object-cover border-2 border-zinc-950 shadow-lg"
-                title={s.display_name}
-              />
-            ) : (
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-zinc-950 bg-amber-500/20 text-amber-300 text-xs font-bold shadow-lg"
-                title={s.display_name}
-              >
-                {s.display_name.slice(0, 1).toUpperCase()}
-              </div>
-            )}
-          </div>
-        ))}
+        {visible.map((s, i) => {
+          const rank = i + 1;
+          const medal = medalByRank[rank as keyof typeof medalByRank];
+          return (
+            <div
+              key={i}
+              className="relative"
+              style={{ transform: `translateX(${i * offsetStep}px)` }}
+            >
+              {medal && (
+                <span
+                  className="absolute -top-1 -left-1 flex items-center justify-center h-5 w-5 rounded-full bg-white text-zinc-950 text-[9px] font-bold shadow-md z-10"
+                  title={`#{rank} supporter`}
+                >
+                  {medal}
+                </span>
+              )}
+              {s.avatar_url ? (
+                <img
+                  src={s.avatar_url}
+                  alt={s.display_name}
+                  className="h-10 w-10 rounded-full object-cover border-2 border-zinc-950 shadow-lg"
+                  title={s.display_name}
+                />
+              ) : (
+                <div
+                  className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-zinc-950 bg-amber-500/20 text-amber-300 text-xs font-bold shadow-lg"
+                  title={s.display_name}
+                >
+                  {s.display_name.slice(0, 1).toUpperCase()}
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {hidden > 0 && (
           <div
