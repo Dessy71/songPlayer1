@@ -1221,9 +1221,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 return (
                   <div
                     key={p.id}
-                    className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 flex items-start justify-between gap-3 min-w-0"
+                    className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 flex items-start justify-between gap-4 min-w-0"
                   >
-                    <div className="flex items-start gap-3 min-w-0">
+                    <div className="flex items-start gap-4 min-w-0">
                       {p.avatar_url ? (
                         <img
                           src={p.avatar_url}
@@ -1235,11 +1235,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           {(p.stage_name || p.display_name || p.email || 'U')[0]?.toUpperCase()}
                         </div>
                       )}
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
+                      <div className="min-w-0 flex flex-col gap-1">
+                        {/* Name + badges row */}
+                        <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
                           <button
                             onClick={() => onOpenArtiste(p.id)}
-                            className="text-sm font-bold text-white hover:text-amber-300 truncate cursor-pointer max-w-xs"
+                            className="text-sm font-bold text-white hover:text-amber-300 truncate cursor-pointer"
                           >
                             {p.stage_name || p.display_name || 'Listener'}
                           </button>
@@ -1247,22 +1248,23 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             <BadgeCheck className="w-4 h-4 text-sky-400 flex-shrink-0" />
                           )}
                           {p.is_sacsu && (
-                            <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300">
+                            <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300 shrink-0">
                               SACSU
                             </span>
                           )}
                           {p.is_precreated && !p.claimed_user_id && (
-                            <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                            <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300 shrink-0">
                               Pre-Created (Unclaimed)
                             </span>
                           )}
                           {p.is_precreated && p.claimed_user_id && (
-                            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 shrink-0">
                               Claimed ✓
                             </span>
                           )}
                         </div>
-                        <div className="flex flex-wrap items-center gap-1.5 mt-1.5 min-w-0">
+                        {/* Details row - single horizontal line, no vertical word wrap */}
+                        <div className="flex flex-nowrap items-center gap-1 overflow-hidden min-w-0">
                           {p.real_name && (
                             <span className="text-xs text-zinc-300 truncate">
                               {p.real_name}
@@ -1282,20 +1284,20 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             </span>
                           )}
                           {p.tertiary_institution && (
-                            <span className="text-[11px] text-cyan-300 flex items-center gap-1 shrink-0">
+                            <span className="text-[11px] text-cyan-300 flex items-center gap-1 shrink-0 truncate">
                               <GraduationCap className="w-3 h-3 shrink-0" />
                               {p.tertiary_institution}
                             </span>
                           )}
                           {(p.scg_zone || p.scg_branch) && (
-                            <span className="text-[11px] text-amber-300 flex items-center gap-1 shrink-0">
+                            <span className="text-[11px] text-amber-300 flex items-center gap-1 shrink-0 truncate">
                               {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}
                             </span>
                           )}
                         </div>
                         {/* Admin-only approval state + Paystack payout configuration */}
                         {(p.role === 'artiste' || p.role === 'admin') && (
-                          <div className="mt-1 flex flex-wrap items-center gap-1.5 min-w-0">
+                          <div className="mt-1 flex items-center gap-1.5 min-w-0 overflow-hidden">
                             <span
                               className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                                 isProfileApproved(p)
@@ -1303,7 +1305,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                                   : p.approval_status === 'rejected'
                                     ? 'bg-rose-500/15 text-rose-300'
                                     : 'bg-amber-500/15 text-amber-300'
-                              }`}
+                              } shrink-0`}
                             >
                               {isProfileApproved(p)
                                 ? 'Support Approved'
@@ -1312,12 +1314,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                                   : 'Pending Approval'}
                             </span>
                             {supports.get(p.id)?.has_paystack_page ? (
-                              <span className="truncate font-mono text-[10px] text-zinc-400 max-w-xs">
+                              <span className="truncate font-mono text-[10px] text-zinc-400">
                                 {supports.get(p.id)?.provider || 'Paystack'}
                                 {supports.get(p.id)?.is_placeholder ? ' · Sample' : ''}
                               </span>
                             ) : (
-                              <span className="text-[10px] text-zinc-500 truncate max-w-xs">
+                              <span className="text-[10px] text-zinc-500 truncate">
                                 No Paystack page configured
                               </span>
                             )}
