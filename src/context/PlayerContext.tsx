@@ -56,8 +56,33 @@ interface PlayerContextValue {
 
 const PlayerContext = createContext<PlayerContextValue | null>(null);
 
-const RECENT_STORAGE_KEY = 'gyidi_recent_ids_v2';
 const VOLUME_STORAGE_KEY = 'gyidi_volume_v2';
+/** How many recently-played entries are kept, locally and on the account. */
+const RECENT_LIMIT = 24;
+
+/**
+ * Recently played is cached per account. The key used to be a single constant,
+ * so two accounts sharing a browser shared one list.
+ */
+const recentStorageKey = (userId: string | null) => `gyidi_recent_ids_v2_${userId || 'guest'}`;
+
+const readRecentCache = (userId: string | null): string[] => {
+  try {
+    const parsed: unknown = JSON.parse(localStorage.getItem(recentStorageKey(userId)) || '[]');
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((id: unknown): id is string => typeof id === 'string');
+  } catch {
+    return [];
+  }
+};
+
+const writeRecentCache = (userId: string | null, ids: string[]) => {
+  try {
+    localStorage.setItem(recentStorageKey(userId), JSON.stringify(ids));
+  } catch {
+    // Storage can be blocked; the account copy is still authoritative.
+  }
+};
 
 export const PlayerProvider: React.FC<PlayerProviderProps> = ({
   children,
@@ -94,13 +119,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
   const [repeat, setRepeat] = useState<RepeatMode>('all');
   const [playbackRate, setPlaybackRateState] = useState(1);
   const [startupLatencyMs, setStartupLatencyMs] = useState<number | null>(null);
-  const [recentlyPlayedIds, setRecentlyPlayedIds] = useState<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem(RECENT_STORAGE_KEY) || '[]');
-    } catch {
-      return [];
-    }
-  });
+  const [recentlyPlayedIds, setRecentlyPlayedIds] = useState<string[]>(() => readRecentCache(userId));
 
   const isSongLockedForGuest = useCallback(
     (songId: string) => {
@@ -137,17 +156,98 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
     };
   }, []);
 
-  const recordRecent = useCallback((songId: string) => {
-    setRecentlyPlayedIds((prev) => {
-      const next = [songId, ...prev.filter((id) => id !== songId)].slice(0, 24);
+  /**
+   * Recently played is written to two places: a per-account browser cache for
+   * instant paint and offline playback, and the account itself so the list
+   * follows the user across devices. A failure to reach Supabase must never
+   * lose the local list.
+   */
+  const persistRecent = useCallback((next: string[], uid: string | null) => {
+    writeRecentCache(uid, next);
+    if (!uid || next.length === 0) return;
+    void (async () => {
       try {
-        localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(next));
+        const { error } = await supabase
+          .from('recent_plays')
+          .upsert({ user_id: uid, song_id: next[0], played_at: new Date().toISOString() }, { onConflict: 'user_id,song_id' });
+        if (error) return;
+        await supabase.rpc('prune_recent_plays', { p_user_id: uid, p_keep: RECENT_LIMIT });
       } catch {
-        // ignore
+        // Offline or not migrated yet: the local cache still holds the list.
       }
+    })();
+  }, []);
+
+  const recordRecent = useCallback((songId: string) => {
+    if (typeof songId !== 'string' || !songId) return;
+    setRecentlyPlayedIds((prev) => {
+      const next = [songId, ...prev.filter((id) => id !== songId)].slice(0, RECENT_LIMIT);
+      persistRecent(next, userId);
       return next;
     });
-  }, []);
+  }, [persistRecent, userId]);
+
+  /**
+   * Load the account's history whenever the signed-in user changes, and upload
+   * anything this device already recorded so nothing is lost the first time an
+   * existing account is used here.
+   */
+  const recentSyncTokenRef = useRef(0);
+  useEffect(() => {
+    const token = recentSyncTokenRef.current + 1;
+    recentSyncTokenRef.current = token;
+
+    // Swap to this account's own cache straight away so a previous account's
+    // list is never shown while the fetch is in flight.
+    const local = readRecentCache(userId);
+    setRecentlyPlayedIds(local);
+    if (!userId) return;
+
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('recent_plays')
+          .select('song_id')
+          .eq('user_id', userId)
+          .order('played_at', { ascending: false })
+          .limit(RECENT_LIMIT * 3);
+        if (error || token !== recentSyncTokenRef.current) return;
+
+        const remote = (data || [])
+          .map((row: { song_id?: unknown }) => row.song_id)
+          .filter((id: unknown): id is string => typeof id === 'string');
+
+        // Device history first, then whatever other devices contributed.
+        const merged: string[] = [];
+        for (const id of [...local, ...remote]) {
+          if (!merged.includes(id)) merged.push(id);
+        }
+        const next = merged.slice(0, RECENT_LIMIT);
+        if (token !== recentSyncTokenRef.current) return;
+        setRecentlyPlayedIds(next);
+        writeRecentCache(userId, next);
+
+        // Backfill anything this device knows about that the account is missing.
+        const missing = next.filter((id) => !remote.includes(id));
+        if (missing.length > 0) {
+          const now = Date.now();
+          await supabase
+            .from('recent_plays')
+            .upsert(
+              missing.map((song_id, index) => ({
+                user_id: userId,
+                song_id,
+                played_at: new Date(now - index * 1000).toISOString(),
+              })),
+              { onConflict: 'user_id,song_id', ignoreDuplicates: true }
+            );
+          await supabase.rpc('prune_recent_plays', { p_user_id: userId, p_keep: RECENT_LIMIT });
+        }
+      } catch {
+        // Offline or not migrated yet: keep the local list.
+      }
+    })();
+  }, [userId]);
 
   const warmTrack = useCallback(
     (song: Song) => {

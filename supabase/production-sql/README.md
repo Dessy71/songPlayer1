@@ -47,6 +47,7 @@ It bundles exactly the migrations that are not yet live:
 | `202611070009_support_orders_visible_to_all.sql` | RLS policy so visitors can read verified support orders (needed for the supporter list to render at all) |
 | `202611070010_fix_profile_auto_creation.sql` | `handle_new_user()` trigger that sets `approval_status = 'pending'` — fixes "Database error saving new user" on listener signup |
 | `202611070011_adopt_paystack_page_support.sql` | `support_user_id_by_email()` RPC used by the support-checkout webhook to attribute Paystack payment-page donations |
+| `202611070012_recent_plays.sql` | `recent_plays` table + `prune_recent_plays()` so recently played follows the account across devices |
 
 All three are idempotent, so re-running them is harmless.
 
