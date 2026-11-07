@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ArrowLeft,
   BadgeCheck,
@@ -27,8 +27,9 @@ import {
   isSongUpcomingPremiere,
   isProfileApproved,
   hasApprovedSupportPage,
-  isPaystackPageUrl,
+  SupportSummary,
 } from '../types/music';
+import { supabase } from '../lib/supabase';
 import { SongRow } from './SongRow';
 import { PremiereCard } from './PremiereCard';
 import { AlbumPremiereCard } from './AlbumPremiereCard';
@@ -97,12 +98,39 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   // Approval gate: a profile is only reachable/supportable once an admin approved it.
   // Rows from before the approval column existed stay visible (grandfathered).
   const isApproved = isProfileApproved(artiste);
-  // Support Badge: approved + Paystack details present. Shown as a profile picture only.
-  // Only a real Paystack page URL qualifies. Legacy rows hold a MoMo phone number in
-  // support_number, which must never be opened as a link or shown as a badge.
-  const showSupportBadge = hasApprovedSupportPage(artiste);
-  const hasLegacyPayoutDetails =
-    Boolean(artiste.support_number) && !isPaystackPageUrl(artiste.support_number);
+
+  // Payout details are no longer on the public profile. This redacted summary comes
+  // from profile_support_summary(), which never returns the subaccount code or the
+  // account holder name.
+  const [support, setSupport] = useState<SupportSummary | null>(null);
+  const [supportRefreshKey, setSupportRefreshKey] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    void supabase
+      .rpc('profile_support_summary', { p_artiste_id: artiste.id })
+      .then(({ data, error }) => {
+        if (!active) return;
+        const row = Array.isArray(data) ? data[0] : data;
+        setSupport(
+          error || !row
+            ? null
+            : {
+                approved: Boolean(row.approved),
+                has_paystack_page: Boolean(row.has_paystack_page),
+                payment_page_url: row.payment_page_url ?? null,
+                provider: row.provider ?? null,
+                is_placeholder: Boolean(row.is_placeholder),
+              }
+        );
+      });
+    return () => {
+      active = false;
+    };
+  }, [artiste.id, supportRefreshKey]);
+
+  // Support Badge: approved + a real Paystack page. Shown as a profile picture only.
+  const showSupportBadge = hasApprovedSupportPage(artiste, support);
 
   const artisteSongs = songs.filter(
     (s) =>
@@ -128,8 +156,8 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   const totalPlays = releasedSongs.reduce((sum, s) => sum + (s.plays_count || 0), 0);
 
   const openPaymentPage = () => {
-    if (!isPaystackPageUrl(artiste.support_number)) return;
-    window.open((artiste.support_number || '').trim(), '_blank', 'noopener,noreferrer');
+    if (!support?.has_paystack_page || !support.payment_page_url) return;
+    window.open(support.payment_page_url, '_blank', 'noopener,noreferrer');
   };
 
   const requireSupportAccess = () => {
@@ -335,12 +363,10 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               <div className="rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   {isAdminViewer
-                    ? hasLegacyPayoutDetails
-                      ? 'This profile still holds legacy MoMo details. Replace them with a Paystack payment page URL and subaccount to open listener support.'
+                    ? support?.is_placeholder
+                      ? 'Sample Paystack details are configured. Replace them with the real payment page URL and subaccount before going live.'
                       : 'Profile approved. Add the Paystack payment page URL so listeners can support this artiste.'
-                    : hasLegacyPayoutDetails
-                      ? 'Mobile Money support has been retired for this artiste. Premium checkout is being set up.'
-                      : 'Approved profile — support details are being finalised.'}
+                    : 'Approved profile — support details are being finalised.'}
                 </p>
                 {isAdminViewer && (
                   <button
@@ -382,7 +408,8 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                         Support {stageTitle}
                       </span>
                       <span className="block truncate text-[11px] text-zinc-400">
-                        {artiste.support_provider || 'Paystack Payment Page'}
+                        {support?.provider || 'Paystack Payment Page'}
+                        {support?.is_placeholder ? ' • Sample' : ''}
                       </span>
                     </span>
                   </span>

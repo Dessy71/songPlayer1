@@ -71,13 +71,50 @@ Artiste support pages are now approved from the app instead of a server-only see
   URL in a new tab. Platform-level "Support Gyidi Nwom" keeps using the verified
   server checkout, never a raw number.
 
+## Payout details are no longer on the public profile
+
+`profiles` is readable by everyone, so the payout columns were exposed to `anon`
+through the public API: any visitor could read artiste MoMo numbers and account
+names. `202611070002_private_payout_details.sql` closes that.
+
+- Payout details now live in `artiste_payout_details`, which has RLS enabled with
+  **no policies** and no `anon`/`authenticated` grants: only `service_role` reads
+  it. `REVOKE ALL ... FROM anon, authenticated` is explicit.
+- The three columns are **dropped** from `profiles`, so the public API can no longer
+  return them, and `UserProfile` no longer declares them. The TypeScript compiler
+  found every remaining caller.
+- Browser reads use `profile_support_summary(artiste_id)` (single) or the
+  `profile_support_summaries` view (bulk, `authenticated` only). Both return an
+  `approved` flag, `has_paystack_page`, the payment page URL, the provider and an
+  `is_placeholder` flag. **They never return the subaccount code or the account
+  holder name.**
+- `admin_get_support_details(target)` is the only read that returns the full row,
+  including the subaccount, and it refuses non-admins.
+- Writes go through `admin_set_support_details(...)`, which updates the restricted
+  row and keeps `support_checkout_config` in sync.
+- Signup (`AuthModal`) and Artiste Studio no longer collect payout details at all;
+  they explain that an administrator configures Paystack after approval.
+- Existing values were **archived, not deleted**: `artiste_payout_details_legacy`
+  (service_role only) keeps the old provider/number/name so nothing is lost. Those
+  values could not be migrated into `subaccount_code` because they are MoMo numbers
+  and personal names, not `ACCT_` codes.
+
+### Placeholder configuration
+
+`202611070003_placeholder_payout_details.sql` seeds obvious sample values
+(`https://paystack.shop/pay/placeholder-<id>` and `ACCT_placeholder0000`) marked
+`is_placeholder = true`, so the admin UI labels them "Sample". Checkout still fails
+closed: `support-checkout` validates the subaccount against Paystack before opening
+checkout, so a listener gets a clean error rather than a bad charge. Replace each
+row from **Admin -> Users -> Support Details** with the real URL and code.
+
 ## Remaining product work
 - Automatic webhook verification and refunds/disputes/reversal recognition handling.
 - Profile photo upload/edit after signup (existing avatar_url is displayed only).
 - Artiste-private supporter/payment history and anonymous display rules.
-- Move legacy payout fields to private storage and remove collection from signup.
-  Note: `support_number` / `support_account_name` are still readable through the
-  public profiles API until that privacy migration lands.
+- Legacy payout fields are now in private storage and no longer collected at
+  signup (see above). Remaining: delete `artiste_payout_details_legacy` once the
+  archived MoMo values have been reviewed and the real Paystack details are set.
 - End-to-end live payment validation. Local tests use mocks/isolated PostgreSQL,
   not real money. No charge was made by the agent.
 

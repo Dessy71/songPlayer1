@@ -41,15 +41,6 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
   );
   const [bio, setBio] = useState(artiste?.bio || '');
 
-  // NEW: Admin-only Paystack fields mapped to support_number and support_account_name
-  const [supportProvider, setSupportProvider] = useState(
-    artiste?.support_provider || (isAdminViewer ? 'Paystack Payment Page' : 'MTN Mobile Money (MoMo)')
-  );
-  const [supportNumber, setSupportNumber] = useState(artiste?.support_number || '');
-  const [supportAccountName, setSupportAccountName] = useState(
-    artiste?.support_account_name || ''
-  );
-
   const [avatarUrl, setAvatarUrl] = useState(artiste?.avatar_url || '');
   const [assignEmail, setAssignEmail] = useState(artiste?.email || '');
 
@@ -66,9 +57,6 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
       setIsSacsu(Boolean(artiste.is_sacsu));
       setTertiaryInstitution(artiste.tertiary_institution || '');
       setBio(artiste.bio || '');
-      setSupportProvider(artiste.support_provider || (isAdminViewer ? 'Paystack Payment Page' : 'MTN Mobile Money (MoMo)'));
-      setSupportNumber(artiste.support_number || '');
-      setSupportAccountName(artiste.support_account_name || '');
       setAvatarUrl(artiste.avatar_url || '');
       setAssignEmail(artiste.email || '');
     }
@@ -93,16 +81,6 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
       setSaving(false);
     }
   };
-
-  // Paystack payout fields are admin-only: never send them from a non-admin save,
-  // and never overwrite stored details with blanks from an admin edit.
-  const adminSupportFields = isAdminViewer
-    ? {
-        support_provider: supportProvider.trim() || null,
-        support_number: supportNumber.trim() || null,
-        support_account_name: supportAccountName.trim() || null,
-      }
-    : {};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,7 +120,6 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             is_sacsu: isSacsu,
             tertiary_institution: tertiaryInstitution.trim() || null,
             bio: bio.trim() || null,
-            ...adminSupportFields,
             avatar_url: avatarUrl || null,
             is_precreated: true,
             is_verified_artiste: true,
@@ -164,7 +141,6 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             is_sacsu: isSacsu,
             tertiary_institution: tertiaryInstitution.trim() || null,
             bio: bio.trim() || null,
-            ...adminSupportFields,
             avatar_url: avatarUrl || null,
           })
           .eq('id', artiste.id)
@@ -336,39 +312,19 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
             />
           </div>
 
-          {/* FAN SUPPORT ACCOUNT DETAILS (ADMIN-ONLY PAYSTACK FIELDS) */}
+          {/* Payout details deliberately live in the Support Details modal, not here:
+              that path is audited and writes to the restricted payout table. */}
           {isAdminViewer && (
-            <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3 space-y-2.5">
+            <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-3">
               <p className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
                 <Wallet className="w-4 h-4" />
-                Admin Paystack Configuration (Payment Page URL & Subaccount)
+                Paystack Payout Configuration
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <select
-                  value={supportProvider}
-                  onChange={(e) => setSupportProvider(e.target.value)}
-                  className="rounded-xl border border-white/10 bg-zinc-950 px-2.5 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-                >
-                  <option value="Paystack Payment Page">Paystack Payment Page</option>
-                  <option value="MTN Mobile Money (MoMo)">MTN MoMo</option>
-                  <option value="Telecel Cash">Telecel Cash</option>
-                  <option value="Bank Account">Bank Account</option>
-                </select>
-                <input
-                  type="text"
-                  value={supportNumber}
-                  onChange={(e) => setSupportNumber(e.target.value)}
-                  placeholder="https://paystack.shop/pay/..."
-                  className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  value={supportAccountName}
-                  onChange={(e) => setSupportAccountName(e.target.value)}
-                  placeholder="ACCT_xxxxxxxxxxxx"
-                  className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-                />
-              </div>
+              <p className="mt-1 text-[11px] leading-relaxed text-zinc-300">
+                Payment page URL, subaccount code and profile approval are managed from
+                <strong className="text-white"> Admin &rarr; Users &rarr; Support Details</strong>
+                {' '}(or the Artiste Profile queue in Approvals), where they stay private and audited.
+              </p>
             </div>
           )}
 

@@ -87,9 +87,6 @@ export interface UserProfile {
   is_precreated?: boolean;
   /** Admin-controlled: a support page only goes live once approved with Paystack details. */
   approval_status?: ApprovalStatus;
-  support_provider?: string | null;
-  support_number?: string | null;
-  support_account_name?: string | null;
   is_verified_artiste?: boolean;
   is_premium?: boolean;
   premium_plan?: 'monthly' | 'yearly' | 'lifetime' | null;
@@ -251,12 +248,22 @@ export function isPaystackPageUrl(value?: string | null): boolean {
   return /^https:\/\/([a-z0-9-]+\.)*paystack\.(com|shop)\//i.test(value.trim());
 }
 
+/** Redacted support summary. The subaccount and account name never reach the browser. */
+export interface SupportSummary {
+  approved: boolean;
+  has_paystack_page: boolean;
+  payment_page_url: string | null;
+  provider: string | null;
+  is_placeholder: boolean;
+}
+
 /** A profile can show the support badge only when approved AND a Paystack page exists. */
 export function hasApprovedSupportPage(
-  profile: Pick<UserProfile, 'approval_status' | 'support_number'> | null | undefined
+  profile: Pick<UserProfile, 'approval_status'> | null | undefined,
+  support: Pick<SupportSummary, 'has_paystack_page'> | null | undefined
 ): boolean {
-  if (!profile) return false;
-  return isProfileApproved(profile) && isPaystackPageUrl(profile.support_number);
+  if (!profile || !support) return false;
+  return isProfileApproved(profile) && support.has_paystack_page === true;
 }
 
 export function isUserPremiumActive(

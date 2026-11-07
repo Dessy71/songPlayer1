@@ -80,13 +80,6 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
   const [tertiaryInstitution, setTertiaryInstitution] = useState(
     profile.tertiary_institution || ''
   );
-  const [supportProvider, setSupportProvider] = useState(
-    profile.support_provider || 'MTN Mobile Money (MoMo)'
-  );
-  const [supportNumber, setSupportNumber] = useState(profile.support_number || '');
-  const [supportAccountName, setSupportAccountName] = useState(
-    profile.support_account_name || ''
-  );
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || '');
   const [saving, setSaving] = useState(false);
   const [savedToast, setSavedToast] = useState(false);
@@ -268,10 +261,6 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
       setError('SCG Zone and SCG Branch are required.');
       return;
     }
-    if (!supportNumber.trim() || !supportAccountName.trim()) {
-      setError('Please add your MoMo / Bank account details so fans can support your ministry.');
-      return;
-    }
 
     setSaving(true);
     try {
@@ -288,9 +277,6 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
           scg_branch: scgBranch.trim() || null,
           is_sacsu: isSacsu,
           tertiary_institution: tertiaryInstitution.trim() || null,
-          support_provider: supportProvider,
-          support_number: supportNumber.trim(),
-          support_account_name: supportAccountName.trim(),
           avatar_url: avatarUrl || null,
         })
         .eq('id', profile.id)
@@ -1015,38 +1001,17 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             />
           </div>
 
-          <div className="pt-2 border-t border-white/10 space-y-2.5">
-            <p className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-              <Wallet className="w-4 h-4" />
-              Fan Funds Support Account *
-            </p>
-            <select
-              value={supportProvider}
-              onChange={(e) => setSupportProvider(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-            >
-              <option value="MTN Mobile Money (MoMo)">MTN Mobile Money (MoMo)</option>
-              <option value="Telecel Cash">Telecel Cash</option>
-              <option value="AT Money">AT Money</option>
-              <option value="Bank Account">Bank Account</option>
-            </select>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <input
-                type="text"
-                required
-                value={supportNumber}
-                onChange={(e) => setSupportNumber(e.target.value)}
-                placeholder="MoMo / Account No. *"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-              />
-              <input
-                type="text"
-                required
-                value={supportAccountName}
-                onChange={(e) => setSupportAccountName(e.target.value)}
-                placeholder="Account Holder Name *"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-              />
+          <div className="pt-2 border-t border-white/10">
+            <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3">
+              <p className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                <Wallet className="w-4 h-4" />
+                Fan Support &amp; Payouts
+              </p>
+              <p className="mt-1 text-[11px] leading-relaxed text-zinc-300">
+                Payout details are configured by an administrator, not collected here. Once
+                your profile is approved with a Paystack payment page, listeners can support
+                you securely and your payout details are never exposed publicly.
+              </p>
             </div>
           </div>
 

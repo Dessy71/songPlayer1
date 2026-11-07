@@ -42,6 +42,7 @@ import {
   isAlbumUpcomingPremiere,
   isSongUpcomingPremiere,
   isProfileApproved,
+  SupportSummary,
 } from '../types/music';
 import { CoverArt } from './CoverArt';
 import { CountdownBadge } from './CountdownBadge';
@@ -154,6 +155,47 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     () => new Map(adminProfiles.map((p) => [p.id, p])),
     [adminProfiles]
   );
+
+  // Redacted support summaries keyed by artiste id. Payout details are no longer on
+  // profiles, so the dashboard reads this instead of the dropped columns.
+  const [supports, setSupports] = useState<Map<string, SupportSummary>>(new Map());
+
+  useEffect(() => {
+    const ids = adminProfiles.filter((p) => p.role === 'artiste').map((p) => p.id);
+    if (ids.length === 0) {
+      setSupports(new Map());
+      return;
+    }
+    let active = true;
+    void supabase
+      .from('profile_support_summaries')
+      .select('artiste_id, approved, has_paystack_page, payment_page_url, provider, is_placeholder')
+      .in('artiste_id', ids)
+      .then(({ data, error }) => {
+        if (!active) return;
+        if (error || !data) {
+          setSupports(new Map());
+          return;
+        }
+        setSupports(
+          new Map(
+            data.map((row) => [
+              row.artiste_id as string,
+              {
+                approved: Boolean(row.approved),
+                has_paystack_page: Boolean(row.has_paystack_page),
+                payment_page_url: (row.payment_page_url as string | null) ?? null,
+                provider: (row.provider as string | null) ?? null,
+                is_placeholder: Boolean(row.is_placeholder),
+              },
+            ])
+          )
+        );
+      });
+    return () => {
+      active = false;
+    };
+  }, [adminProfiles]);
 
   const stats = useMemo(() => {
     const now = Date.now();
@@ -348,14 +390,14 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       });
   }, [adminSongs, approvalFilter]);
 
-  // Artiste profile approval queue (support pages). Approved profiles are grandfathered
-  // rows that already have support details configured.
+  // Artiste profile approval queue. Payout details are no longer on the profile, so the
+  // "configured" signal comes from the redacted support summary keyed by artiste id.
   const profileApprovalQueue = useMemo(() => {
     const artistes = adminProfiles.filter((p) => p.role === 'artiste');
     if (approvalFilter === 'pending') return artistes.filter((p) => p.approval_status === 'pending');
     if (approvalFilter === 'rejected') return artistes.filter((p) => p.approval_status === 'rejected');
-    return artistes.filter((p) => isProfileApproved(p) && Boolean(p.support_number));
-  }, [adminProfiles, approvalFilter]);
+    return artistes.filter((p) => isProfileApproved(p) && supports.has(p.id));
+  }, [adminProfiles, approvalFilter, supports]);
 
   const storageQuotaPercent = Math.min(100, (stats.totalBytes / (1000 * 1024 * 1024)) * 100);
   const maxBucket = Math.max(1, ...stats.dailyBuckets.map((b) => b.count));
@@ -711,13 +753,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           {p.stage_name || p.display_name || p.email || 'Artiste'}
                         </p>
                         <p className="truncate text-[11px] text-zinc-400">
-                          {p.support_number
-                            ? `${p.support_provider || 'Paystack'}: ${p.support_number}`
+                          {supports.get(p.id)?.payment_page_url
+                            ? `${supports.get(p.id)?.provider || 'Paystack'}${supports.get(p.id)?.is_placeholder ? ' • Sample' : ''}`
                             : 'No Paystack page configured'}
                         </p>
-                        {p.support_account_name && (
+                        {supports.get(p.id)?.payment_page_url && (
                           <p className="truncate font-mono text-[10px] text-zinc-500">
-                            {p.support_account_name}
+                            {supports.get(p.id)?.payment_page_url}
                           </p>
                         )}
                       </div>
@@ -1222,10 +1264,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                                   ? 'Support Rejected'
                                   : 'Pending Approval'}
                             </span>
-                            {p.support_number ? (
+                            {supports.get(p.id)?.has_paystack_page ? (
                               <span className="truncate font-mono text-[10px] text-zinc-400">
-                                {p.support_provider || 'Paystack'}: {p.support_number}
-                                {p.support_account_name ? ` · ${p.support_account_name}` : ''}
+                                {supports.get(p.id)?.provider || 'Paystack'}
+                                {supports.get(p.id)?.is_placeholder ? ' · Sample' : ''}
                               </span>
                             ) : (
                               <span className="text-[10px] text-zinc-500">

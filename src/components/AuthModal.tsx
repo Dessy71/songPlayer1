@@ -64,9 +64,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [scgBranch, setScgBranch] = useState('');
   const [isSacsu, setIsSacsu] = useState(false);
   const [tertiaryInstitution, setTertiaryInstitution] = useState('');
-  const [supportProvider, setSupportProvider] = useState('MTN Mobile Money (MoMo)');
-  const [supportNumber, setSupportNumber] = useState('');
-  const [supportAccountName, setSupportAccountName] = useState('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -121,9 +118,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             } else if (!scgZone.trim() || !scgBranch.trim()) {
               throw new Error('Please fill in your SCG Zone and SCG Branch.');
             }
-            if (!supportNumber.trim() || !supportAccountName.trim()) {
-              throw new Error('Please provide your fan support account number and account name.');
-            }
           }
 
           const cleanUsername =
@@ -154,9 +148,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   accountType === 'artiste' && tertiaryInstitution.trim()
                     ? tertiaryInstitution.trim()
                     : null,
-                support_provider: accountType === 'artiste' ? supportProvider : null,
-                support_number: accountType === 'artiste' ? supportNumber.trim() : null,
-                support_account_name: accountType === 'artiste' ? supportAccountName.trim() : null,
               },
             },
           });
@@ -422,38 +413,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </label>
               </div>
 
-              <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 pt-1">
-                <Wallet className="w-3.5 h-3.5 inline mr-1" />
-                Fan Support Account Details
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <select
-                  value={supportProvider}
-                  onChange={(e) => setSupportProvider(e.target.value)}
-                  className="rounded-xl border border-white/10 bg-zinc-950 px-2.5 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
-                >
-                  <option value="MTN Mobile Money (MoMo)">MTN MoMo</option>
-                  <option value="Telecel Cash">Telecel Cash</option>
-                  <option value="AT Money">AT Money</option>
-                  <option value="Bank Account">Bank Account</option>
-                </select>
-                <input
-                  type="text"
-                  required
-                  value={supportNumber}
-                  onChange={(e) => setSupportNumber(e.target.value)}
-                  placeholder="Account / MoMo No. *"
-                  className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  required
-                  value={supportAccountName}
-                  onChange={(e) => setSupportAccountName(e.target.value)}
-                  placeholder="Account Name *"
-                  className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
-                />
+              <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
+                  <Wallet className="w-3.5 h-3.5 inline mr-1" />
+                  Fan Support
+                </p>
+                <p className="mt-1 text-[11px] leading-relaxed text-zinc-300">
+                  Payout details are no longer collected here. Once your profile is approved,
+                  an administrator configures your Paystack payment page so listeners can
+                  support you securely — and your payout details stay private.
+                </p>
               </div>
             </div>
           )}
