@@ -1215,50 +1215,50 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {userRows.map((p) => {
                 const code = claimCodeMap.get(p.id);
                 return (
                   <div
                     key={p.id}
-                    className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 flex items-start justify-between gap-4 min-w-0"
+                    className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 min-w-0 flex flex-col h-full gap-3"
                   >
                     <div className="flex items-start gap-4 min-w-0">
                       {p.avatar_url ? (
                         <img
                           src={p.avatar_url}
                           alt=""
-                          className="h-12 w-12 rounded-xl object-cover flex-shrink-0"
+                          className="h-14 w-14 rounded-xl object-cover flex-shrink-0"
                         />
                       ) : (
-                        <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center text-sm font-bold text-amber-300 flex-shrink-0">
+                        <div className="h-14 w-14 rounded-xl bg-white/10 flex items-center justify-center text-sm font-bold text-amber-300 flex-shrink-0">
                           {(p.stage_name || p.display_name || p.email || 'U')[0]?.toUpperCase()}
                         </div>
                       )}
-                      <div className="min-w-0 flex flex-col gap-1">
+                      <div className="min-w-0 flex flex-col gap-1 overflow-hidden">
                         {/* Name + badges row */}
                         <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
                           <button
                             onClick={() => onOpenArtiste(p.id)}
-                            className="text-sm font-bold text-white hover:text-amber-300 truncate cursor-pointer"
+                            className="text-sm font-bold text-white hover:text-amber-300 truncate cursor-pointer min-w-0"
                           >
                             {p.stage_name || p.display_name || 'Listener'}
                           </button>
                           {p.is_verified_artiste && (
-                            <BadgeCheck className="w-4 h-4 text-sky-400 flex-shrink-0" />
+                            <BadgeCheck className="w-4 h-4 text-sky-400 flex-shrink-0 shrink-0" />
                           )}
                           {p.is_sacsu && (
-                            <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300 shrink-0">
+                            <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300 shrink-0 whitespace-nowrap">
                               SACSU
                             </span>
                           )}
                           {p.is_precreated && !p.claimed_user_id && (
-                            <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300 shrink-0">
+                            <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300 shrink-0 whitespace-nowrap">
                               Pre-Created (Unclaimed)
                             </span>
                           )}
                           {p.is_precreated && p.claimed_user_id && (
-                            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 shrink-0">
+                            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300 shrink-0 whitespace-nowrap">
                               Claimed ✓
                             </span>
                           )}
@@ -1271,7 +1271,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             </span>
                           )}
                           {p.email && (
-                            <span className="text-[11px] text-zinc-400 truncate">
+                            <span className="text-xs text-zinc-400 truncate block min-w-0">
                               {p.email}
                             </span>
                           )}
@@ -1284,13 +1284,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             </span>
                           )}
                           {p.tertiary_institution && (
-                            <span className="text-[11px] text-cyan-300 flex items-center gap-1 shrink-0 truncate">
+                            <span className="text-[11px] text-cyan-300 flex items-center gap-1 shrink-0 truncate whitespace-nowrap">
                               <GraduationCap className="w-3 h-3 shrink-0" />
                               {p.tertiary_institution}
                             </span>
                           )}
                           {(p.scg_zone || p.scg_branch) && (
-                            <span className="text-[11px] text-amber-300 flex items-center gap-1 shrink-0 truncate">
+                            <span className="text-[11px] text-amber-300 flex items-center gap-1 shrink-0 truncate whitespace-nowrap">
                               {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}
                             </span>
                           )}
@@ -1299,13 +1299,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         {(p.role === 'artiste' || p.role === 'admin') && (
                           <div className="mt-1 flex items-center gap-1.5 min-w-0 overflow-hidden">
                             <span
-                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0 whitespace-nowrap ${
                                 isProfileApproved(p)
                                   ? 'bg-emerald-500/15 text-emerald-300'
                                   : p.approval_status === 'rejected'
                                     ? 'bg-rose-500/15 text-rose-300'
                                     : 'bg-amber-500/15 text-amber-300'
-                              } shrink-0`}
+                              }`}
                             >
                               {isProfileApproved(p)
                                 ? 'Support Approved'
@@ -1314,12 +1314,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                                   : 'Pending Approval'}
                             </span>
                             {supports.get(p.id)?.has_paystack_page ? (
-                              <span className="truncate font-mono text-[10px] text-zinc-400">
+                              <span className="truncate font-mono text-[10px] text-zinc-400 min-w-0">
                                 {supports.get(p.id)?.provider || 'Paystack'}
                                 {supports.get(p.id)?.is_placeholder ? ' · Sample' : ''}
                               </span>
                             ) : (
-                              <span className="text-[10px] text-zinc-500 truncate">
+                              <span className="text-[10px] text-zinc-500 truncate min-w-0">
                                 No Paystack page configured
                               </span>
                             )}
@@ -1333,7 +1333,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         disabled={busyId === p.id}
                         value={p.role}
                         onChange={(e) => handleRoleChange(p, e.target.value as UserRole)}
-                        className="min-w-0 rounded-lg border border-white/15 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white"
+                        className="min-w-[100px] rounded-lg border border-white/15 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white"
                       >
                         <option value="listener">Listener</option>
                         <option value="artiste">Artiste</option>
@@ -1344,11 +1344,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         {p.is_precreated && (
                           <button
                             onClick={() => setProvisioningArtiste(p)}
-                            className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/20 border border-emerald-500/35 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer"
-                            title="Create Login Email/Password or Copy Claim Code"
-                          >
-                            <KeyRound className="w-3 h-3" />
-                            Login Creds
+                              className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/20 border border-emerald-500/35 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer shrink-0"
+                              title="Create Login Email/Password or Copy Claim Code"
+                            >
+                              <KeyRound className="w-3 h-3 shrink-0" />
+                              Login Creds
                           </button>
                         )}
 
@@ -1357,10 +1357,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             setEditingArtiste(p);
                             setArtisteModalOpen(true);
                           }}
-                          className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300 hover:bg-white/15 cursor-pointer"
-                        >
-                          <Edit3 className="w-3 h-3" />
-                          Edit
+                            className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300 hover:bg-white/15 cursor-pointer shrink-0"
+                          >
+                            <Edit3 className="w-3 h-3 shrink-0" />
+                            Edit
                         </button>
 
                         {/* NEW: Support Details Button for Admin */}
@@ -1370,25 +1370,25 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                               setSelectedArtisteForSupport(p);
                               setSupportModalOpen(true);
                             }}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400/10 border border-amber-400/25 px-2.5 py-1 text-[11px] font-bold text-amber-400 hover:bg-amber-400/20 cursor-pointer"
-                            title="Edit Paystack URL & Subaccount"
-                          >
-                            <Wallet className="w-3 h-3" />
-                            Support Details
+                              className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400/10 border border-amber-400/25 px-2.5 py-1 text-[11px] font-bold text-amber-400 hover:bg-amber-400/20 cursor-pointer shrink-0"
+                              title="Edit Paystack URL & Subaccount"
+                            >
+                              <Wallet className="w-3 h-3 shrink-0" />
+                              Support Details
                           </button>
                         )}
 
                         <button
                           disabled={busyId === p.id}
                           onClick={() => handleToggleUserPremium(p)}
-                          className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
+                          className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer shrink-0 ${
                             p.is_premium
                               ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40'
                               : 'bg-white/5 text-zinc-400 hover:text-amber-300'
                           }`}
                           title="Grant or revoke Gyidi Nwom Premium"
                         >
-                          <Crown className="w-3 h-3" />
+                          <Crown className="w-3 h-3 shrink-0" />
                           {p.is_premium ? 'Premium ✓' : '+ Premium'}
                         </button>
 
@@ -1396,7 +1396,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           <button
                             disabled={busyId === p.id}
                             onClick={() => handleToggleVerifyArtiste(p)}
-                            className={`rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
+                            className={`rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer shrink-0 ${
                               p.is_verified_artiste
                                 ? 'bg-sky-500/20 text-sky-300'
                                 : 'bg-white/5 text-zinc-400 hover:text-white'
