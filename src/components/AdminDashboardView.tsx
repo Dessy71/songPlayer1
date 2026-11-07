@@ -1208,7 +1208,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 setEditingArtiste(null);
                 setArtisteModalOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-4 py-2 text-xs font-extrabold text-white shadow-lg cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-4 py-2 text-xs font-extrabold text-white shadow-lg cursor-pointer flex-shrink-0"
             >
               <Plus className="w-4 h-4" />
               Create Artiste / SACSU Profile
@@ -1221,7 +1221,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 return (
                   <div
                     key={p.id}
-                    className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 flex items-start justify-between gap-3"
+                    className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 flex items-start justify-between gap-3 min-w-0"
                   >
                     <div className="flex items-start gap-3 min-w-0">
                       {p.avatar_url ? (
@@ -1239,7 +1239,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <button
                             onClick={() => onOpenArtiste(p.id)}
-                            className="text-sm font-bold text-white hover:text-amber-300 truncate cursor-pointer"
+                            className="text-sm font-bold text-white hover:text-amber-300 truncate cursor-pointer max-w-xs"
                           >
                             {p.stage_name || p.display_name || 'Listener'}
                           </button>
@@ -1262,8 +1262,8 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             </span>
                           )}
                         </div>
-                        {p.real_name && <p className="text-xs text-zinc-300">{p.real_name}</p>}
-                        {p.email && <p className="text-[11px] text-zinc-400 truncate">{p.email}</p>}
+                        {p.real_name && <p className="text-xs text-zinc-300 truncate max-w-xs">{p.real_name}</p>}
+                        {p.email && <p className="text-[11px] text-zinc-400 truncate max-w-xs">{p.email}</p>}
                         {p.is_precreated && !p.claimed_user_id && code && (
                           <p
                             className="text-[11px] font-mono font-bold text-amber-300 mt-0.5 truncate max-w-xs"
@@ -1285,7 +1285,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         )}
                         {/* Admin-only approval state + Paystack payout configuration */}
                         {(p.role === 'artiste' || p.role === 'admin') && (
-                          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          <div className="mt-1 flex flex-wrap items-center gap-1.5 min-w-0">
                             <span
                               className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                                 isProfileApproved(p)
@@ -1302,12 +1302,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                                   : 'Pending Approval'}
                             </span>
                             {supports.get(p.id)?.has_paystack_page ? (
-                              <span className="truncate font-mono text-[10px] text-zinc-400">
+                              <span className="truncate font-mono text-[10px] text-zinc-400 max-w-xs">
                                 {supports.get(p.id)?.provider || 'Paystack'}
                                 {supports.get(p.id)?.is_placeholder ? ' · Sample' : ''}
                               </span>
                             ) : (
-                              <span className="text-[10px] text-zinc-500">
+                              <span className="text-[10px] text-zinc-500 truncate max-w-xs">
                                 No Paystack page configured
                               </span>
                             )}
@@ -1316,19 +1316,19 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                    <div className="flex flex-col items-end gap-1.5 flex-shrink-0 min-w-0">
                       <select
                         disabled={busyId === p.id}
                         value={p.role}
                         onChange={(e) => handleRoleChange(p, e.target.value as UserRole)}
-                        className="rounded-lg border border-white/15 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white"
+                        className="min-w-0 rounded-lg border border-white/15 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white"
                       >
                         <option value="listener">Listener</option>
                         <option value="artiste">Artiste</option>
                         <option value="admin">Admin</option>
                       </select>
 
-                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      <div className="flex items-center gap-1 flex-wrap justify-end min-w-0">
                         {p.is_precreated && (
                           <button
                             onClick={() => setProvisioningArtiste(p)}
