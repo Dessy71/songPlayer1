@@ -1,4 +1,4 @@
--- Allow all authenticated users to read verified support orders.
+-- Allow all users (authenticated and anonymous) to read verified support orders.
 -- The artiste_supporters() RPC (SECURITY DEFINER) joins against
 -- support_payment_orders to display supporter profile pictures on artiste
 -- profile pages. Previously RLS only allowed each user to read their own
@@ -9,5 +9,5 @@
 -- or contact details.
 CREATE POLICY "Verified supporters visible to all"
   ON public.support_payment_orders
-  FOR SELECT TO authenticated
+  FOR SELECT TO anon, authenticated
   USING (status = 'verified');
