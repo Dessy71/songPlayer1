@@ -395,34 +395,26 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 </button>
               </div>
             ) : (
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={openPaymentPage}
-                  className="flex w-full items-center justify-between gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-3 text-left hover:bg-emerald-500/20 transition cursor-pointer"
-                >
-                  <span className="flex items-center gap-2.5 min-w-0">
-                    <Wallet className="w-5 h-5 flex-shrink-0 text-emerald-400" />
-                    <span className="min-w-0">
-                      <span className="block text-xs font-extrabold uppercase tracking-wider text-emerald-300">
-                        Support {stageTitle}
-                      </span>
-                      <span className="block truncate text-[11px] text-zinc-400">
-                        {support?.provider || 'Paystack Payment Page'}
-                        {support?.is_placeholder ? ' • Sample' : ''}
-                      </span>
+              /* Wallet icon only: click and go straight to the payment page.
+                 No URL, no subaccount, no secondary "view details" step. */
+              <button
+                type="button"
+                onClick={openPaymentPage}
+                className="flex w-full items-center justify-between gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-3 text-left hover:bg-emerald-500/20 transition cursor-pointer"
+              >
+                <span className="flex items-center gap-2.5 min-w-0">
+                  <Wallet className="w-5 h-5 flex-shrink-0 text-emerald-400" />
+                  <span className="min-w-0">
+                    <span className="block text-xs font-extrabold uppercase tracking-wider text-emerald-300">
+                      Support {stageTitle}
+                    </span>
+                    <span className="block truncate text-[11px] text-zinc-400">
+                      Continue to the payment page
                     </span>
                   </span>
-                  <ExternalLink className="w-4 h-4 flex-shrink-0 text-emerald-400" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSupportModalOpen(true)}
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-[11px] font-bold text-zinc-300 hover:bg-zinc-800 cursor-pointer"
-                >
-                  View support details
-                </button>
-              </div>
+                </span>
+                <ExternalLink className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+              </button>
             )}
           </div>
         </div>

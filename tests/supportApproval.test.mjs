@@ -99,3 +99,69 @@ test('signup and artiste studio stop collecting payout details', () => {
     }
   }
 });
+
+test('no non-admin code path renders a subaccount code', () => {
+  // Only the admin form in SupportModal may bind the subaccount value.
+  const modal = fs.readFileSync('src/components/SupportModal.tsx', 'utf8');
+  const listenerBlock = modal.slice(modal.indexOf('LISTENER / ARTISTE / PLATFORM VIEW'));
+  assert.equal(
+    /subaccountCode|subaccount_code/.test(listenerBlock),
+    false,
+    'the listener view must not reference the subaccount'
+  );
+
+  // The artiste profile is fully public and must never read payout data. It may only
+  // mention "subaccount" inside admin-gated copy, never as a data reference.
+  const profile = fs.readFileSync('src/components/ArtisteProfileView.tsx', 'utf8');
+  for (const identifier of [
+    'support_account_name',
+    'subaccount_code',
+    'admin_get_support_details',
+    '.subaccount',
+  ]) {
+    assert.equal(
+      profile.includes(identifier),
+      false,
+      `ArtisteProfileView must not reference ${identifier}`
+    );
+  }
+});
+
+test('listener sees one wallet redirect, not a details view', () => {
+  const profile = fs.readFileSync('src/components/ArtisteProfileView.tsx', 'utf8');
+  assert.equal(
+    profile.includes('View support details'),
+    false,
+    'the secondary "View support details" button must be gone'
+  );
+
+  const modal = fs.readFileSync('src/components/SupportModal.tsx', 'utf8');
+  // No copyable URL row for listeners.
+  const listenerBlock = modal.slice(modal.indexOf('LISTENER / ARTISTE / PLATFORM VIEW'));
+  assert.equal(
+    listenerBlock.includes('aria-label="Copy payment page URL"'),
+    false,
+    'listeners must not be shown a copyable payment URL'
+  );
+});
+
+test('Support Provider field is gone and Gyidi has no hard-coded amount', () => {
+  const modal = fs.readFileSync('src/components/SupportModal.tsx', 'utf8');
+  assert.equal(
+    modal.includes('>\n                  Support Provider'),
+    false,
+    'the Support Provider input must be removed'
+  );
+
+  const gyidi = fs.readFileSync('src/components/SupportGyidiButton.tsx', 'utf8');
+  assert.equal(
+    /useState\(['"]5['"]\)|Amount \(GHS\)/.test(gyidi),
+    false,
+    'the Gyidi button must not hard-code an amount'
+  );
+  assert.equal(gyidi.includes('SupportCheckout'), false);
+
+  // The old amount-picker must no longer be rendered on the Support Gyidi section.
+  const app = fs.readFileSync('src/App.tsx', 'utf8');
+  assert.equal(app.includes('SupportCheckout'), false, 'SupportCheckout must be unused in App');
+});

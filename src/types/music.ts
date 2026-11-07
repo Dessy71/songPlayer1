@@ -257,6 +257,14 @@ export interface SupportSummary {
   is_placeholder: boolean;
 }
 
+/** Redacted platform ("Support Gyidi") summary. Never includes the subaccount code. */
+export interface PlatformSupportSummary {
+  has_paystack_page: boolean;
+  payment_page_url: string | null;
+  enabled: boolean;
+  is_placeholder: boolean;
+}
+
 /** A profile can show the support badge only when approved AND a Paystack page exists. */
 export function hasApprovedSupportPage(
   profile: Pick<UserProfile, 'approval_status'> | null | undefined,

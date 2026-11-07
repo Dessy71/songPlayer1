@@ -11,7 +11,12 @@ import {
   BadgeCheck,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { UserProfile, isProfileApproved, isPaystackPageUrl } from '../types/music';
+import {
+  UserProfile,
+  PlatformSupportSummary,
+  isProfileApproved,
+  isPaystackPageUrl,
+} from '../types/music';
 import { SupportCheckout } from './SupportCheckout';
 
 interface SupportModalProps {
@@ -28,6 +33,8 @@ interface SupportModalProps {
 
 /** Platform-level target key used by support_checkout_config for "Support Gyidi Nwom". */
 const GYIDI_TARGET = 'gyidi';
+/** Support provider is fixed: the payment surface is always Paystack. */
+const DEFAULT_PROVIDER = 'Paystack Payment Page';
 const SUBACCOUNT_PATTERN = /^ACCT_[A-Za-z0-9]+$/;
 const PAYSTACK_PAGE_PATTERN = /^https:\/\/([a-z0-9-]+\.)*paystack\.(com|shop)\//i;
 
@@ -43,7 +50,6 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   const isGyidi = !artiste?.id;
   const displayName = artiste?.display_name || artiste?.stage_name || 'Support Gyidi Nwom';
 
-  const [provider, setProvider] = useState('');
   const [supportUrl, setSupportUrl] = useState('');
   const [subaccountCode, setSubaccountCode] = useState('');
   const [enabled, setEnabled] = useState(true);
@@ -53,11 +59,41 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   const [notice, setNotice] = useState<string | null>(null);
 
   const isApproved = isProfileApproved(artiste);
-  const hasDetails = Boolean(supportUrl && subaccountCode);
   // A legacy MoMo number must never be opened as a payment page.
   const hasPaystackPage = isPaystackPageUrl(supportUrl);
   // Support Badge: shown once approved with a real Paystack page. Profile pictures only.
   const hasSupportBadge = isApproved && hasPaystackPage;
+
+  // Listeners never get the admin RPC, so platform support is read from the redacted
+  // summary (page URL only). Gyidi has no profile row, so it is always "live".
+  const [platform, setPlatform] = useState<PlatformSupportSummary | null>(null);
+  useEffect(() => {
+    if (!isOpen || !isGyidi || isAdminViewer) return;
+    let active = true;
+    void supabase
+      .rpc('platform_support_summary')
+      .then(({ data, error }) => {
+        if (!active) return;
+        const row = Array.isArray(data) ? data[0] : data;
+        setPlatform(
+          error || !row
+            ? null
+            : {
+                has_paystack_page: Boolean(row.has_paystack_page),
+                payment_page_url: row.payment_page_url ?? null,
+                enabled: Boolean(row.enabled),
+                is_placeholder: Boolean(row.is_placeholder),
+              }
+        );
+      });
+    return () => {
+      active = false;
+    };
+  }, [isOpen, isGyidi, isAdminViewer]);
+
+  const canShowSupportButton = isGyidi
+    ? Boolean(platform?.has_paystack_page && platform?.enabled)
+    : hasSupportBadge;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -65,7 +101,6 @@ export const SupportModal: React.FC<SupportModalProps> = ({
     setError(null);
     setNotice(null);
     setCopied(false);
-    setProvider('Paystack Payment Page');
     setSupportUrl('');
     setSubaccountCode('');
     setEnabled(true);
@@ -80,7 +115,6 @@ export const SupportModal: React.FC<SupportModalProps> = ({
         if (!active || error) return;
         const row = Array.isArray(data) ? data[0] : data;
         if (!row) return;
-        setProvider(row.provider || 'Paystack Payment Page');
         setSupportUrl(row.payment_page_url || '');
         setSubaccountCode(row.subaccount_code || '');
         setEnabled(row.enabled !== false);
@@ -98,8 +132,9 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   };
 
   const openPaymentPage = () => {
-    if (!isPaystackPageUrl(supportUrl)) return;
-    window.open(supportUrl.trim(), '_blank', 'noopener,noreferrer');
+    const url = isGyidi ? platform?.payment_page_url : supportUrl;
+    if (!isPaystackPageUrl(url)) return;
+    window.open((url || '').trim(), '_blank', 'noopener,noreferrer');
   };
 
   const saveDetails = async (approve: boolean) => {
@@ -132,7 +167,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
       // support_checkout_config is service_role only, so this goes through a guarded RPC.
       const { data, error: rpcError } = await supabase.rpc('admin_set_support_details', {
         p_target: target,
-        p_provider: provider.trim() || 'Paystack Payment Page',
+        p_provider: DEFAULT_PROVIDER,
         p_payment_page_url: url || null,
         p_subaccount_code: sub || null,
         p_approve: approve,
@@ -265,19 +300,6 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="mb-1 block text-xs font-bold uppercase text-zinc-400">
-                  Support Provider
-                </label>
-                <input
-                  type="text"
-                  value={provider}
-                  onChange={(e) => setProvider(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-zinc-800/50 px-3 py-2 text-sm text-zinc-200 focus:border-amber-400 focus:outline-none"
-                  placeholder="Paystack Payment Page"
-                />
-              </div>
-
               <label className="flex items-start gap-2 rounded-lg border border-white/10 bg-zinc-950/40 p-2.5 text-[11px] text-zinc-300">
                 <input
                   type="checkbox"
@@ -334,63 +356,48 @@ export const SupportModal: React.FC<SupportModalProps> = ({
           </form>
         )}
 
-        {/* LISTENER / ARTISTE VIEW */}
-        {!isAdminViewer && isGyidi && (
-          <div className="mt-4">
-            {/* Platform-level support uses the verified server checkout, never a raw number. */}
-            <SupportCheckout target="gyidi" name="Gyidi Nwom" />
-          </div>
-        )}
-
-        {!isAdminViewer && !isGyidi && (
+        {/* LISTENER / ARTISTE / PLATFORM VIEW
+            One wallet button that goes straight to the payment page. The URL and the
+            subaccount code are never rendered for a non-admin. */}
+        {!isAdminViewer && (
           <div className="mt-4 space-y-3">
-            {hasSupportBadge ? (
+            {canShowSupportButton ? (
               <>
                 <p className="text-xs text-zinc-300">
-                  Support {displayName} directly — you authorize every payment on Paystack, and
-                  payout details stay private.
+                  {isGyidi
+                    ? 'Partner with the Gyidi Nwom digital ministry. You authorize every payment on Paystack.'
+                    : `Support ${displayName} directly — you authorize every payment on Paystack, and payout details stay private.`}
                 </p>
                 <button
                   type="button"
                   onClick={openPaymentPage}
-                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-3 text-left transition-colors hover:bg-emerald-500/20"
+                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-3 text-left transition-colors hover:bg-emerald-500/20 cursor-pointer"
                 >
-                  <span className="flex items-center gap-2.5">
+                  <span className="flex items-center gap-2.5 min-w-0">
                     <Wallet className="w-5 h-5 flex-shrink-0 text-emerald-400" />
                     <span className="min-w-0">
                       <span className="block text-sm font-bold text-emerald-300">
-                        Support {displayName}
+                        Support {isGyidi ? 'Gyidi Nwom' : displayName}
                       </span>
                       <span className="block truncate text-[11px] text-zinc-400">
-                        {provider || 'Paystack Payment Page'}
+                        Continue to the payment page
                       </span>
                     </span>
                   </span>
                   <ExternalLink className="w-4 h-4 flex-shrink-0 text-emerald-400" />
                 </button>
-                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-zinc-800/60 px-3 py-2">
-                  <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-zinc-400">
-                    {supportUrl}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(supportUrl)}
-                    aria-label="Copy payment page URL"
-                    className="flex-shrink-0 p-1 text-zinc-400 transition-colors hover:text-emerald-400"
-                  >
-                    {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
               </>
             ) : (
               <div className="rounded-xl border border-white/10 bg-zinc-950/60 p-3.5 text-xs italic text-zinc-400">
-                {artiste?.approval_status === 'pending'
-                  ? 'This profile is pending admin approval. Support opens once the admin adds the Paystack page and approves it.'
-                  : artiste?.approval_status === 'rejected'
-                    ? 'Support is not available for this profile.'
-                    : supportUrl && !hasPaystackPage
-                      ? 'Mobile Money details on file have been retired. A Paystack payment page is being set up.'
-                      : 'Support details have not been configured yet.'}
+                {isGyidi
+                  ? 'Gyidi Nwom support is not configured yet.'
+                  : artiste?.approval_status === 'pending'
+                    ? 'This profile is pending admin approval. Support opens once the admin adds the Paystack page and approves it.'
+                    : artiste?.approval_status === 'rejected'
+                      ? 'Support is not available for this profile.'
+                      : supportUrl && !hasPaystackPage
+                        ? 'Mobile Money details on file have been retired. A Paystack payment page is being set up.'
+                        : 'Support details have not been configured yet.'}
               </div>
             )}
           </div>
