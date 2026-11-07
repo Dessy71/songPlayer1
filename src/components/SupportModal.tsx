@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { X, HeartHandshake, Copy, Check, AlertCircle, Wallet } from 'lucide-react';
+import { X, HeartHandshake, Copy, Check, Wallet, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-
 import { UserProfile } from '../types/music';
 
 interface SupportModalProps {
@@ -35,7 +34,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 
     // Map Paystack fields to support_number and support_account_name
     const updateData: Partial<UserProfile> = { ...formData };
-
+    
     const { data, error } = await supabase
       .from('profiles')
       .update(updateData)
@@ -132,7 +131,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                     type="text"
                     value={formData.support_provider || 'Paystack Payment Page'}
                     onChange={(e) => setFormData({ ...formData, support_provider: e.target.value })}
-                    className="w-full bg-zinc-800/50 border border-amber-400/20 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-400"
+                    className="w-full bg-zinc-800/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
