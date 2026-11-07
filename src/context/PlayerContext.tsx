@@ -2,6 +2,12 @@ import React, { createContext, useContext, useEffect, useRef, useState, useCallb
 import { Song, RepeatMode, isSongPubliclyPlayable } from '../types/music';
 import { supabase } from '../lib/supabase';
 import { resolvePlayableAudioUrl } from '../lib/offlineAudio';
+import {
+  RECENT_LIMIT,
+  loadRecentCache,
+  mergeRecent,
+  writeRecentCache,
+} from '../lib/recentPlays';
 import { applyAudioVolume, usesSystemVolume } from '../lib/audioVolume';
 import { clearSermonProgress, saveSermonProgress } from '../lib/sermonProgress';
 
@@ -57,32 +63,6 @@ interface PlayerContextValue {
 const PlayerContext = createContext<PlayerContextValue | null>(null);
 
 const VOLUME_STORAGE_KEY = 'gyidi_volume_v2';
-/** How many recently-played entries are kept, locally and on the account. */
-const RECENT_LIMIT = 24;
-
-/**
- * Recently played is cached per account. The key used to be a single constant,
- * so two accounts sharing a browser shared one list.
- */
-const recentStorageKey = (userId: string | null) => `gyidi_recent_ids_v2_${userId || 'guest'}`;
-
-const readRecentCache = (userId: string | null): string[] => {
-  try {
-    const parsed: unknown = JSON.parse(localStorage.getItem(recentStorageKey(userId)) || '[]');
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((id: unknown): id is string => typeof id === 'string');
-  } catch {
-    return [];
-  }
-};
-
-const writeRecentCache = (userId: string | null, ids: string[]) => {
-  try {
-    localStorage.setItem(recentStorageKey(userId), JSON.stringify(ids));
-  } catch {
-    // Storage can be blocked; the account copy is still authoritative.
-  }
-};
 
 export const PlayerProvider: React.FC<PlayerProviderProps> = ({
   children,
@@ -119,7 +99,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
   const [repeat, setRepeat] = useState<RepeatMode>('all');
   const [playbackRate, setPlaybackRateState] = useState(1);
   const [startupLatencyMs, setStartupLatencyMs] = useState<number | null>(null);
-  const [recentlyPlayedIds, setRecentlyPlayedIds] = useState<string[]>(() => readRecentCache(userId));
+  const [recentlyPlayedIds, setRecentlyPlayedIds] = useState<string[]>(() => loadRecentCache(userId));
 
   const isSongLockedForGuest = useCallback(
     (songId: string) => {
@@ -199,7 +179,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
 
     // Swap to this account's own cache straight away so a previous account's
     // list is never shown while the fetch is in flight.
-    const local = readRecentCache(userId);
+    const local = loadRecentCache(userId);
     setRecentlyPlayedIds(local);
     if (!userId) return;
 
@@ -218,11 +198,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
           .filter((id: unknown): id is string => typeof id === 'string');
 
         // Device history first, then whatever other devices contributed.
-        const merged: string[] = [];
-        for (const id of [...local, ...remote]) {
-          if (!merged.includes(id)) merged.push(id);
-        }
-        const next = merged.slice(0, RECENT_LIMIT);
+        const next = mergeRecent(local, remote);
         if (token !== recentSyncTokenRef.current) return;
         setRecentlyPlayedIds(next);
         writeRecentCache(userId, next);
