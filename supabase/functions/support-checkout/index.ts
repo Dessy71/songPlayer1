@@ -52,6 +52,97 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     const result=await response.json();if(!response.ok||!result.status)throw Error('Provider unavailable');return result.data;
    };
 
+   // ---------------------------------------------------------------------
+   // Paystack payment-page (storefront) donations
+   // ---------------------------------------------------------------------
+   // The Support button on an artiste profile opens the artiste's Paystack
+   // payment page (https://paystack.shop/pay/<tag>) straight in a new tab, so no
+   // local order row exists when Paystack reports charge.success: the reference is
+   // Paystack-generated and the metadata carries none of our fields. Those charges
+   // are adopted here instead. The subaccount identifies the artiste, the payer
+   // email identifies the supporter, and the charge is re-verified with Paystack
+   // server-to-server before any supporter badge is awarded.
+   const PROVIDER_REFERENCE = /^[A-Za-z0-9_-]{6,64}$/;
+   const SUBACCOUNT = /^ACCT_[a-zA-Z0-9]+$/;
+   const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+   // trustProvider is only safe for charges read straight back from the Paystack API
+   // (the admin sync); a webhook body is attacker-supplied until re-verified.
+   const adoptPayment = async (payment: any, trustProvider = false): Promise<{ adopted: boolean; reason?: string }> => {
+    const reference = payment?.reference;
+    if (typeof reference !== 'string' || !PROVIDER_REFERENCE.test(reference)) return { adopted: false, reason: 'unsupported-reference' };
+    if (payment?.status !== 'success' || payment?.currency !== 'GHS') return { adopted: false, reason: 'not-a-ghs-success' };
+    if (!Number.isSafeInteger(payment.amount) || payment.amount < 100 || payment.amount > 1000000) return { adopted: false, reason: 'amount-out-of-range' };
+
+    const subaccountCode = payment?.subaccount?.subaccount_code;
+    const email = payment?.customer?.email;
+    if (typeof subaccountCode !== 'string' || !SUBACCOUNT.test(subaccountCode)) return { adopted: false, reason: 'unlinked-artiste' };
+    if (typeof email !== 'string' || !EMAIL.test(email)) return { adopted: false, reason: 'missing-email' };
+
+    const { data: config, error: configError } = await admin.from('support_checkout_config')
+      .select('artiste_id, subaccount_code').eq('subaccount_code', subaccountCode).maybeSingle();
+    if (configError || !config?.artiste_id) return { adopted: false, reason: 'unlinked-artiste' };
+
+    const { data: existing, error: existingError } = await admin.from('support_payment_orders')
+      .select('reference,status').eq('reference', reference).maybeSingle();
+    if (existingError) throw existingError;
+    if (existing?.status === 'verified') return { adopted: false, reason: 'already-verified' };
+
+    // Never trust the webhook body alone: confirm the charge with Paystack.
+    let verified: any = payment;
+    if (!trustProvider) {
+      try { verified = await paystack(`transaction/verify/${encodeURIComponent(reference)}`); }
+      catch { return { adopted: false, reason: 'verify-unavailable' }; }
+    }
+    if (verified?.status !== 'success' || verified.reference !== reference || verified.currency !== 'GHS' ||
+        Number(verified.amount) !== Number(payment.amount) ||
+        String(verified?.customer?.email ?? '').toLowerCase() !== email.toLowerCase() ||
+        verified?.subaccount?.subaccount_code !== subaccountCode) return { adopted: false, reason: 'verify-mismatch' };
+
+    const transactionId = String(verified.id ?? payment.id ?? '');
+    const paidAt = verified.paid_at ?? payment.paid_at;
+    if (!/^[1-9][0-9]*$/.test(transactionId) || typeof paidAt !== 'string' || !Number.isFinite(Date.parse(paidAt))) {
+      return { adopted: false, reason: 'invalid-receipt' };
+    }
+    const receipt = { p_reference: reference, p_transaction_id: transactionId, p_paid_at: new Date(Date.parse(paidAt)).toISOString() };
+
+    // A row left pending by an earlier failed attempt only needs completing.
+    if (existing) {
+      const { error } = await admin.rpc('fulfill_verified_support', receipt);
+      if (error) return { adopted: false, reason: 'fulfil-failed' };
+      return { adopted: true };
+    }
+
+    const { data: userId, error: userError } = await admin.rpc('support_user_id_by_email', { p_email: email });
+    if (userError || !userId) return { adopted: false, reason: 'no-matching-account' };
+
+    const { error: insertError } = await admin.from('support_payment_orders').insert({
+      reference,
+      user_id: userId,
+      artiste_id: config.artiste_id,
+      amount_subunits: Number(payment.amount),
+      customer_email: email.toLowerCase(),
+      subaccount_code: subaccountCode,
+      domain: payment.domain === 'live' ? 'live' : 'test',
+      publicly_visible: false,
+      status: 'pending',
+    });
+    // Lost a race with a concurrent webhook retry: fall through and complete it.
+    if (insertError) {
+      const { data: raced } = await admin.from('support_payment_orders').select('status').eq('reference', reference).maybeSingle();
+      if (raced?.status !== 'verified') {
+        const { error } = await admin.rpc('fulfill_verified_support', receipt);
+        if (error) throw error;
+        return { adopted: true };
+      }
+      return { adopted: false, reason: 'already-verified' };
+    }
+
+    const { error: receiptError } = await admin.rpc('fulfill_verified_support', receipt);
+    if (receiptError) throw receiptError;
+    return { adopted: true };
+   };
+
    if (webhook) {
     // Signature must cover the exact raw bytes, before JSON parsing.
     const raw = new Uint8Array(await req.arrayBuffer());
@@ -61,7 +152,13 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     if (event.event !== 'charge.success') return json({ received: true, ignored: true });
     try {
       const reference = event.data?.reference;
-      if (!validReference(reference)) return json({ received: true, ignored: true });
+      if (!validReference(reference)) {
+        // Donation made straight on the artiste's Paystack payment page.
+        const outcome = await adoptPayment(event.data);
+        return json(outcome.adopted
+          ? { received: true, adopted: true }
+          : { received: true, ignored: true, reason: outcome.reason });
+      }
       const { data: stored, error: orderError } = await admin.from('support_payment_orders').select('*').eq('reference', reference).maybeSingle();
       if (orderError) throw orderError;
       if (!stored || stored.status === 'verified') return json({ received: true, ignored: true });
@@ -110,6 +207,43 @@ export function createSupportHandler(env:(key:string)=>string|undefined, clientF
     assertVerifiedSupport(p, o);
     const {error:receiptError}=await admin.rpc('fulfill_verified_support',{p_reference:o.reference,p_transaction_id:String(p.id),p_paid_at:p.paid_at});if(receiptError)throw receiptError;
     return json({verified:true});
+   }
+   if(body.action==='reconcile'){
+    // Admin only. Adopts successful Paystack charges the webhook never turned into
+    // supporter badges — payments made before the webhook was connected, or whose
+    // delivery attempts all failed. Read-only apart from the adoption itself.
+    const {data:profile,error:profileError}=await admin.from('profiles').select('role').eq('id',user.id).maybeSingle();
+    if(profileError)throw profileError;
+    if(profile?.role!=='admin')return json({error:'Admins only.'},403);
+    const days=Number.isSafeInteger(body.days)?Math.min(Math.max(body.days,1),90):30;
+    const from=new Date(Date.now()-days*86400000).toISOString().slice(0,10);
+    const {data:configs,error:configError}=await admin.from('support_checkout_config')
+      .select('subaccount_code').eq('enabled',true).not('subaccount_code','is',null);
+    if(configError)throw configError;
+    const linked=new Set((configs||[]).map((c:any)=>c.subaccount_code).filter((c:unknown):c is string=>typeof c==='string'));
+    if(linked.size===0)return json({adopted:0,scanned:0,skipped:[]});
+    let scanned=0,adopted=0;const skipped:string[]=[];
+    for(let page=1;page<=5;page++){
+     let list:any[];
+     try{list=await paystack(`transaction?status=success&from=${encodeURIComponent(from)}&perPage=100&page=${page}`);}
+     catch{break;}
+     if(!Array.isArray(list)||list.length===0)break;
+     scanned+=list.length;
+     for(const row of list){
+      // The list endpoint can omit the split details, so fall back to the full charge.
+      let payment:any=row;
+      if(payment?.subaccount?.subaccount_code==null&&typeof row?.reference==='string'&&PROVIDER_REFERENCE.test(row.reference)){
+       try{payment=await paystack(`transaction/verify/${encodeURIComponent(row.reference)}`);}
+       catch{continue;}
+      }
+      if(typeof payment?.subaccount?.subaccount_code!=='string'||!linked.has(payment.subaccount.subaccount_code))continue;
+      const outcome=await adoptPayment(payment,true);
+      if(outcome.adopted)adopted+=1;
+      else if(outcome.reason)skipped.push(`${row?.reference}:${outcome.reason}`);
+     }
+     if(list.length<100)break;
+    }
+    return json({adopted,scanned,skipped:skipped.slice(0,20)});
    }
    return json({error:'Unknown action.'},400);
   }catch{

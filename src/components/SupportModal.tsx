@@ -9,6 +9,7 @@ import {
   ExternalLink,
   Loader2,
   BadgeCheck,
+  RefreshCw,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
@@ -57,6 +58,8 @@ export const SupportModal: React.FC<SupportModalProps> = ({
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncResult, setSyncResult] = useState<string | null>(null);
 
   const isApproved = isProfileApproved(artiste);
   // A legacy MoMo number must never be opened as a payment page.
@@ -101,6 +104,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
     setError(null);
     setNotice(null);
     setCopied(false);
+    setSyncResult(null);
     setSupportUrl('');
     setSubaccountCode('');
     setEnabled(true);
@@ -196,6 +200,41 @@ export const SupportModal: React.FC<SupportModalProps> = ({
       );
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  /**
+   * Matches successful Paystack charges from the last 30 days against Gyidi Nwom
+   * accounts and awards the supporter badge. Needed for donations made on the
+   * Paystack payment page before the webhook was connected, or when every webhook
+   * delivery attempt failed.
+   */
+  const syncPayments = async () => {
+    if (!isAdminViewer) return;
+    setIsSyncing(true);
+    setSyncResult(null);
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke(
+        'support-checkout',
+        { body: { action: 'reconcile', days: 30 } }
+      );
+      if (invokeError) throw invokeError;
+      if (data?.error) throw new Error(String(data.error));
+      const count = Number(data?.adopted ?? 0);
+      setSyncResult(
+        count > 0
+          ? `${count} payment${count === 1 ? '' : 's'} matched. Supporter badges updated.`
+          : `No new payments to match (${Number(data?.scanned ?? 0)} checked).`
+      );
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '';
+      setSyncResult(
+        /unknown action/i.test(message)
+          ? 'The deployed function is out of date. Run: npx supabase functions deploy support-checkout'
+          : message || 'Could not sync Paystack payments.'
+      );
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -354,6 +393,40 @@ export const SupportModal: React.FC<SupportModalProps> = ({
               )}
             </div>
           </form>
+        )}
+
+        {/* ADMIN: adopt Paystack payment-page donations that the webhook missed */}
+        {isAdminViewer && (
+          <div className="mt-4 space-y-2.5 rounded-xl border border-white/10 bg-zinc-950/40 p-4">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase text-zinc-400">
+              <RefreshCw className="h-3.5 w-3.5" />
+              Supporter sync
+            </div>
+            <p className="text-[11px] leading-relaxed text-zinc-400">
+              Match successful Paystack payments from the last 30 days to Gyidi Nwom accounts
+              by the email the supporter entered, then award their supporter badge. Use this
+              for payments made before the webhook was connected, or when Paystack could not
+              deliver it.
+            </p>
+            <button
+              type="button"
+              onClick={() => void syncPayments()}
+              disabled={isSyncing}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-zinc-800 px-3.5 py-2 text-xs font-bold text-zinc-200 transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+            >
+              {isSyncing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              {isSyncing ? 'Syncing…' : 'Sync Paystack payments'}
+            </button>
+            {syncResult && (
+              <p role="status" className="text-[11px] text-emerald-300">
+                {syncResult}
+              </p>
+            )}
+          </div>
         )}
 
         {/* LISTENER / ARTISTE / PLATFORM VIEW
