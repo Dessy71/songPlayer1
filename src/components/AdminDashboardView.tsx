@@ -97,7 +97,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   useEffect(() => {
     if (initialSubTab) setSubTab(initialSubTab);
   }, [initialSubTab]);
-  const [approvalFilter, setApprovalFilter] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  const [approvalFilter, setApprovalFilter] = useState<'pending' | 'approved' | 'rejected'>(
+    'pending'
+  );
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -513,7 +515,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 {stats.approvedSongs.length}
               </p>
               <p className="text-[11px] text-zinc-400 mt-1">
-                {adminAlbums.filter((a) => a.approval_status === 'approved').length} Albums •{' '}
+                {adminAlbums.filter((a) => a.approval_status === 'approved').length} Albums •
                 {stats.totalLikes} ♥
               </p>
             </div>
@@ -562,25 +564,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 {storageQuotaPercent.toFixed(1)}% of 1 GB Free Plan
               </p>
             </div>
-
-            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-[11px] text-zinc-400 font-medium">Support Gyidi / Artiste</p>
-                <Wallet className="w-3.5 h-3.5 text-amber-400" />
-              </div>
-              <p className="text-lg font-extrabold text-white mt-1">
-                {adminProfiles.filter(p => p.role === 'artiste' || p.id === 'support-gyidi').length}
-              </p>
-              <p className="text-[10px] text-zinc-500 mt-1">
-                Paystack & MoMo Configs Active
-              </p>
-            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-zinc-900/60 p-5">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                <TrendingUp className="w-4 h-4 text-amber-400" />
                 7-Day Platform Stream Activity
               </h3>
               <p className="text-xs text-zinc-400 mb-4">{stats.plays7d} tracked stream events</p>
@@ -636,17 +625,708 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       {s.plays_count} plays
                     </span>
                   </div>
-                ))}\n              </div>\n            </div>\n          </div>\n        </div>\n      )}\n\n      {/* SUBTAB 2: ALBUM & SINGLE APPROVALS */}\n      {subTab === 'approvals' && (\n        <div className="space-y-5">\n          <div className="flex flex-wrap items-center justify-between gap-3">\n            <div className="flex items-center gap-2">\n              {(['pending', 'approved', 'rejected'] as const).map((st) => (\n                <button\n                  key={st}\n                  onClick={() => setApprovalFilter(st)}\n                  className={`rounded-full px-4 py-1.5 text-xs font-bold capitalize transition cursor-pointer ${
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUBTAB 2: ALBUM & SINGLE APPROVALS */}
+      {subTab === 'approvals' && (
+        <div className="space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              {(['pending', 'approved', 'rejected'] as const).map((st) => (
+                <button
+                  key={st}
+                  onClick={() => setApprovalFilter(st)}
+                  className={`rounded-full px-4 py-1.5 text-xs font-bold capitalize transition cursor-pointer ${
                     approvalFilter === st
                       ? 'bg-white text-zinc-950'
                       : 'bg-white/5 text-zinc-400 hover:text-white'
-                  }`}\n                >\n                  {st}\n                </button>\n              ))}\n            </div>\n            <p className=\"text-xs text-zinc-400\">\n              Pre-listen to every submitted single or album track before approving.\n            </p>\n          </div>\n\n          {filteredAlbumQueue.length === 0 && filteredSingleQueue.length === 0 ? (\n            <div className=\"rounded-2xl border border-white/10 bg-zinc-900/40 p-14 text-center\">\n              <CheckCircle2 className=\"w-10 h-10 text-emerald-400 mx-auto mb-2\" />\n              <p className=\"text-sm font-bold text-white\">\n                No {approvalFilter} album or song submissions\n              </p>\n            </div>\n          ) : (\n            <div className=\"space-y-4\">\n              {filteredAlbumQueue.map((album) => {\n                const tracks = adminSongs\n                  .filter((s) => s.album_id === album.id)\n                  .sort((a, b) => (a.track_number || 0) - (b.track_number || 0));\n                const upcoming = isAlbumUpcomingPremiere(album);\n\n                return (\n                  <div\n                    key={album.id}\n                    className=\"rounded-2xl border border-violet-500/35 bg-zinc-900/75 p-5 space-y-4\"\n                  >\n                    <div className=\"flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4\">\n                      <div className=\"flex items-center gap-4 min-w-0\">\n                        <CoverArt\n                          title={album.title}\n                          category={album.category}\n                          theme={album.cover_theme}\n                          coverUrl={album.cover_url}\n                          size=\"md\"\n                          className=\"h-20 w-20 rounded-2xl flex-shrink-0 border border-white/15\"\n                        />\n                        <div className=\"space-y-1 min-w-0\">\n                          <div className=\"flex flex-wrap items-center gap-2\">\n                            <span className=\"inline-flex items-center gap-1 rounded-full bg-violet-500/20 border border-violet-400/40 px-2.5 py-0.5 text-[10px] font-extrabold text-violet-200\">\n                              <Disc3 className=\"w-3 h-3\" />\n                              FULL ALBUM ({tracks.length} TRACKS)\n                            </span>\n                            {album.is_premiere ? (\n                              <span className=\"inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-300\">\n                                <Calendar className=\"w-3 h-3\" />\n                                Premiere:{' '}\n                                {album.premiere_at\n                                  ? new Date(album.premiere_at).toLocaleString()\n                                  : ''}\n                              </span>\n                            ) : (\n                              <span className=\"inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300\">\n                                <Zap className=\"w-3 h-3\" />\n                                Instant Album\n                              </span>\n                            )}\n                          </div>\n                          <h4 className=\"text-lg font-extrabold text-white\">{album.title}</h4>\n                          <p className=\"text-xs text-zinc-300\">\n                            Artiste: <strong className=\"text-amber-300\">{album.artist}</strong>\n                          </p>\n                          {upcoming && album.premiere_at && (\n                            <CountdownBadge targetIso={album.premiere_at} size=\"sm\" />\n                          )}\n                        </div>\n                      </div>\n\n                      <div className=\"flex flex-wrap items-center gap-2\">\n                        {album.approval_status !== 'approved' && (\n                          <button\n                            disabled={busyId === album.id}\n                            onClick={() => handleReviewAlbum(album, true)}\n                            className=\"inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer\"\n                          >\n                            {busyId === album.id ? (\n                              <Loader2 className=\"w-3.5 h-3.5 animate-spin\" />\n                            ) : (\n                              <CheckCircle2 className=\"w-3.5 h-3.5\" />\n                            )}\n                            {album.is_premiere\n                              ? 'Approve Album & Start Countdown'\n                              : 'Approve & Publish Entire Album'}\n                          </button>\n                        )}\n                        {album.approval_status !== 'rejected' && (\n                          <button\n                            onClick={() => {\n                              setRejectingId(rejectingId === album.id ? null : album.id);\n                              setRejectReason('');\n                            }}\n                            className=\"inline-flex items-center gap-1.5 rounded-xl bg-rose-500/15 border border-rose-500/30 px-3.5 py-2 text-xs font-bold text-rose-300 cursor-pointer\"\n                          >\n                            <XCircle className=\"w-3.5 h-3.5\" />\n                            Reject Album\n                          </button>\n                        )}\n                      </div>\n                    </div>\n\n                    <div className=\"grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3 border-t border-white/10\">\n                      {tracks.map((trk, idx) => {\n                        const playingThis = currentSong?.id === trk.id && isPlaying;\n                        return (\n                          <div\n                            key={trk.id}\n                            className=\"flex items-center justify-between rounded-xl bg-zinc-950/80 border border-white/5 px-3 py-2 text-xs\"\n                          >\n                            <span className=\"truncate text-zinc-200\">\n                              <strong className=\"text-amber-400 mr-1.5\">\n                                {trk.track_number || idx + 1}.\n                              </strong>\n                              {trk.title}{' '}\n                              <span className=\"text-zinc-500\">\n                                ({formatDuration(trk.duration_seconds)})\n                              </span>\n                            </span>\n                            <button\n                              onClick={() => {\n                                if (currentSong?.id === trk.id) togglePlay();\n                                else playSong(trk, tracks, { isPrelisten: true });\n                              }}\n                              className=\"inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/15 cursor-pointer\"\n                            >\n                              {playingThis ? (\n                                <>\n                                  <Pause className=\"w-3 h-3 fill-current\" /> Pause Pre-Listen\n                                </>\n                              ) : (\n                                <>\n                                  <Play className=\"w-3 h-3 fill-current\" /> Pre-Listen\n                                </>\n                              )}\n                            </button>\n                          </div>\n                        );\n                      })}\n                    </div>\n\n                    {rejectingId === album.id && (\n                      <div className=\"pt-2 flex flex-col sm:flex-row gap-2\">\n                        <input\n                          type=\"text\"\n                          value={rejectReason}\n                          onChange={(e) => setRejectReason(e.target.value)}\n                          placeholder=\"Reason / note for the Artiste...\"\n                          className=\"flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white\"\n                        />\n                        <button\n                          onClick={() => handleReviewAlbum(album, false, rejectReason)}\n                          className=\"rounded-xl bg-rose-500 px-4 py-2 text-xs font-bold text-white cursor-pointer\"\n                        >\n                          Confirm Album Rejection\n                        </button>\n                      </div>\n                    )}\n                  </div>\n                );\n              })}\n\n              {filteredSingleQueue.slice(0, 50).map((song) => {\n                const submitter = song.artiste_id ? profileMap.get(song.artiste_id) : null;\n                const isPrelisteningThis = currentSong?.id === song.id;\n                const upcoming = isSongUpcomingPremiere(song);\n\n                return (\n                  <div\n                    key={song.id}\n                    className=\"rounded-2xl border border-white/10 bg-zinc-900/65 p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4\"\n                  >\n                    <div className=\"flex items-start sm:items-center gap-4 min-w-0 flex-1\">\n                      <CoverArt\n                        title={song.title}\n                        category={song.category}\n                        theme={song.cover_theme}\n                        coverUrl={song.cover_url}\n                        size=\"md\"\n                        className=\"h-16 w-16 rounded-2xl flex-shrink-0 border border-white/10\"\n                      />\n\n                      <div className=\"min-w-0 space-y-1\">\n                        <div className=\"flex flex-wrap items-center gap-2\">\n                          <h4 className=\"text-base font-extrabold text-white\">{song.title}</h4>\n                          {song.is_premiere ? (\n                            <span className=\"inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-300\">\n                              <Calendar className=\"w-3 h-3\" />\n                              Premiere:{' '}\n                              {song.premiere_at\n                                ? new Date(song.premiere_at).toLocaleString()\n                                : 'Scheduled'}\n                            </span>\n                          ) : (\n                            <span className=\"inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300\">\n                              <Zap className=\"w-3 h-3\" />\n                              Single Upload\n                            </span>\n                          )}\n                        </div>\n\n                        <p className=\"text-xs text-zinc-300\">\n                          Artiste: <strong className=\"text-white\">{song.artist}</strong> •{' '}\n                          {formatDuration(song.duration_seconds)} •{' '}\n                          {formatBytes(song.file_size_bytes)}\n                        </p>\n\n                        {submitter && (\n                          <div className=\"flex flex-wrap items-center gap-2 text-[11px] text-zinc-400\">\n                            <button\n                              onClick={() => onOpenArtiste(submitter.id)}\n                              className=\"text-amber-300 hover:underline font-semibold cursor-pointer\"\n                            >\n                              {submitter.real_name || submitter.display_name}\n                            </button>\n                            {submitter.tertiary_institution && (\n                              <span className=\"text-cyan-300\">\n                                <GraduationCap className=\"w-3 h-3 inline mr-0.5\" />\n                                {submitter.tertiary_institution}\n                              </span>\n                            )}\n                            {(submitter.scg_zone || submitter.scg_branch) && (\n                              <span>\n                                <MapPin className=\"w-3 h-3 inline mr-0.5 text-amber-400\" />\n                                {[submitter.scg_zone, submitter.scg_branch]\n                                  .filter(Boolean)\n                                  .join(' — ')}\n                              </span>\n                            )}\n                          </div>\n                        )}\n\n                        {upcoming && song.premiere_at && (\n                          <CountdownBadge targetIso={song.premiere_at} size=\"sm\" />\n                        )}\n                      </div>\n                    </div>\n\n                    <div className=\"flex flex-wrap items-center gap-2\">\n                      <button\n                        onClick={() => {\n                          if (isPrelisteningThis) togglePlay();\n                          else playSong(song, [song], { isPrelisten: true });\n                        }}\n                        className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold border transition cursor-pointer ${
+                  }`}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-zinc-400">
+              Pre-listen to every submitted single or album track before approving.
+            </p>
+          </div>
+
+          {filteredAlbumQueue.length === 0 && filteredSingleQueue.length === 0 ? (
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-14 text-center">
+              <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
+              <p className="text-sm font-bold text-white">
+                No {approvalFilter} album or song submissions
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredAlbumQueue.map((album) => {
+                const tracks = adminSongs
+                  .filter((s) => s.album_id === album.id)
+                  .sort((a, b) => (a.track_number || 0) - (b.track_number || 0));
+                const upcoming = isAlbumUpcomingPremiere(album);
+
+                return (
+                  <div
+                    key={album.id}
+                    className="rounded-2xl border border-violet-500/35 bg-zinc-900/75 p-5 space-y-4"
+                  >
+                    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <CoverArt
+                          title={album.title}
+                          category={album.category}
+                          theme={album.cover_theme}
+                          coverUrl={album.cover_url}
+                          size="md"
+                          className="h-20 w-20 rounded-2xl flex-shrink-0 border border-white/15"
+                        />
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/20 border border-violet-400/40 px-2.5 py-0.5 text-[10px] font-extrabold text-violet-200">
+                              <Disc3 className="w-3 h-3" />
+                              FULL ALBUM ({tracks.length} TRACKS)
+                            </span>
+                            {album.is_premiere ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                                <Calendar className="w-3 h-3" />
+                                Premiere:{' '}
+                                {album.premiere_at
+                                  ? new Date(album.premiere_at).toLocaleString()
+                                  : ''}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                                <Zap className="w-3 h-3" />
+                                Instant Album
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="text-lg font-extrabold text-white">{album.title}</h4>
+                          <p className="text-xs text-zinc-300">
+                            Artiste: <strong className="text-amber-300">{album.artist}</strong>
+                          </p>
+                          {upcoming && album.premiere_at && (
+                            <CountdownBadge targetIso={album.premiere_at} size="sm" />
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        {album.approval_status !== 'approved' && (
+                          <button
+                            disabled={busyId === album.id}
+                            onClick={() => handleReviewAlbum(album, true)}
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer"
+                          >
+                            {busyId === album.id ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                            )}
+                            {album.is_premiere
+                              ? 'Approve Album & Start Countdown'
+                              : 'Approve & Publish Entire Album'}
+                          </button>
+                        )}
+                        {album.approval_status !== 'rejected' && (
+                          <button
+                            onClick={() => {
+                              setRejectingId(rejectingId === album.id ? null : album.id);
+                              setRejectReason('');
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-rose-500/15 border border-rose-500/30 px-3.5 py-2 text-xs font-bold text-rose-300 cursor-pointer"
+                          >
+                            <XCircle className="w-3.5 h-3.5" />
+                            Reject Album
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3 border-t border-white/10">
+                      {tracks.map((trk, idx) => {
+                        const playingThis = currentSong?.id === trk.id && isPlaying;
+                        return (
+                          <div
+                            key={trk.id}
+                            className="flex items-center justify-between rounded-xl bg-zinc-950/80 border border-white/5 px-3 py-2 text-xs"
+                          >
+                            <span className="truncate text-zinc-200">
+                              <strong className="text-amber-400 mr-1.5">
+                                {trk.track_number || idx + 1}.
+                              </strong>
+                              {trk.title}{' '}
+                              <span className="text-zinc-500">
+                                ({formatDuration(trk.duration_seconds)})
+                              </span>
+                            </span>
+                            <button
+                              onClick={() => {
+                                if (currentSong?.id === trk.id) togglePlay();
+                                else playSong(trk, tracks, { isPrelisten: true });
+                              }}
+                              className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/15 cursor-pointer"
+                            >
+                              {playingThis ? (
+                                <>
+                                  <Pause className="w-3 h-3 fill-current" /> Pause
+                                </>
+                              ) : (
+                                <>
+                                  <Play className="w-3 h-3 fill-current" /> Pre-Listen
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {rejectingId === album.id && (
+                      <div className="pt-2 flex flex-col sm:flex-row gap-2">
+                        <input
+                          type="text"
+                          value={rejectReason}
+                          onChange={(e) => setRejectReason(e.target.value)}
+                          placeholder="Reason / note for the Artiste..."
+                          className="flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white"
+                        />
+                        <button
+                          onClick={() => handleReviewAlbum(album, false, rejectReason)}
+                          className="rounded-xl bg-rose-500 px-4 py-2 text-xs font-bold text-white cursor-pointer"
+                        >
+                          Confirm Album Rejection
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {filteredSingleQueue.slice(0, 50).map((song) => {
+                const submitter = song.artiste_id ? profileMap.get(song.artiste_id) : null;
+                const isPrelisteningThis = currentSong?.id === song.id;
+                const upcoming = isSongUpcomingPremiere(song);
+
+                return (
+                  <div
+                    key={song.id}
+                    className="rounded-2xl border border-white/10 bg-zinc-900/65 p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4"
+                  >
+                    <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+                      <CoverArt
+                        title={song.title}
+                        category={song.category}
+                        theme={song.cover_theme}
+                        coverUrl={song.cover_url}
+                        size="md"
+                        className="h-16 w-16 rounded-2xl flex-shrink-0 border border-white/10"
+                      />
+
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-base font-extrabold text-white">{song.title}</h4>
+                          {song.is_premiere ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                              <Calendar className="w-3 h-3" />
+                              Premiere:{' '}
+                              {song.premiere_at
+                                ? new Date(song.premiere_at).toLocaleString()
+                                : 'Scheduled'}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                              <Zap className="w-3 h-3" />
+                              Single Upload
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-xs text-zinc-300">
+                          Artiste: <strong className="text-white">{song.artist}</strong> •
+                          {formatDuration(song.duration_seconds)} •
+                          {formatBytes(song.file_size_bytes)}
+                        </p>
+
+                        {submitter && (
+                          <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-400">
+                            <button
+                              onClick={() => onOpenArtiste(submitter.id)}
+                              className="text-amber-300 hover:underline font-semibold cursor-pointer"
+                            >
+                              {submitter.real_name || submitter.display_name}
+                            </button>
+                            {submitter.tertiary_institution && (
+                              <span className="text-cyan-300">
+                                <GraduationCap className="w-3 h-3 inline mr-0.5" />
+                                {submitter.tertiary_institution}
+                              </span>
+                            )}
+                            {(submitter.scg_zone || submitter.scg_branch) && (
+                              <span>
+                                <MapPin className="w-3 h-3 inline mr-0.5 text-amber-400" />
+                                {[submitter.scg_zone, submitter.scg_branch]
+                                  .filter(Boolean)
+                                  .join(' — ')}
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        {upcoming && song.premiere_at && (
+                          <CountdownBadge targetIso={song.premiere_at} size="sm" />
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => {
+                          if (isPrelisteningThis) togglePlay();
+                          else playSong(song, [song], { isPrelisten: true });
+                        }}
+                        className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold border transition cursor-pointer ${
                           isPrelisteningThis && isPlaying
                             ? 'bg-amber-500 text-zinc-950 border-amber-400'
                             : 'bg-white/10 text-white border-white/15 hover:bg-white/15'
-                        }`}\n                      >\n                        {isPrelisteningThis && isPlaying ? (\n                          <>\n                            <Pause className=\"w-3 h-3 fill-current\" /> Pause Pre-Listen\n                          </>\n                        ) : (\n                          <>\n                            <Play className=\"w-3 h-3 fill-current\" /> Pre-Listen\n                          </>\n                        )}\n                      </button>\n\n                      {song.approval_status !== 'approved' && (\n                        <button\n                          disabled={busyId === song.id}\n                          onClick={() => handleReviewSong(song, true)}\n                          className=\"inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer\"\n                        >\n                          <CheckCircle2 className=\"w-3.5 h-3.5\" />\n                          {song.is_premiere ? 'Approve & Start Countdown' : 'Approve & Publish'}\n                        </button>\n                      )}\n\n                      {song.approval_status !== 'rejected' && (\n                        <button\n                          onClick={() => {\n                            setRejectingId(rejectingId === song.id ? null : song.id);\n                            setRejectReason('');\n                          }}\n                          className=\"inline-flex items-center gap-1.5 rounded-xl bg-rose-500/15 border border-rose-500/30 px-3.5 py-2 text-xs font-bold text-rose-300 cursor-pointer\"\n                        >\n                          <XCircle className=\"w-3.5 h-3.5\" />\n                          Reject\n                        </button>\n                      )}\n                    </div>\n\n                    {rejectingId === song.id && (\n                      <div className=\"w-full pt-3 border-t border-white/10 flex flex-col sm:flex-row gap-2\">\n                        <input\n                          type=\"text\"\n                          value={rejectReason}\n                          onChange={(e) => setRejectReason(e.target.value)}\n                          placeholder=\"Reason / note for the Artiste...\"\n                          className=\"flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white\"\n                        />\n                        <button\n                          onClick={() => handleReviewSong(song, false, rejectReason)}\n                          className=\"rounded-xl bg-rose-500 px-4 py-2 text-xs font-bold text-white cursor-pointer\"\n                        >\n                          Confirm Rejection\n                        </button>\n                      </div>\n                    )}\n                  </div>\n                );\n              })}\n            </div>\n          )}\n        </div>\n      )}\n\n      {/* SUBTAB: DAILY VERSES (7-DAY SCHEDULER) */}\n      {subTab === 'verses' && (\n        <AdminContentMonetizationPanel\n          mode=\"verses\"\n          adminProfileId={adminProfile.id}\n          onRefreshGlobal={onRefreshAll}\n          onPreviewDailyFeed={onPreviewDailyFeed}\n        />\n      )}\n\n      {/* SUBTAB: GENERAL ANNOUNCEMENTS */}\n      {subTab === 'announcements' && (\n        <AdminContentMonetizationPanel\n          mode=\"announcements\"\n          adminProfileId={adminProfile.id}\n          onRefreshGlobal={onRefreshAll}\n          onPreviewDailyFeed={onPreviewDailyFeed}\n        />\n      )}\n\n      {/* SUBTAB: PREMIUM PRICING & PAYSTACK BILLING */}\n      {subTab === 'premium' && (\n        <AdminContentMonetizationPanel\n          mode=\"premium\"\n          adminProfileId={adminProfile.id}\n          onRefreshGlobal={onRefreshAll}\n        />\n      )}\n\n      {/* SUBTAB: GOOGLE ADSENSE REVENUE */}\n      {subTab === 'adsense' && (\n        <AdminContentMonetizationPanel\n          mode=\"adsense\"\n          adminProfileId={adminProfile.id}\n          onRefreshGlobal={onRefreshAll}\n        />\n      )}\n\n      {/* SUBTAB 3: MESSAGES & BROADCASTS */}\n      {subTab === 'messages' && (\n        <MessagesView\n          currentProfile={adminProfile}\n          allProfiles={adminProfiles}\n          onUnreadCountChanged={onUnreadCountChanged}\n        />\n      )}\n\n      {/* SUBTAB 4: ARTISTES, SACSU & USERS */}\n      {subTab === 'users' && (\n        <div className="space-y-4">\n          <div className=\"rounded-2xl border border-amber-400/25 bg-amber-500/10 px-4 py-3 text-xs text-zinc-200 flex flex-wrap items-center justify-between gap-2\">\n            <div>\n              <strong className=\"text-amber-300\">How Pre-Created Artistes Log In:</strong> Click{' '}\n              <strong className=\"text-emerald-300\">Login Creds</strong> on any pre-created profile\n              below to either <strong>(1)</strong> create ready-made Email + Password credentials to\n              send them, OR <strong>(2)</strong> copy their secret <strong>Claim Code</strong> so\n              they sign up with their own email & password!\n            </div>\n          </div>\n\n          <div className=\"flex flex-wrap items-center justify-between gap-3\">\n            <div className=\"relative flex-1 max-w-md\">\n              <Search className=\"w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2\" />\n              <input\n                type=\"text\"\n                value={userSearch}\n                onChange={(e) => setUserSearch(e.target.value)}\n                placeholder=\"Search artistes, SACSU campuses, SCG zones, emails...\"\n                className=\"w-full rounded-full border border-white/10 bg-zinc-900 pl-10 pr-4 py-2 text-xs text-white focus:border-amber-500 focus:outline-none\"\n              />\n            </div>\n\n            <button\n              onClick={() => {\n                setEditingArtiste(null);\n                setArtisteModalOpen(true);\n              }}\n              className=\"inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-4 py-2 text-xs font-extrabold text-white shadow-lg cursor-pointer\"\n            >\n              <Plus className=\"w-4 h-4\" />\n              Create Artiste / SACSU Profile\n            </button>\n          </div>\n\n          <div className=\"grid grid-cols-1 md:grid-cols-2 gap-3.5\">\n            {adminProfiles\n              .filter((p) => {\n                const q = userSearch.trim().toLowerCase();\n                if (!q) return true;\n                return (\n                  (p.stage_name || '').toLowerCase().includes(q) ||\n                  (p.real_name || '').toLowerCase().includes(q) ||\n                  (p.email || '').toLowerCase().includes(q) ||\n                  (p.scg_zone || '').toLowerCase().includes(q) ||\n                  (p.scg_branch || '').toLowerCase().includes(q) ||\n                  (p.tertiary_institution || '').toLowerCase().includes(q)\n                );\n              })\n              .map((p) => {\n                const code = claimCodeMap.get(p.id);\n                return (\n                  <div\n                    key={p.id}\n                    className=\"rounded-2xl border border-white/10 bg-zinc-900/60 p-4 flex items-start justify-between gap-3\"\n                  >\n                    <div className=\"flex items-start gap-3 min-w-0\">\n                      {p.avatar_url ? (\n                        <img\n                          src={p.avatar_url}\n                          alt=\"\"\n                          className=\"h-12 w-12 rounded-xl object-cover flex-shrink-0\"\n                        />\n                      ) : (\n                        <div className=\"h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center text-sm font-bold text-amber-300 flex-shrink-0\">\n                          {(p.stage_name || p.display_name || p.email || 'U')[0]?.toUpperCase()}\n                        </div>\n                      )}\n                      <div className=\"min-w-0\">\n                        <div className=\"flex items-center gap-1.5 flex-wrap\">\n                          <button\n                            onClick={() => onOpenArtiste(p.id)}\n                            className=\"text-sm font-bold text-white hover:text-amber-300 truncate cursor-pointer\"\n                          >\n                            {p.stage_name || p.display_name || 'Listener'}\n                          </button>\n                          {p.is_verified_artiste && (\n                            <BadgeCheck className=\"w-4 h-4 text-sky-400 flex-shrink-0\" />\n                          )}\n                          {p.is_sacsu && (\n                            <span className=\"rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300\">\n                              SACSU\n                            </span>\n                          )}\n                          {p.is_precreated && !p.claimed_user_id && (\n                            <span className=\"rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300\">\n                              Pre-Created (Unclaimed)\n                            </span>\n                          )}\n                          {p.is_precreated && p.claimed_user_id && (\n                            <span className=\"rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300\">\n                              Claimed ✓\n                            </span>\n                          )}\n                        </div>\n                        {p.real_name && <p className=\"text-xs text-zinc-300\">{p.real_name}</p>}\n                        {p.email && <p className=\"text-[11px] text-zinc-400 truncate\">{p.email}</p>}\n                        {p.is_precreated && !p.claimed_user_id && code && (\n                          <p className=\"text-[11px] font-mono font-bold text-amber-300 mt-0.5\">\n                            Claim Code: {code}\n                          </p>\n                        )}\n                        {p.tertiary_institution && (\n                          <p className=\"text-[11px] text-cyan-300 mt-0.5\">\n                            <GraduationCap className=\"w-3 h-3 inline mr-1\" />\n                            {p.tertiary_institution}\n                          </p>\n                        )}\n                        {(p.scg_zone || p.scg_branch) && (\n                          <p className=\"text-[11px] text-amber-300 mt-0.5\">\n                            {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}\n                          </p>\n                        )}\n                        {/* NEW: Admin-only Paystack URL & Subaccount Display in List */}\n                        {isAdminViewer && (p.role === 'artiste' || p.id === 'support-gyidi') && (\n                          <p className=\"text-[11px] text-amber-400 mt-0.5 font-mono\">\n                            {p.support_provider || 'Paystack Payment Page'}: {p.support_number || 'N/A'} \n                            {p.support_account_name && `(Sub: ${p.support_account_name})`}\n                          </p>\n                        )}\n                      </div>\n                    </div>\n\n                    <div className=\"flex flex-col items-end gap-1.5 flex-shrink-0\">\n                      <select\n                        disabled={busyId === p.id}\n                        value={p.role}\n                        onChange={(e) => handleRoleChange(p, e.target.value as UserRole)}\n                        className=\"rounded-lg border border-white/15 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white\"\n                      >\n                        <option value=\"listener\">Listener</option>\n                        <option value=\"artiste\">Artiste</option>\n                        <option value=\"admin\">Admin</option>\n                      </select>\n\n                      <div className=\"flex items-center gap-1.5 flex-wrap justify-end\">\n                        {p.is_precreated && (\n                          <button\n                            onClick={() => setProvisioningArtiste(p)}\n                            className=\"inline-flex items-center gap-1 rounded-lg bg-emerald-500/20 border border-emerald-500/35 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer\"\n                            title=\"Create Login Email/Password or Copy Claim Code\"\n                          >\n                            <KeyRound className=\"w-3 h-3\" />\n                            Login Creds\n                          </button>\n                        )}\n\n                        <button\n                          onClick={() => {\n                            setEditingArtiste(p);\n                            setArtisteModalOpen(true);\n                          }}\n                          className=\"inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300 hover:bg-white/15 cursor-pointer\"\n                        >\n                          <Edit3 className=\"w-3 h-3\" />\n                          Edit\n                        </button>\n\n                        {/* NEW: Support Details Button for Admin */}\n                        {isAdminViewer && (p.role === 'artiste' || p.id === 'support-gyidi') && (\n                          <button\n                            onClick={() => {\n                              setSelectedArtisteForSupport(p);\n                              setSupportModalOpen(true);\n                            }}\n                            className=\"inline-flex items-center gap-1.5 rounded-lg bg-amber-400/10 border border-amber-400/25 px-2.5 py-1 text-[11px] font-bold text-amber-400 hover:bg-amber-400/20 cursor-pointer\"\n                            title=\"Edit Paystack URL & Subaccount\"\n                          >\n                            <Wallet className=\"w-3 h-3\" />\n                            Support Details\n                          </button>\n                        )}\n\n                        <button\n                          disabled={busyId === p.id}\n                          onClick={() => handleToggleUserPremium(p)}\n                          className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
+                        }`}
+                      >
+                        {isPrelisteningThis && isPlaying ? (
+                          <>
+                            <Pause className="w-3 h-3 fill-current" /> Pause Pre-Listen
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-3 h-3 fill-current" /> Pre-Listen
+                          </>
+                        )}
+                      </button>
+
+                      {song.approval_status !== 'approved' && (
+                        <button
+                          disabled={busyId === song.id}
+                          onClick={() => handleReviewSong(song, true)}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          {song.is_premiere ? 'Approve & Start Countdown' : 'Approve & Publish'}
+                        </button>
+                      )}
+
+                      {song.approval_status !== 'rejected' && (
+                        <button
+                          onClick={() => {
+                            setRejectingId(rejectingId === song.id ? null : song.id);
+                            setRejectReason('');
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-rose-500/15 border border-rose-500/30 px-3.5 py-2 text-xs font-bold text-rose-300 cursor-pointer"
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                          Reject
+                        </button>
+                      )}
+                    </div>
+
+                    {rejectingId === song.id && (
+                      <div className="w-full pt-3 border-t border-white/10 flex flex-col sm:flex-row gap-2">
+                        <input
+                          type="text"
+                          value={rejectReason}
+                          onChange={(e) => setRejectReason(e.target.value)}
+                          placeholder="Reason / note for the Artiste..."
+                          className="flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white"
+                        />
+                        <button
+                          onClick={() => handleReviewSong(song, false, rejectReason)}
+                          className="rounded-xl bg-rose-500 px-4 py-2 text-xs font-bold text-white cursor-pointer"
+                        >
+                          Confirm Rejection
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* SUBTAB: DAILY VERSES (7-DAY SCHEDULER) */}
+      {subTab === 'verses' && (
+        <AdminContentMonetizationPanel
+          mode="verses"
+          adminProfileId={adminProfile.id}
+          onRefreshGlobal={onRefreshAll}
+          onPreviewDailyFeed={onPreviewDailyFeed}
+        />
+      )}
+
+      {/* SUBTAB: GENERAL ANNOUNCEMENTS */}
+      {subTab === 'announcements' && (
+        <AdminContentMonetizationPanel
+          mode="announcements"
+          adminProfileId={adminProfile.id}
+          onRefreshGlobal={onRefreshAll}
+          onPreviewDailyFeed={onPreviewDailyFeed}
+        />
+      )}
+
+      {/* SUBTAB: PREMIUM PRICING & PAYSTACK BILLING */}
+      {subTab === 'premium' && (
+        <AdminContentMonetizationPanel
+          mode="premium"
+          adminProfileId={adminProfile.id}
+          onRefreshGlobal={onRefreshAll}
+        />
+      )}
+
+      {/* SUBTAB: GOOGLE ADSENSE REVENUE */}
+      {subTab === 'adsense' && (
+        <AdminContentMonetizationPanel
+          mode="adsense"
+          adminProfileId={adminProfile.id}
+          onRefreshGlobal={onRefreshAll}
+        />
+      )}
+
+      {/* SUBTAB 3: MESSAGES & BROADCASTS */}
+      {subTab === 'messages' && (
+        <MessagesView
+          currentProfile={adminProfile}
+          allProfiles={adminProfiles}
+          onUnreadCountChanged={onUnreadCountChanged}
+        />
+      )}
+
+      {/* SUBTAB 4: ARTISTES, SACSU & USERS */}
+      {subTab === 'users' && (
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-amber-400/25 bg-amber-500/10 px-4 py-3 text-xs text-zinc-200 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <strong className="text-amber-300">How Pre-Created Artistes Log In:</strong> Click
+              <strong className="text-emerald-300">Login Creds</strong> on any pre-created profile
+              below to either <strong>(1)</strong> create ready-made Email + Password credentials to
+              send them, OR <strong>(2)</strong> copy their secret <strong>Claim Code</strong> so
+              they sign up with their own email & password!
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={userSearch}
+                onChange={(e) => setUserSearch(e.target.value)}
+                placeholder="Search artistes, SACSU campuses, SCG zones, emails..."
+                className="w-full rounded-full border border-white/10 bg-zinc-900 pl-10 pr-4 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+              />
+            </div>
+
+            <button
+              onClick={() => {
+                setEditingArtiste(null);
+                setArtisteModalOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-4 py-2 text-xs font-extrabold text-white shadow-lg cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              Create Artiste / SACSU Profile
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            {adminProfiles
+              .filter((p) => {
+                const q = userSearch.trim().toLowerCase();
+                if (!q) return true;
+                return (
+                  (p.stage_name || '').toLowerCase().includes(q) ||
+                  (p.real_name || '').toLowerCase().includes(q) ||
+                  (p.email || '').toLowerCase().includes(q) ||
+                  (p.scg_zone || '').toLowerCase().includes(q) ||
+                  (p.scg_branch || '').toLowerCase().includes(q) ||
+                  (p.tertiary_institution || '').toLowerCase().includes(q)
+                );
+              })
+              .map((p) => {
+                const code = claimCodeMap.get(p.id);
+                return (
+                  <div
+                    key={p.id}
+                    className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 flex items-start justify-between gap-3"
+                  >
+                    <div className="flex items-start gap-3 min-w-0">
+                      {p.avatar_url ? (
+                        <img
+                          src={p.avatar_url}
+                          alt=""
+                          className="h-12 w-12 rounded-xl object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center text-sm font-bold text-amber-300 flex-shrink-0">
+                          {(p.stage_name || p.display_name || p.email || 'U')[0]?.toUpperCase()}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <button
+                            onClick={() => onOpenArtiste(p.id)}
+                            className="text-sm font-bold text-white hover:text-amber-300 truncate cursor-pointer"
+                          >
+                            {p.stage_name || p.display_name || 'Listener'}
+                          </button>
+                          {p.is_verified_artiste && (
+                            <BadgeCheck className="w-4 h-4 text-sky-400 flex-shrink-0" />
+                          )}
+                          {p.is_sacsu && (
+                            <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300">
+                              SACSU
+                            </span>
+                          )}
+                          {p.is_precreated && !p.claimed_user_id && (
+                            <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                              Pre-Created (Unclaimed)
+                            </span>
+                          )}
+                          {p.is_precreated && p.claimed_user_id && (
+                            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                              Claimed ✓
+                            </span>
+                          )}
+                        </div>
+                        {p.real_name && <p className="text-xs text-zinc-300">{p.real_name}</p>}
+                        {p.email && <p className="text-[11px] text-zinc-400 truncate">{p.email}</p>}
+                        {p.is_precreated && !p.claimed_user_id && code && (
+                          <p className="text-[11px] font-mono font-bold text-amber-300 mt-0.5">
+                            Claim Code: {code}
+                          </p>
+                        )}
+                        {p.tertiary_institution && (
+                          <p className="text-[11px] text-cyan-300 mt-0.5">
+                            <GraduationCap className="w-3 h-3 inline mr-1" />
+                            {p.tertiary_institution}
+                          </p>
+                        )}
+                        {(p.scg_zone || p.scg_branch) && (
+                          <p className="text-[11px] text-amber-300 mt-0.5">
+                            {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}
+                          </p>
+                        )}
+                        {/* NEW: Admin-only Paystack URL & Subaccount Display in List */}
+                        {(p.role === 'artiste' || p.id === 'support-gyidi') && (
+                          <p className="text-[11px] text-amber-400 mt-0.5 font-mono">
+                            {p.support_provider || 'Paystack Payment Page'}: {p.support_number || 'N/A'}
+                            {p.support_account_name && ` (Sub: ${p.support_account_name})`}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                      <select
+                        disabled={busyId === p.id}
+                        value={p.role}
+                        onChange={(e) => handleRoleChange(p, e.target.value as UserRole)}
+                        className="rounded-lg border border-white/15 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white"
+                      >
+                        <option value="listener">Listener</option>
+                        <option value="artiste">Artiste</option>
+                        <option value="admin">Admin</option>
+                      </select>
+
+                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                        {p.is_precreated && (
+                          <button
+                            onClick={() => setProvisioningArtiste(p)}
+                            className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/20 border border-emerald-500/35 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer"
+                            title="Create Login Email/Password or Copy Claim Code"
+                          >
+                            <KeyRound className="w-3 h-3" />
+                            Login Creds
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            setEditingArtiste(p);
+                            setArtisteModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-amber-300 hover:bg-white/15 cursor-pointer"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                          Edit
+                        </button>
+
+                        {/* NEW: Support Details Button for Admin */}
+                        {(p.role === 'artiste' || p.id === 'support-gyidi') && (
+                          <button
+                            onClick={() => {
+                              setSelectedArtisteForSupport(p);
+                              setSupportModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400/10 border border-amber-400/25 px-2.5 py-1 text-[11px] font-bold text-amber-400 hover:bg-amber-400/20 cursor-pointer"
+                            title="Edit Paystack URL & Subaccount"
+                          >
+                            <Wallet className="w-3 h-3" />
+                            Support Details
+                          </button>
+                        )}
+
+                        <button
+                          disabled={busyId === p.id}
+                          onClick={() => handleToggleUserPremium(p)}
+                          className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
                             p.is_premium
                               ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40'
                               : 'bg-white/5 text-zinc-400 hover:text-amber-300'
-                          }`}\n                          title=\"Grant or revoke Gyidi Nwom Premium\"\n                        >\n                          <Crown className=\"w-3 h-3\" />\n                          {p.is_premium ? 'Premium ✓' : '+ Premium'}\n                        </button>\n\n                        {(p.role === 'artiste' || p.role === 'admin') && (\n                          <button\n                            disabled={busyId === p.id}\n                            onClick={() => handleToggleVerifyArtiste(p)}\n                            className={`rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
-                              p.is_verified_artiste\n                                ? 'bg-sky-500/20 text-sky-300'\n                                : 'bg-white/5 text-zinc-400 hover:text-white'\n                            }`}\n                          >\n                            {p.is_verified_artiste ? 'Verified ✓' : 'Verify'}\n                          </button>\n                        )}\n                      </div>\n                    </div>\n                  </div>\n                );\n              })}\n          </div>\n        </div>\n      )}\n\n      {/* SUBTAB 5: ALL CATALOG */}\n      {subTab === 'catalog' && (\n        <div className=\"space-y-4\">\n          <div className=\"relative max-w-md\">\n            <Search className=\"w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2\" />\n            <input\n              type=\"text\"\n              value={catalogSearch}\n              onChange={(e) => setCatalogSearch(e.target.value)}\n              placeholder=\"Filter catalog tracks...\"\n              className=\"w-full rounded-full border border-white/10 bg-zinc-900 pl-10 pr-4 py-2 text-xs text-white focus:border-amber-500 focus:outline-none\"\n            />\n          </div>\n\n          <div className=\"rounded-2xl border border-white/10 bg-zinc-900/50 divide-y divide-white/5\">\n            {adminSongs\n              .filter((s) => {\n                const q = catalogSearch.trim().toLowerCase();\n                if (!q) return true;\n                return (\n                  s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)\n                );\n              })\n              .slice(0, 80)\n              .map((s) => (\n                <div\n                  key={s.id}\n                  className=\"flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-white/[0.03]\"\n                >\n                  <div className=\"min-w-0\">\n                    <p className=\"text-xs font-bold text-white truncate\">{s.title}</p>\n                    <p className=\"text-[11px] text-zinc-400 truncate\">\n                      {s.artist} • {s.category} • {s.plays_count} plays • {s.approval_status}\n                    </p>\n                  </div>\n                  <div className=\"flex items-center gap-2\">\n                    <button\n                      onClick={() => {\n                        setEditingCatalogSong(s);\n                        setEditReleaseOpen(true);\n                      }}\n                      className=\"rounded-lg bg-white/10 p-1.5 text-amber-300 hover:bg-white/15 cursor-pointer\"\n                      title=\"Edit song\"\n                    >\n                      <Edit3 className=\"w-3 h-3\" />\n                    </button>\n                    <button\n                      onClick={() => playSong(s, [s], { isPrelisten: true })}\n                      className=\"rounded-lg bg-white/10 p-1.5 text-white hover:bg-white/15 cursor-pointer\"\n                    >\n                      <Play className=\"w-3 h-3 fill-white\" />\n                    </button>\n                    <button\n                      disabled={busyId === s.id}\n                      onClick={() => handleDeleteSong(s)}\n                      className=\"rounded-lg bg-rose-500/10 p-1.5 text-rose-400 hover:bg-rose-500/20 cursor-pointer\"\n                      title=\"Delete song\"\n                    >\n                      <Trash2 className=\"w-3 h-3\" />\n                    </button>\n                  </div>\n                </div>\n              ))}\n          </div>\n        </div>\n      )}\n\n      {/* NEW: SupportModal Integration */}\n      <SupportModal\n        key={selectedArtisteForSupport?.id || 'support-gyidi'}\n        isOpen={supportModalOpen}\n        onClose={() => { setSupportModalOpen(false); setSelectedArtisteForSupport(null); }}\n        artiste={selectedArtisteForSupport || { id: 'support-gyidi', display_name: 'Support Gyidi', role: 'admin', approval_status: 'approved' } as UserProfile}\n        isAdminViewer={true}\n      />\n\n      <EditArtisteModal\n        key={editingArtiste?.id || 'new-artiste'}\n        isOpen={artisteModalOpen}\n        onClose={() => setArtisteModalOpen(false)}\n        artiste={editingArtiste}\n        isAdminViewer={true}\n        onSaved={async (saved) => {\n          setAdminProfiles((prev) => {\n            const exists = prev.some((x) => x.id === saved.id);\n            return exists ? prev.map((x) => (x.id === saved.id ? saved : x)) : [saved, ...prev];\n          });\n          await loadFullAdminData();\n          await onRefreshAll();\n        }}\n      />\n\n      <ProvisionArtisteLoginModal\n        isOpen={Boolean(provisioningArtiste)}\n        onClose={() => setProvisioningArtiste(null)}\n        artiste={provisioningArtiste}\n        claimCode={provisioningArtiste ? claimCodeMap.get(provisioningArtiste.id) : null}\n        onProvisioned={async () => {\n          await loadFullAdminData();\n          await onRefreshAll();\n        }}\n      />\n\n      <EditReleaseModal\n        isOpen={editReleaseOpen}\n        onClose={() => setEditReleaseOpen(false)}\n        song={editingCatalogSong}\n        onSaved={onRefreshAll}\n        onDeleted={onRefreshAll}\n      />\n    </div>\n  );\n};\n
+                          }`}
+                          title="Grant or revoke Gyidi Nwom Premium"
+                        >
+                          <Crown className="w-3 h-3" />
+                          {p.is_premium ? 'Premium ✓' : '+ Premium'}
+                        </button>
+
+                        {(p.role === 'artiste' || p.role === 'admin') && (
+                          <button
+                            disabled={busyId === p.id}
+                            onClick={() => handleToggleVerifyArtiste(p)}
+                            className={`rounded-lg px-2 py-1 text-[11px] font-semibold cursor-pointer ${
+                              p.is_verified_artiste
+                                ? 'bg-sky-500/20 text-sky-300'
+                                : 'bg-white/5 text-zinc-400 hover:text-white'
+                            }`}
+                          >
+                            {p.is_verified_artiste ? 'Verified ✓' : 'Verify'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
+      {/* SUBTAB 5: ALL CATALOG */}
+      {subTab === 'catalog' && (
+        <div className="space-y-4">
+          <div className="relative max-w-md">
+            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={catalogSearch}
+              onChange={(e) => setCatalogSearch(e.target.value)}
+              placeholder="Filter catalog tracks..."
+              className="w-full rounded-full border border-white/10 bg-zinc-900 pl-10 pr-4 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+            />
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/50 divide-y divide-white/5">
+            {adminSongs
+              .filter((s) => {
+                const q = catalogSearch.trim().toLowerCase();
+                if (!q) return true;
+                return (
+                  s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
+                );
+              })
+              .slice(0, 80)
+              .map((s) => (
+                <div
+                  key={s.id}
+                  className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-white/[0.03]"
+                >
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-white truncate">{s.title}</p>
+                    <p className="text-[11px] text-zinc-400 truncate">
+                      {s.artist} • {s.category} • {s.plays_count} plays • {s.approval_status}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingCatalogSong(s);
+                        setEditReleaseOpen(true);
+                      }}
+                      className="rounded-lg bg-white/10 p-1.5 text-amber-300 hover:bg-white/15 cursor-pointer"
+                      title="Edit song"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => playSong(s, [s], { isPrelisten: true })}
+                      className="rounded-lg bg-white/10 p-1.5 text-white hover:bg-white/15 cursor-pointer"
+                    >
+                      <Play className="w-3 h-3 fill-white" />
+                    </button>
+                    <button
+                      disabled={busyId === s.id}
+                      onClick={() => handleDeleteSong(s)}
+                      className="rounded-lg bg-rose-500/10 p-1.5 text-rose-400 hover:bg-rose-500/20 cursor-pointer"
+                      title="Delete song"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      )}
+
+      {/* NEW: SupportModal Integration */}
+      <SupportModal
+        key={selectedArtisteForSupport?.id || 'support-gyidi'}
+        isOpen={supportModalOpen}
+        onClose={() => { setSupportModalOpen(false); setSelectedArtisteForSupport(null); }}
+        artiste={selectedArtisteForSupport || { id: 'support-gyidi', display_name: 'Support Gyidi', role: 'admin', approval_status: 'approved' } as UserProfile}
+        isAdminViewer={true}
+      />
+
+      <EditArtisteModal
+        key={editingArtiste?.id || 'new-artiste'}
+        isOpen={artisteModalOpen}
+        onClose={() => setArtisteModalOpen(false)}
+        artiste={editingArtiste}
+        isAdminViewer={true}
+        onSaved={async (saved) => {
+          setAdminProfiles((prev) => {
+            const exists = prev.some((x) => x.id === saved.id);
+            return exists ? prev.map((x) => (x.id === saved.id ? saved : x)) : [saved, ...prev];
+          });
+          await loadFullAdminData();
+          await onRefreshAll();
+        }}
+      />
+
+      <ProvisionArtisteLoginModal
+        isOpen={Boolean(provisioningArtiste)}
+        onClose={() => setProvisioningArtiste(null)}
+        artiste={provisioningArtiste}
+        claimCode={provisioningArtiste ? claimCodeMap.get(provisioningArtiste.id) : null}
+        onProvisioned={async () => {
+          await loadFullAdminData();
+          await onRefreshAll();
+        }}
+      />
+
+      <EditReleaseModal
+        isOpen={editReleaseOpen}
+        onClose={() => setEditReleaseOpen(false)}
+        song={editingCatalogSong}
+        onSaved={onRefreshAll}
+        onDeleted={onRefreshAll}
+      />
+    </div>
+  );
+};
