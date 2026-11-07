@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Wallet, ExternalLink, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { PlatformSupportSummary, isPaystackPageUrl } from '../types/music';
+import { SupportCheckout } from './SupportCheckout';
 
 /**
  * "Support Gyidi Nwom" button.
  *
- * Mirrors artiste support: a wallet icon that opens Gyidi's Paystack payment page.
- * There is no amount picker and no hard-coded figure — the listener chooses on the
- * Paystack page itself. The subaccount code is never requested or rendered; the URL
- * comes from the redacted platform_support_summary() RPC.
+ * Open to everyone — no Premium membership required. When the platform Paystack
+ * page is configured, this renders SupportCheckout so any signed-in listener can
+ * choose an amount and optionally be recognised publicly as a supporter. The
+ * subaccount code is never requested or rendered; the URL comes from the redacted
+ * platform_support_summary() RPC.
  */
 export const SupportGyidiButton: React.FC = () => {
   const [summary, setSummary] = useState<PlatformSupportSummary | null>(null);
@@ -58,24 +60,5 @@ export const SupportGyidiButton: React.FC = () => {
     );
   }
 
-  return (
-    <button
-      type="button"
-      onClick={() => window.open((url || '').trim(), '_blank', 'noopener,noreferrer')}
-      className="flex w-full items-center justify-between gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-3 text-left transition cursor-pointer hover:bg-emerald-500/20"
-    >
-      <span className="flex items-center gap-2.5 min-w-0">
-        <Wallet className="w-5 h-5 flex-shrink-0 text-emerald-400" />
-        <span className="min-w-0">
-          <span className="block text-xs font-extrabold uppercase tracking-wider text-emerald-300">
-            Support Gyidi Nwom
-          </span>
-          <span className="block truncate text-[11px] text-zinc-400">
-            Continue to the payment page
-          </span>
-        </span>
-      </span>
-      <ExternalLink className="w-4 h-4 flex-shrink-0 text-emerald-400" />
-    </button>
-  );
-};
+  return <SupportCheckout target="gyidi" name="Gyidi Nwom" />;
+}
