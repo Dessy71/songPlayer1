@@ -43,23 +43,22 @@ test('support badge requires approval AND a real Paystack page', async () => {
 
   const approved = { approval_status: 'approved' };
   const pending = { approval_status: 'pending' };
+  const withPage = { has_paystack_page: true };
+  const noPage = { has_paystack_page: false };
 
-  // Legacy: approved, but holds a phone number -> no badge, no link.
-  assert.equal(hasApprovedSupportPage({ ...approved, support_number: '0542442084' }), false);
-  assert.equal(hasApprovedSupportPage({ ...approved, support_number: null }), false);
+  // Payout details now come from the redacted summary, never from the profile.
+  assert.equal(hasApprovedSupportPage(approved, noPage), false);
+  assert.equal(hasApprovedSupportPage(approved, null), false);
 
-  // Not approved yet -> no badge even with a valid page.
-  assert.equal(
-    hasApprovedSupportPage({ ...pending, support_number: 'https://paystack.shop/pay/kbadu' }),
-    false
-  );
+  // Not approved yet -> no badge even when a valid page exists.
+  assert.equal(hasApprovedSupportPage(pending, withPage), false);
 
   // Approved + real page -> badge.
-  assert.equal(
-    hasApprovedSupportPage({ ...approved, support_number: 'https://paystack.shop/pay/kbadu' }),
-    true
-  );
-  assert.equal(hasApprovedSupportPage(null), false);
+  assert.equal(hasApprovedSupportPage(approved, withPage), true);
+
+  // Grandfathered rows (no status) count as approved.
+  assert.equal(hasApprovedSupportPage({ approval_status: undefined }, withPage), true);
+  assert.equal(hasApprovedSupportPage(null, withPage), false);
 });
 
 test('grandfathered rows without a status stay visible, rejected ones do not', async () => {
@@ -71,4 +70,32 @@ test('grandfathered rows without a status stay visible, rejected ones do not', a
   assert.equal(isProfileApproved({ approval_status: 'pending' }), false);
   assert.equal(isProfileApproved({ approval_status: 'rejected' }), false);
   assert.equal(isProfileApproved(null), false);
+});
+
+test('public profile type carries no payout fields', () => {
+  const source = fs.readFileSync('src/types/music.ts', 'utf8');
+  const profileBlock = source.slice(
+    source.indexOf('export interface UserProfile'),
+    source.indexOf('export interface ProfileClaimCode')
+  );
+  for (const field of ['support_number', 'support_account_name', 'support_provider']) {
+    assert.equal(
+      profileBlock.includes(field),
+      false,
+      `${field} must not be on the publicly readable UserProfile`
+    );
+  }
+});
+
+test('signup and artiste studio stop collecting payout details', () => {
+  for (const file of ['src/components/AuthModal.tsx', 'src/components/ArtisteStudioView.tsx']) {
+    const source = fs.readFileSync(file, 'utf8');
+    for (const field of ['support_number:', 'support_account_name:', 'support_provider:']) {
+      assert.equal(
+        source.includes(field),
+        false,
+        `${file} must not write ${field}`
+      );
+    }
+  }
 });

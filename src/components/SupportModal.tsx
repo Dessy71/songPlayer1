@@ -61,14 +61,34 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
+    let active = true;
     setError(null);
     setNotice(null);
     setCopied(false);
-    setProvider(artiste?.support_provider || 'Paystack Payment Page');
-    setSupportUrl(artiste?.support_number || '');
-    setSubaccountCode(artiste?.support_account_name || '');
+    setProvider('Paystack Payment Page');
+    setSupportUrl('');
+    setSubaccountCode('');
     setEnabled(true);
-  }, [isOpen, artiste?.id, artiste?.support_provider, artiste?.support_number, artiste?.support_account_name]);
+
+    // Admins need the full payout row (including the subaccount) to edit it. It is read
+    // through admin_support_details(), which is itself admin-guarded; listeners only ever
+    // get the redacted profile_support_summary().
+    if (!isAdminViewer) return;
+    void supabase
+      .rpc('admin_get_support_details', { p_target: target })
+      .then(({ data, error }) => {
+        if (!active || error) return;
+        const row = Array.isArray(data) ? data[0] : data;
+        if (!row) return;
+        setProvider(row.provider || 'Paystack Payment Page');
+        setSupportUrl(row.payment_page_url || '');
+        setSubaccountCode(row.subaccount_code || '');
+        setEnabled(row.enabled !== false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [isOpen, isAdminViewer, target]);
 
   const handleCopy = (text?: string | null) => {
     if (!text) return;
@@ -117,6 +137,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
         p_subaccount_code: sub || null,
         p_approve: approve,
         p_enabled: enabled,
+        p_is_placeholder: false,
       });
 
       if (rpcError) throw rpcError;
