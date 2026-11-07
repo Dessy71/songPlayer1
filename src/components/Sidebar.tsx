@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Compass,
   Flame,
@@ -25,6 +25,7 @@ import {
   Smartphone,
   Crown,
   X,
+  Camera,
 } from 'lucide-react';
 import {
   NavTab,
@@ -33,6 +34,7 @@ import {
   isUserPremiumActive,
 } from '../types/music';
 import { GoogleAdBanner } from './GoogleAdBanner';
+import { supabase } from '../lib/supabase';
 
 interface SidebarProps {
   activeTab: NavTab;
@@ -88,6 +90,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isArtiste = profile?.role === 'artiste' || isAdmin;
   const isPremium = isUserPremiumActive(profile, platformSettings);
   const monthlyPrice = Number(platformSettings?.premium_monthly_price_ghs ?? 5);
+
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+
+  const handleListenerPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile) return;
+    setPhotoBusy(true);
+    setPhotoError(null);
+    try {
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = `avatars/listener-${profile.id}-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from('covers')
+        .upload(path, file, { cacheControl: '31536000', upsert: true });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from('covers').getPublicUrl(path);
+      const { error: updErr } = await supabase
+        .from('profiles')
+        .update({ avatar_url: pub.publicUrl })
+        .eq('id', profile.id);
+      if (updErr) throw updErr;
+    } catch (err: unknown) {
+      setPhotoError(err instanceof Error ? err.message : 'Profile photo upload failed.');
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
 
   const discoverItems: Array<{
     id: NavTab;
@@ -440,6 +470,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </p>
               </div>
             </div>
+            {profile && profile.role === 'listener' && (
+              <div className="mt-3 space-y-1.5">
+                <label
+                  className="flex w-full items-center gap-2 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 hover:border-amber-400 cursor-pointer transition disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  <Camera className="w-3.5 h-3.5 flex-shrink-0" />
+                  {photoBusy ? 'Updating…' : 'Change Profile Photo'}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleListenerPhotoChange}
+                    disabled={photoBusy}
+                    className="hidden"
+                  />
+                </label>
+                {photoError && <p className="text-[10px] text-rose-400">{photoError}</p>}
+              </div>
+            )}
+
             <button
               onClick={onSignOut}
               className="mt-2 w-full flex items-center justify-center gap-1.5 rounded-lg bg-white/5 py-1.5 text-[11px] font-medium text-zinc-300 hover:bg-white/10 hover:text-white transition cursor-pointer"

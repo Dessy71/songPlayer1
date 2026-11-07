@@ -34,6 +34,7 @@ import { SongRow } from './SongRow';
 import { PremiereCard } from './PremiereCard';
 import { AlbumPremiereCard } from './AlbumPremiereCard';
 import { CoverArt } from './CoverArt';
+import { ArtisteSupporters } from './ArtisteSupporters';
 import { EditArtisteModal } from './EditArtisteModal';
 import { EditReleaseModal } from './EditReleaseModal';
 import { usePlayer } from '../context/PlayerContext';
@@ -419,6 +420,9 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Listener supporters: profile pictures stacked behind each other, half showing */}
+      <ArtisteSupporters artisteId={artiste.id} />
 
       {/* Upcoming Album & Song Premieres */}
       {(upcomingAlbums.length > 0 || upcomingSingles.length > 0) && (
