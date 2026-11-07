@@ -35,9 +35,9 @@ import {
   RotateCw,
   Smartphone,
   ArrowLeft,
-  Crown,
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
+import { recoverPremiumAccount } from './lib/premiumPayment';
 import {
   Album,
   Announcement,
@@ -56,6 +56,7 @@ import {
 } from './types/music';
 import { PlayerProvider, usePlayer } from './context/PlayerContext';
 import { Sidebar } from './components/Sidebar';
+import { HomeSpotlight } from './components/HomeSpotlight';
 import { SongRow } from './components/SongRow';
 import { PlayerBar } from './components/PlayerBar';
 import { QueueDrawer } from './components/QueueDrawer';
@@ -70,6 +71,8 @@ import { MessagesView } from './components/MessagesView';
 import { EditArtisteModal } from './components/EditArtisteModal';
 import { AuthModal } from './components/AuthModal';
 import { UploadModal } from './components/UploadModal';
+import { SupportCheckout } from './components/SupportCheckout';
+import { ThemeToggle } from './components/ThemeToggle';
 import { SupportModal } from './components/SupportModal';
 import { DeveloperModal } from './components/DeveloperModal';
 import { PlaylistModal } from './components/PlaylistModal';
@@ -141,11 +144,9 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 }) => {
   const {
     currentSong,
-    isPlaying,
     startupLatencyMs,
     recentlyPlayedIds,
     playSong,
-    togglePlay,
     warmTrack,
   } = usePlayer();
 
@@ -156,7 +157,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     [userProfile, platformSettings, nowTick]
   );
 
-  const [activeTab, setActiveTab] = useState<NavTab>('discover');
+  const [activeTab, setActiveTab] = useState<NavTab>(() => new URLSearchParams(window.location.search).has('payment_return') ? 'premium' : 'discover');
   const [tabHistory, setTabHistory] = useState<NavTab[]>([]);
   const [premiumPromptReason, setPremiumPromptReason] = useState<string | null>(null);
   const [selectedArtisteId, setSelectedArtisteId] = useState<string | null>(null);
@@ -343,6 +344,23 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     },
     [userId, isPremium, openAccountPrompt, openPremiumPrompt]
   );
+
+  const handleOpenLyrics = (song: Song) => {
+    if (!isPremium) {
+      openPremiumPrompt('Viewing song lyrics is a Gyidi Nwom Premium feature.');
+      return;
+    }
+    setLyricsDrawerSong(song);
+  };
+
+  const handleOpenShareCard = (song: Song, quote = '') => {
+    if (!isPremium) {
+      openPremiumPrompt('Sharing songs and WhatsApp Status cards is a Gyidi Nwom Premium feature.');
+      return;
+    }
+    setShareCardInitialQuote(quote);
+    setShareCardSong(song);
+  };
 
   const canViewerEditSong = useCallback(
     (song: Song | null) => {
@@ -993,15 +1011,6 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     });
   }, [artistes, artisteTrackCounts, artisteDirectoryFilter, institutionFilter]);
 
-  const handleHeroPlay = () => {
-    const unlockedList = playableSongs.filter((s) =>
-      isAuthenticated ? s.category === 'Songs' : guestUnlockedIds.has(s.id)
-    );
-    if (unlockedList.length === 0) return;
-    if (currentSong) togglePlay();
-    else playSong(unlockedList[0], unlockedList);
-  };
-
   const handleShuffleAll = (pool: Song[]) => {
     if (!isAuthenticated) {
       openAccountPrompt('Create a free account to shuffle songs and unlock the full catalog!');
@@ -1012,8 +1021,11 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     playSong(rnd, pool);
   };
 
+  const nextPremiere = [...upcomingAlbums, ...upcomingSinglePremieres]
+    .sort((a, b) => new Date(a.premiere_at || 0).getTime() - new Date(b.premiere_at || 0).getTime())[0];
+
   return (
-    <div className="flex h-[100dvh] w-full max-w-full overflow-hidden bg-zinc-950 text-zinc-100">
+    <div className="app-shell flex w-full max-w-full overflow-hidden bg-zinc-950 text-zinc-100">
       <Sidebar
         activeTab={activeTab}
         onSelectTab={(t) => {
@@ -1090,10 +1102,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl px-4 sm:px-7 py-3">
-          <div className="flex items-center gap-3 flex-1 max-w-xl">
+        <header className="mobile-header shrink-0 z-30 flex items-center justify-between gap-2 sm:gap-3 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl px-4 sm:px-7 py-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 basis-full sm:basis-auto min-w-0 sm:max-w-xl">
             <button
               onClick={() => setMobileMenuOpen(true)}
               className="lg:hidden rounded-xl p-2 bg-white/5 text-zinc-300 hover:bg-white/10 cursor-pointer"
@@ -1102,7 +1114,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <Menu className="w-5 h-5" />
             </button>
 
-            <div className="relative flex-1">
+            <div className="relative flex-1 min-w-0">
               <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
@@ -1135,26 +1147,9 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                setPremiumPromptReason(null);
-                navigateToTab('premium');
-              }}
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 sm:px-3 py-1.5 text-xs font-extrabold transition cursor-pointer ${
-                isPremium
-                  ? 'bg-amber-500/20 border border-amber-400/45 text-amber-200 hover:bg-amber-500/30'
-                  : 'bg-gradient-to-r from-amber-400 to-pink-500 text-zinc-950 shadow-md hover:opacity-95'
-              }`}
-              title="Gyidi Nwom Premium Pricing & Billing"
-            >
-              <Crown className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">
-                {isPremium ? 'Premium ✓' : 'Go Premium'}
-              </span>
-            </button>
+          <ThemeToggle />
 
+          <div className="ml-auto hidden sm:flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0 max-w-full">
             {!isAppInstalled && (
               <button
                 onClick={() => setInstallAppOpen(true)}
@@ -1163,28 +1158,6 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               >
                 <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
                 Install App
-              </button>
-            )}
-
-            {(verseFlyers.length > 0 || activeRoleAnnouncements.length > 0) && (
-              <button
-                onClick={() => {
-                  if (!isPremium && activeRoleAnnouncements.length === 0) {
-                    openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.');
-                    return;
-                  }
-                  setDailyFeedInitialTab(isPremium ? undefined : 'announcements');
-                  setDailyFeedOpen(true);
-                }}
-                className="relative inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-amber-200 hover:bg-white/15 cursor-pointer"
-                title="Daily Bible Verse (Premium) & Official Announcements"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden md:inline">Daily Word</span>
-                {((isPremium && unseenFeedState.hasUnseenVerse) ||
-                  unseenFeedState.hasUnseenAnn) && (
-                  <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-                )}
               </button>
             )}
 
@@ -1227,18 +1200,12 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               </button>
             )}
 
-            <button
-              onClick={handleUploadTrigger}
-              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-md shadow-pink-500/20 hover:opacity-95 transition cursor-pointer"
-            >
-              <UploadCloud className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Upload Song / Album</span>
-            </button>
+
           </div>
         </header>
 
         {/* Main Scroll Area */}
-        <main className="flex-1 min-w-0 max-w-full stable-scroll px-3.5 sm:px-7 py-5 pb-36">
+        <main className="flex-1 min-h-0 min-w-0 max-w-full stable-scroll px-3.5 sm:px-7 py-5 pb-36">
           {/* Persistent Section Navigation Bar: Go Back & Close Buttons on Every Section */}
           {activeTab !== 'discover' &&
             !(activeTab === 'albums' && selectedAlbum) &&
@@ -1275,9 +1242,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <div className="flex items-center gap-2.5 text-xs sm:text-sm text-amber-200">
                 <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
                 <span>
-                  <strong>Guest Preview:</strong> 5 preview songs are unlocked with Play, Next &amp;
+                  <span className="sm:hidden">5 free preview tracks. Sign in for the full library.</span>
+                  <span className="hidden sm:inline">                  <strong>Guest Preview:</strong> 5 preview songs are unlocked with Play, Next &amp;
                   Previous. Create a free account to unlock all {playableSongs.length} songs &amp;
-                  upgrade to Premium for Offline Vault, Likes, Playlists &amp; Daily Verses!
+                  upgrade to Premium for Offline Vault, Likes, Playlists &amp; Daily Verses!</span>
                 </span>
               </div>
               <button
@@ -1302,7 +1270,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 ))}
               </div>
             </div>
-          ) : activeTab === 'premium' ? (
+          ) : activeTab === 'premium' || (!isPremium && ['favorites', 'playlists', 'offline', 'live'].includes(activeTab)) ? (
             <PremiumBillingView
               userId={userId}
               userEmail={userEmail}
@@ -1387,11 +1355,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               onOpenArtiste={handleOpenArtisteProfile}
               onToggleFavorite={handleToggleFavorite}
               onToggleOfflineSave={handleToggleOfflineSave}
-              onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-              onOpenShareCard={(s) => {
-                setShareCardInitialQuote('');
-                setShareCardSong(s);
-              }}
+              onOpenLyrics={handleOpenLyrics}
+              onOpenShareCard={(s) => handleOpenShareCard(s)}
               onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
               onUnlocked={() => setNowTick(Date.now())}
               onRefreshCatalog={fetchPlatformData}
@@ -1507,11 +1472,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               onOpenAlbum={handleOpenAlbumView}
               onToggleFavorite={handleToggleFavorite}
               onToggleOfflineSave={handleToggleOfflineSave}
-              onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-              onOpenShareCard={(s) => {
-                setShareCardInitialQuote('');
-                setShareCardSong(s);
-              }}
+              onOpenLyrics={handleOpenLyrics}
+              onOpenShareCard={(s) => handleOpenShareCard(s)}
               onToggleReminder={handleToggleReminder}
               onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
               onArtisteUpdated={(updated) => {
@@ -1756,190 +1718,122 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               )}
             </div>
           ) : activeTab === 'discover' ? (
-            <div className="space-y-10 max-w-[1400px] mx-auto">
-              {/* Hero Banner */}
-              <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-amber-600/30 via-pink-600/25 to-violet-950/60 p-6 sm:p-9">
-                <div
-                  className="absolute inset-0 opacity-20 pointer-events-none"
-                  style={{
-                    backgroundImage:
-                      'radial-gradient(circle at 80% 20%, rgba(245,158,11,0.55), transparent 50%)',
-                  }}
-                />
-                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div className="max-w-2xl">
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-black/40 border border-white/15 px-3 py-1 text-xs font-semibold text-amber-300 mb-3">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      SCG & SACSU Streaming • Singles & Full Albums
-                    </div>
-                    <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                      Gyidi Nwom — Savior Church of Ghana Digital Sanctuary
-                    </h2>
-                    <p className="mt-2.5 text-sm sm:text-base text-zinc-200/90 leading-relaxed">
-                      Stream {playableSongs.length} sacred hymns, choir recordings, SACSU tertiary
-                      ministrations, full albums, and convention sermons with instant cloud
-                      playback.
-                    </p>
+            <div className="space-y-4 sm:space-y-6 max-w-[1400px] mx-auto">
+              <HomeSpotlight slides={[
+                {
+                  id: 'welcome', label: 'SCG & SACSU · Gyidi Nwom',
+                  title: 'Savior Church of Ghana Digital Sanctuary',
+                  description: `Stream ${playableSongs.length} hymns, choir recordings & convention sermons.`,
+                  image: '/logo-mark.png', icon: <Music2 className="h-6 w-6" />,
+                  onOpen: () => navigateToTab('browse'),
+                },
+                {
+                  id: 'verse', label: "Today's Bible Verse · Premium",
+                  title: activePopupVerse?.scripture_ref || 'Your daily word & encouragement',
+                  description: activePopupVerse?.caption || 'View today’s Scripture flyer',
+                  image: isPremium ? activePopupVerse?.flyer_url : undefined,
+                  icon: <BookOpen className="h-6 w-6" />,
+                  onOpen: () => {
+                    if (!isPremium) { openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.'); return; }
+                    setDailyFeedInitialTab('verse'); setDailyFeedOpen(true);
+                  },
+                },
+                {
+                  id: 'live', label: 'Coming soon · Live Video & Radio',
+                  title: 'Live conventions & Sabbath Radio',
+                  description: 'HD video & low-data audio · Preview and join the waitlist',
+                  icon: <Video className="h-6 w-6" />,
+                  onOpen: () => {
+                    if (!isPremium) { openPremiumPrompt('Live Convention Video & Sabbath Radio is a Premium feature.'); return; }
+                    navigateToTab('live');
+                  },
+                },
+                {
+                  id: 'premieres', label: `Upcoming Premieres · ${upcomingAlbums.length + upcomingSinglePremieres.length}`,
+                  title: nextPremiere?.title || 'New singles & albums are on the way',
+                  description: nextPremiere?.premiere_at
+                    ? `${nextPremiere.artist} · ${new Date(nextPremiere.premiere_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`
+                    : 'Explore scheduled releases and premiere countdowns',
+                  image: nextPremiere?.cover_url || undefined,
+                  icon: <CalendarClock className="h-6 w-6" />,
+                  onOpen: () => navigateToTab('upcoming'),
+                },
+                ...(activeRoleAnnouncements.length ? [{
+                  id: 'announcement', label: 'Official church & platform notice',
+                  title: activeRoleAnnouncements[0].title,
+                  description: activeRoleAnnouncements[0].body,
+                  icon: <Megaphone className="h-6 w-6" />,
+                  onOpen: () => { setDailyFeedInitialTab('announcements'); setDailyFeedOpen(true); },
+                }] : []),
+              ]} />
 
-                    <div className="mt-6 flex flex-wrap items-center gap-3">
-                      <button
-                        onClick={handleHeroPlay}
-                        className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-zinc-950 shadow-xl hover:bg-amber-100 transition cursor-pointer"
-                      >
-                        <Play className="w-4 h-4 fill-zinc-950" />
-                        {currentSong && isPlaying
-                          ? 'Pause Stream'
-                          : isAuthenticated
-                          ? 'Start Listening'
-                          : 'Play 5-Song Free Preview'}
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          handleShuffleAll(playableSongs.filter((s) => s.category === 'Songs'))
-                        }
-                        className="inline-flex items-center gap-2 rounded-full bg-black/40 border border-white/20 px-5 py-3 text-sm font-semibold text-white hover:bg-black/60 transition cursor-pointer"
-                      >
-                        <Shuffle className="w-4 h-4 text-amber-400" />
-                        Shuffle Hymns
-                      </button>
-
-                      <button
-                        onClick={handleUploadTrigger}
-                        className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-400/40 px-5 py-3 text-sm font-bold text-amber-200 hover:bg-amber-500/30 transition cursor-pointer"
-                      >
-                        <UploadCloud className="w-4 h-4" />
-                        Upload Song or Album
-                      </button>
-                    </div>
-                  </div>
-
-                  <img
-                    src="/logo-mark.png"
-                    alt="Gyidi Nwom Official Emblem"
-                    className="hidden md:block h-36 w-36 rounded-3xl object-cover border border-amber-400/30 shadow-2xl shadow-black/60"
-                  />
-                </div>
-              </section>
-
-              {/* DAILY BIBLE VERSE FLYER & CHURCH ANNOUNCEMENTS SPOTLIGHT */}
-              {(activePopupVerse || activeRoleAnnouncements.length > 0) && (
-                <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {activePopupVerse && (
-                    <div
-                      onClick={() => {
-                        if (!isAuthenticated) {
-                          openAccountPrompt(
-                            'Create an account & upgrade to Premium to unlock Daily Bible Verse flyers!'
-                          );
-                          return;
-                        }
-                        if (!isPremium) {
-                          openPremiumPrompt(
-                            'Daily Bible Verse flyers are a Gyidi Nwom Premium feature.'
-                          );
-                          return;
-                        }
-                        setDailyFeedInitialTab('verse');
-                        setDailyFeedOpen(true);
-                      }}
-                      className="group flex items-center gap-4 rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-zinc-900 to-zinc-950 p-4 hover:border-amber-400/60 transition cursor-pointer"
-                    >
-                      <img
-                        src={activePopupVerse.flyer_url}
-                        alt={activePopupVerse.scripture_ref || 'Daily Verse'}
-                        className="h-16 w-16 rounded-xl object-cover border border-amber-400/30 flex-shrink-0"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
-                          <BookOpen className="w-3.5 h-3.5" />
-                          Today&apos;s Bible Verse Flyer • Premium
-                        </span>
-                        <h4 className="text-sm font-extrabold text-white truncate mt-0.5">
-                          {activePopupVerse.scripture_ref || 'View Today’s Scripture Flyer'}
-                        </h4>
-                        <p className="text-xs text-zinc-400 truncate">
-                          {isPremium
-                            ? activePopupVerse.caption || 'Tap to view or share today’s word'
-                            : 'Unlock Daily Bible Verse flyers with Gyidi Nwom Premium'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeRoleAnnouncements.length > 0 && (
-                    <div
-                      onClick={() => {
-                        setDailyFeedInitialTab('announcements');
-                        setDailyFeedOpen(true);
-                      }}
-                      className="group flex items-center gap-4 rounded-2xl border border-violet-400/30 bg-gradient-to-r from-violet-500/15 via-zinc-900 to-zinc-950 p-4 hover:border-violet-400/60 transition cursor-pointer"
-                    >
-                      <div className="h-14 w-14 rounded-2xl bg-violet-500/20 border border-violet-400/30 flex items-center justify-center flex-shrink-0">
-                        <Megaphone className="w-6 h-6 text-violet-300" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-violet-300">
-                          Official Church & Platform Notice ({activeRoleAnnouncements.length})
-                        </span>
-                        <h4 className="text-sm font-extrabold text-white truncate mt-0.5">
-                          {activeRoleAnnouncements[0].title}
-                        </h4>
-                        <p className="text-xs text-zinc-400 truncate">
-                          {activeRoleAnnouncements[0].body}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </section>
-              )}
-
-              {/* UPCOMING FEATURE SPOTLIGHT: LIVE CONVENTION VIDEO & SABBATH RADIO */}
-              <section
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    openAccountPrompt(
-                      'Create an account & upgrade to Premium to access Live Convention Video & Sabbath Radio!'
-                    );
-                    return;
-                  }
-                  if (!isPremium) {
-                    openPremiumPrompt(
-                      'Live Convention Video & Sabbath Radio access is a Gyidi Nwom Premium feature.'
-                    );
-                    return;
-                  }
-                  navigateToTab('live');
-                }}
-                className="group relative overflow-hidden rounded-2xl border border-rose-500/35 bg-gradient-to-r from-rose-600/20 via-zinc-900 to-amber-500/15 p-4 sm:p-5 hover:border-rose-400/60 transition cursor-pointer"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-start sm:items-center gap-3.5">
-                    <div className="h-12 w-12 rounded-2xl bg-rose-500/20 border border-rose-400/35 flex items-center justify-center flex-shrink-0">
-                      <Video className="w-6 h-6 text-rose-300" />
-                    </div>
+              {/* TRENDING & WHAT EVERYBODY IS LISTENING TO */}
+              <section aria-label="Trending and what everyone is listening to" data-testid="home-trending">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2.5">
+                    <Flame className="w-5 h-5 text-orange-400" />
                     <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/25 border border-rose-400/40 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-rose-200">
-                          <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
-                          Upcoming Feature • Coming Soon
-                        </span>
-                        <span className="text-[11px] font-semibold text-amber-300">
-                          HD Live Video + Low-Data Sabbath Radio
-                        </span>
-                      </div>
-                      <h4 className="text-sm sm:text-base font-extrabold text-white mt-1">
-                        Live Convention Video Broadcasts &amp; Sabbath Radio Stream
-                      </h4>
-                      <p className="text-xs text-zinc-300 mt-0.5">
-                        Soon, SCG Headquarters, regional conventions &amp; SACSU campuses will stream
-                        live HD video and low-data audio directly to brethren worldwide.
+                      <h3 aria-label="Trending & What Everyone Is Listening To" className="font-extrabold text-white">
+                        <span className="block text-base sm:inline sm:text-lg">Trending</span>
+                        <span className="block text-[11px] font-medium text-zinc-300 sm:inline sm:text-lg sm:font-extrabold sm:text-white"> &amp; What Everyone Is Listening To</span>
+                      </h3>
+                      <p className="hidden sm:block text-xs text-zinc-400">
+                        {isAuthenticated
+                          ? 'Most streamed hymns & live community listening pulse'
+                          : 'First 5 tracks are unlocked for Guest Preview — sign up free to unlock #6+'}
                       </p>
                     </div>
                   </div>
-                  <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-extrabold text-zinc-950 group-hover:bg-amber-200 transition flex-shrink-0">
-                    Preview &amp; Join Waitlist →
-                  </span>
+                  <button
+                    onClick={() => navigateToTab('trending')}
+                    aria-label="Full Trending Chart"
+                    className="shrink-0 min-h-11 text-[11px] sm:text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
+                  >
+                    Full chart →
+                  </button>
+                </div>
+
+                {listeningNowFeed.length > 0 && (
+                  <div className="mb-4 flex items-center gap-2.5 overflow-x-auto pb-1">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-[11px] font-bold text-emerald-300 flex-shrink-0">
+                      <Radio className="w-3.5 h-3.5 animate-pulse" />
+                      Listening Now
+                    </span>
+                    {listeningNowFeed.slice(0, 5).map(({ song }) => (
+                      <button
+                        key={song.id}
+                        onClick={() => playSong(song, trendingSongs)}
+                        className="flex items-center gap-2 rounded-full bg-zinc-900 border border-white/10 px-3 py-1 text-xs text-zinc-200 hover:border-amber-400/50 transition flex-shrink-0 cursor-pointer"
+                      >
+                        {!isAuthenticated && !guestUnlockedIds.has(song.id) && (
+                          <Lock className="w-3 h-3 text-amber-400" />
+                        )}
+                        <span className="font-semibold truncate max-w-[150px]">{song.title}</span>
+                        <span className="text-zinc-500">• {song.artist}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-2">
+                  {trendingSongs.slice(0, 7).map((song, i) => (
+                    <SongRow
+                      key={song.id}
+                      song={song}
+                      index={i}
+                      contextQueue={trendingSongs}
+                      isFavorite={favoriteIds.has(song.id)}
+                      savedResumeSec={sermonProgressMap[song.id]?.positionSec}
+                      isOfflineSaved={offlineSavedIds.has(song.id)}
+                      onToggleFavorite={handleToggleFavorite}
+                      onOpenArtiste={handleOpenArtisteProfile}
+                      onEditSong={canViewerEditSong(song) ? (s) => setEditingLyricsSong(s) : undefined}
+                      onOpenLyrics={handleOpenLyrics}
+                      onOpenShareCard={(s) => handleOpenShareCard(s)}
+                      onToggleOfflineSave={handleToggleOfflineSave}
+                      onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
+                    />
+                  ))}
                 </div>
               </section>
 
@@ -2011,147 +1905,6 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         </p>
                       </div>
                     ))}
-                </div>
-              </section>
-
-              {/* UPCOMING PREMIERES */}
-              <section>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <CalendarClock className="w-5 h-5 text-amber-400" />
-                    <div>
-                      <h3 className="text-lg font-extrabold text-white">Upcoming Premieres</h3>
-                      <p className="text-xs text-zinc-400">
-                        Approved singles & full albums counting down to public drop
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => navigateToTab('upcoming')}
-                    className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
-                  >
-                    See all
-                  </button>
-                </div>
-
-                {upcomingAlbums.length === 0 && upcomingSinglePremieres.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-white/15 bg-zinc-900/35 p-6 flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-bold text-white">
-                        Have an upcoming SCG single, SACSU hymn, or full choir album?
-                      </p>
-                      <p className="text-xs text-zinc-400 mt-0.5">
-                        Artistes can schedule a Single or Album Premiere (7+ days ahead) with custom
-                        Cover Art & live countdown!
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleUploadTrigger}
-                      className="rounded-full bg-amber-500 px-4 py-2 text-xs font-extrabold text-zinc-950 hover:bg-amber-400 cursor-pointer"
-                    >
-                      Schedule a Premiere
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {upcomingAlbums.slice(0, 2).map((alb) => (
-                      <AlbumPremiereCard
-                        key={alb.id}
-                        album={alb}
-                        tracks={songs.filter((s) => s.album_id === alb.id)}
-                        artiste={alb.artiste_id ? artisteMap.get(alb.artiste_id) : null}
-                        onOpenArtiste={handleOpenArtisteProfile}
-                        onOpenAlbum={handleOpenAlbumView}
-                        onUnlocked={() => setNowTick(Date.now())}
-                      />
-                    ))}
-
-                    {upcomingSinglePremieres
-                      .slice(0, Math.max(0, 4 - upcomingAlbums.slice(0, 2).length))
-                      .map((song) => (
-                        <PremiereCard
-                          key={song.id}
-                          song={song}
-                          artiste={song.artiste_id ? artisteMap.get(song.artiste_id) : null}
-                          reminded={remindedIds.has(song.id)}
-                          onToggleReminder={handleToggleReminder}
-                          onOpenArtiste={handleOpenArtisteProfile}
-                          onPlayIfUnlocked={(s) => playSong(s, [s, ...playableSongs])}
-                          onUnlocked={() => setNowTick(Date.now())}
-                        />
-                      ))}
-                  </div>
-                )}
-              </section>
-
-              {/* TRENDING & WHAT EVERYBODY IS LISTENING TO */}
-              <section>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <Flame className="w-5 h-5 text-orange-400" />
-                    <div>
-                      <h3 className="text-lg font-extrabold text-white">
-                        Trending & What Everybody Is Listening To
-                      </h3>
-                      <p className="text-xs text-zinc-400">
-                        {isAuthenticated
-                          ? 'Most streamed hymns & live community listening pulse'
-                          : 'First 5 tracks are unlocked for Guest Preview — sign up free to unlock #6+'}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => navigateToTab('trending')}
-                    className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
-                  >
-                    Full Trending Chart
-                  </button>
-                </div>
-
-                {listeningNowFeed.length > 0 && (
-                  <div className="mb-4 flex items-center gap-2.5 overflow-x-auto pb-1">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-[11px] font-bold text-emerald-300 flex-shrink-0">
-                      <Radio className="w-3.5 h-3.5 animate-pulse" />
-                      Listening Now
-                    </span>
-                    {listeningNowFeed.slice(0, 5).map(({ song }) => (
-                      <button
-                        key={song.id}
-                        onClick={() => playSong(song, trendingSongs)}
-                        className="flex items-center gap-2 rounded-full bg-zinc-900 border border-white/10 px-3 py-1 text-xs text-zinc-200 hover:border-amber-400/50 transition flex-shrink-0 cursor-pointer"
-                      >
-                        {!isAuthenticated && !guestUnlockedIds.has(song.id) && (
-                          <Lock className="w-3 h-3 text-amber-400" />
-                        )}
-                        <span className="font-semibold truncate max-w-[150px]">{song.title}</span>
-                        <span className="text-zinc-500">• {song.artist}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-2">
-                  {trendingSongs.slice(0, 7).map((song, i) => (
-                    <SongRow
-                      key={song.id}
-                      song={song}
-                      index={i}
-                      contextQueue={trendingSongs}
-                      isFavorite={favoriteIds.has(song.id)}
-                      savedResumeSec={sermonProgressMap[song.id]?.positionSec}
-                      isOfflineSaved={offlineSavedIds.has(song.id)}
-                      onToggleFavorite={handleToggleFavorite}
-                      onOpenArtiste={handleOpenArtisteProfile}
-                      onEditSong={canViewerEditSong(song) ? (s) => setEditingLyricsSong(s) : undefined}
-                      onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-                      onOpenShareCard={(s) => {
-                        setShareCardInitialQuote('');
-                        setShareCardSong(s);
-                      }}
-                      onToggleOfflineSave={handleToggleOfflineSave}
-                      onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
-                    />
-                  ))}
                 </div>
               </section>
 
@@ -2299,37 +2052,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </p>
                   </div>
 
-                  <div className="w-full md:w-auto rounded-2xl border border-amber-500/30 bg-zinc-950 px-5 py-4 min-w-[270px]">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
-                      MTN Mobile Money (MoMo)
-                    </p>
-                    <div className="mt-1 flex items-center justify-between gap-3">
-                      <span className="text-xl font-extrabold text-white tabular-nums">
-                        0557394159
-                      </span>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText('0557394159');
-                          setCopiedInlineMomo(true);
-                          setTimeout(() => setCopiedInlineMomo(false), 2000);
-                        }}
-                        className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1 text-xs font-semibold text-white hover:bg-white/15 cursor-pointer"
-                      >
-                        {copiedInlineMomo ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-400" /> Copied
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5" /> Copy
-                          </>
-                        )}
-                      </button>
-                    </div>
-                    <p className="text-xs text-zinc-300 mt-1">
-                      Account Name: <strong className="text-white">Desmond Kofi Antwi</strong>
-                    </p>
-                  </div>
+                  <div className="w-full md:max-w-sm"><SupportCheckout target="gyidi" name="Gyidi Nwom" /></div>
                 </div>
               </section>
 
@@ -2746,11 +2469,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       onToggleFavorite={handleToggleFavorite}
                       onOpenArtiste={handleOpenArtisteProfile}
                       onEditSong={canViewerEditSong(song) ? (s) => setEditingLyricsSong(s) : undefined}
-                      onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-                      onOpenShareCard={(s) => {
-                        setShareCardInitialQuote('');
-                        setShareCardSong(s);
-                      }}
+                      onOpenLyrics={handleOpenLyrics}
+                      onOpenShareCard={(s) => handleOpenShareCard(s)}
                       onToggleOfflineSave={handleToggleOfflineSave}
                       onOpenPlaylistModal={(s) => handleRequestPlaylistModal(s)}
                     />
@@ -2780,17 +2500,14 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           }
           setQueueOpen((o) => !o);
         }}
-        onOpenLyrics={(s) => setLyricsDrawerSong(s)}
-        onOpenShareCard={(s) => {
-          setShareCardInitialQuote('');
-          setShareCardSong(s);
-        }}
+        onOpenLyrics={handleOpenLyrics}
+        onOpenShareCard={(s) => handleOpenShareCard(s)}
       />
 
       <QueueDrawer isOpen={queueOpen} onClose={() => setQueueOpen(false)} />
 
       <LyricsDrawer
-        isOpen={Boolean(lyricsDrawerSong)}
+        isOpen={isPremium && Boolean(lyricsDrawerSong)}
         song={lyricsDrawerSong}
         canEditSong={canViewerEditSong(lyricsDrawerSong)}
         onClose={() => setLyricsDrawerSong(null)}
@@ -2798,14 +2515,11 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           setLyricsDrawerSong(null);
           setEditingLyricsSong(s);
         }}
-        onOpenShareCard={(s, selectedLine) => {
-          setShareCardInitialQuote(selectedLine || '');
-          setShareCardSong(s);
-        }}
+        onOpenShareCard={handleOpenShareCard}
       />
 
       <ShareCardModal
-        isOpen={Boolean(shareCardSong)}
+        isOpen={isPremium && Boolean(shareCardSong)}
         song={shareCardSong}
         initialQuote={shareCardInitialQuote}
         onClose={() => setShareCardSong(null)}
@@ -3033,6 +2747,22 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, [fetchOwnProfile, fetchPlatformData]);
+
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    const restore = async () => {
+      try {
+        const result = await recoverPremiumAccount();
+        if (!cancelled) setUserProfile(result.profile);
+      } catch { if (!cancelled) void fetchOwnProfile(userId); }
+    };
+    void restore();
+    const refresh = () => { if (document.visibilityState === 'visible') void restore(); };
+    document.addEventListener('visibilitychange', refresh);
+    const interval = window.setInterval(() => { if (document.visibilityState === 'visible') void fetchOwnProfile(userId); }, 60000);
+    return () => { cancelled = true; document.removeEventListener('visibilitychange', refresh); window.clearInterval(interval); };
+  }, [userId, fetchOwnProfile]);
 
   const playableSongs = useMemo(
     () => songs.filter((s) => isSongPubliclyPlayable(s)),

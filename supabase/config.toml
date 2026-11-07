@@ -1,0 +1,4 @@
+[functions.verify-premium-payment]
+verify_jwt = false
+# Webhook mode authenticates x-paystack-signature; all other actions authenticate
+# the user's bearer token explicitly with auth.getUser(). Never remove either check.

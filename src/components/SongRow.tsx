@@ -118,7 +118,9 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
         {/* Primary Track Info Line */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
           {/* Index / Play / Lock indicator (GPU-only equalizer so mobile never reflows) */}
-          <div className="w-5 flex-shrink-0 flex items-center justify-center text-xs font-medium text-zinc-500 overflow-hidden">
+          <button type="button" onClick={(event) => { event.stopPropagation(); handleRowClick(); }}
+            aria-label={`${isActive && isPlaying ? 'Pause' : 'Play'} ${song.title}`}
+            className="h-11 w-8 flex-shrink-0 flex items-center justify-center rounded-lg text-xs font-medium text-amber-300 hover:bg-white/10 overflow-hidden">
             {lockedForGuest ? (
               <Lock className="w-3.5 h-3.5 text-amber-400/80" />
             ) : isActive ? (
@@ -134,9 +136,9 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
                 <Play className="w-4 h-4 text-amber-400 fill-amber-400" />
               )
             ) : (
-              <span className="tabular-nums">{index + 1}</span>
+              <Play className="w-4 h-4 fill-current" />
             )}
-          </div>
+          </button>
 
           {/* Cover */}
           <div className="relative flex-shrink-0">

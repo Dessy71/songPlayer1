@@ -124,7 +124,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-5">
+    <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-5">
       <div className="relative w-full max-w-2xl rounded-3xl border border-amber-400/25 bg-zinc-950 shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
         {/* Top Header */}
         <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-gradient-to-r from-amber-500/15 via-violet-500/10 to-zinc-950 px-5 py-4">

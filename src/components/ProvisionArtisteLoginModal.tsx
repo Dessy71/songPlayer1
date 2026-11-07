@@ -151,7 +151,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
     : '';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-xl rounded-3xl border border-white/15 bg-zinc-950 p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
         <button
           onClick={onClose}

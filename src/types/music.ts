@@ -236,9 +236,9 @@ export function isUserPremiumActive(
 ): boolean {
   if (!profile) return false;
   if (profile.role === 'admin') return true;
-  if (settings && settings.premium_enabled === false) return true;
   if (!profile.is_premium) return false;
-  if (profile.premium_plan === 'lifetime' || !profile.premium_until) return true;
+  if (profile.premium_plan === 'lifetime') return true;
+  if (!profile.premium_until) return false;
   return new Date(profile.premium_until).getTime() > nowMs;
 }
 
