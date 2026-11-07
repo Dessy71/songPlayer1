@@ -1262,33 +1262,33 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             </span>
                           )}
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mt-1.5">
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1.5 min-w-0">
                           {p.real_name && (
-                            <span className="text-xs text-zinc-300 truncate block">
+                            <span className="text-xs text-zinc-300 truncate">
                               {p.real_name}
                             </span>
                           )}
                           {p.email && (
-                            <span className="text-[11px] text-zinc-400 truncate block">
+                            <span className="text-[11px] text-zinc-400 truncate">
                               {p.email}
                             </span>
                           )}
                           {p.is_precreated && !p.claimed_user_id && code && (
                             <span
-                              className="text-[11px] font-mono font-bold text-amber-300 truncate block"
+                              className="text-[11px] font-mono font-bold text-amber-300 truncate"
                               title={`Claim Code: ${code}`}
                             >
                               Claim Code: {code}
                             </span>
                           )}
                           {p.tertiary_institution && (
-                            <span className="text-[11px] text-cyan-300 flex items-center gap-1 block">
+                            <span className="text-[11px] text-cyan-300 flex items-center gap-1 shrink-0">
                               <GraduationCap className="w-3 h-3 shrink-0" />
                               {p.tertiary_institution}
                             </span>
                           )}
                           {(p.scg_zone || p.scg_branch) && (
-                            <span className="text-[11px] text-amber-300 flex items-center gap-1 block">
+                            <span className="text-[11px] text-amber-300 flex items-center gap-1 shrink-0">
                               {[p.scg_zone, p.scg_branch].filter(Boolean).join(' • ')}
                             </span>
                           )}
