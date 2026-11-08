@@ -51,6 +51,7 @@ import { EditReleaseModal } from './EditReleaseModal';
 import { MessagesView } from './MessagesView';
 import { AdminContentMonetizationPanel } from './AdminContentMonetizationPanel';
 import { ProvisionArtisteLoginModal } from './ProvisionArtisteLoginModal';
+import { AdminAppAnalytics } from './AdminAppAnalytics';
 import { SupportModal } from './SupportModal'; // NEW: SupportModal import
 import { formatBytes, formatDuration } from '../lib/format';
 import { usePlayer } from '../context/PlayerContext';
@@ -64,6 +65,7 @@ const USER_TYPE_FILTERS: Array<{ id: 'all' | 'artiste' | 'listener' | 'sacsu' | 
 ];
 
 export type AdminSubTab =
+  | 'usage'
   | 'analytics'
   | 'approvals'
   | 'verses'
@@ -452,6 +454,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
         <div className="flex flex-wrap items-center gap-1.5 rounded-2xl bg-forest-950/90 border border-white/10 p-1.5">
           <button
+            onClick={() => setSubTab('usage')}
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
+              subTab === 'usage'
+                ? 'bg-gold-500 text-forest-950'
+                : 'text-zinc-300 hover:bg-white/5'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            App Usage
+          </button>
+
+          <button
             onClick={() => setSubTab('analytics')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'analytics'
@@ -587,7 +601,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         </div>
       )}
 
-      {/* SUBTAB 1: ANALYTICS */}
+      {/* SUBTAB: APP USAGE (live sessions, devices, locations) */}
+      {subTab === 'usage' && <AdminAppAnalytics />}
+
+      {/* SUBTAB: ANALYTICS (catalogue) */}
       {subTab === 'analytics' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">

@@ -91,6 +91,7 @@ import {
   syncProfileOfflineLibrary,
 } from './lib/offlineAudio';
 import { clearSermonProgress, getSermonProgressMap } from './lib/sermonProgress';
+import { recordPlay, startAnalytics } from './lib/appAnalytics';
 import { formatDuration } from './lib/format';
 
 const CATALOG_CACHE_KEY = 'gyidi_catalog_cache_v5';
@@ -148,7 +149,32 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     recentlyPlayedIds,
     playSong,
     warmTrack,
+    isPlaying,
   } = usePlayer();
+
+  // Read through refs so the analytics session is registered once on mount
+  // rather than being torn down every time playback pauses or resumes.
+  const userIdRef = useRef(userId);
+  userIdRef.current = userId;
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
+
+  // First-party usage analytics. Fire-and-forget by design: a failed beacon
+  // must never interrupt playback or surface an error to the listener.
+  useEffect(
+    () =>
+      startAnalytics({
+        getUserId: () => userIdRef.current,
+        isListening: () => isPlayingRef.current,
+      }),
+    []
+  );
+
+  // One play per track start, not per second of playback.
+  useEffect(() => {
+    if (!currentSong?.id) return;
+    recordPlay(() => userIdRef.current);
+  }, [currentSong?.id]);
 
   const isAuthenticated = Boolean(userId);
   const [nowTick, setNowTick] = useState<number>(() => Date.now());
