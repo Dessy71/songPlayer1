@@ -89,7 +89,7 @@ export const GoogleAdBanner: React.FC<GoogleAdBannerProps> = ({
   if (canRenderLiveUnit) {
     return (
       <div
-        className={`rounded-2xl border border-white/10 bg-zinc-900/40 overflow-hidden ${
+        className={`rounded-2xl border border-white/10 bg-forest-900/40 overflow-hidden ${
           slotType === 'home' ? 'p-3 my-2' : 'p-2.5'
         }`}
       >
@@ -100,7 +100,7 @@ export const GoogleAdBanner: React.FC<GoogleAdBannerProps> = ({
           {isAdmin && onConfigureClick && (
             <button
               onClick={onConfigureClick}
-              className="text-[10px] font-semibold text-amber-400 hover:underline cursor-pointer"
+              className="text-[10px] font-semibold text-gold-400 hover:underline cursor-pointer"
             >
               Ad Settings
             </button>
@@ -124,20 +124,20 @@ export const GoogleAdBanner: React.FC<GoogleAdBannerProps> = ({
       settings?.adsense_enabled && clientId && clientId.startsWith('ca-pub-')
     );
     return (
-      <div className="rounded-2xl border border-dashed border-emerald-500/30 bg-emerald-500/5 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="rounded-2xl border border-dashed border-forest-500/30 bg-forest-500/5 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <DollarSign className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <DollarSign className="w-4 h-4 text-forest-400 flex-shrink-0" />
           <p className="text-xs text-zinc-300">
             {autoAdsActive ? (
               <>
-                <strong className="text-emerald-300">Google AdSense Active ({clientId})</strong> —
+                <strong className="text-forest-300">Google AdSense Active ({clientId})</strong> —
                 Auto Ads script is live. Optional: add a Home Banner Slot ID for a fixed placement
                 here.
               </>
             ) : (
               <>
-                <strong className="text-amber-300">Admin Preview — Google Ads Ready:</strong> Enter
-                your Google AdSense Publisher Key (<code className="text-emerald-300">ca-pub-...</code>)
+                <strong className="text-gold-300">Admin Preview — Google Ads Ready:</strong> Enter
+                your Google AdSense Publisher Key (<code className="text-forest-300">ca-pub-...</code>)
                 in Admin Dashboard to start earning ad revenue.
               </>
             )}
@@ -146,7 +146,7 @@ export const GoogleAdBanner: React.FC<GoogleAdBannerProps> = ({
         {onConfigureClick && (
           <button
             onClick={onConfigureClick}
-            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/35 px-3.5 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-forest-500/20 border border-forest-500/35 px-3.5 py-1.5 text-xs font-bold text-forest-300 hover:bg-forest-500/30 cursor-pointer"
           >
             <Settings className="w-3.5 h-3.5" />
             Configure Google Ads

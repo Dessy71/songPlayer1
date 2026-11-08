@@ -446,8 +446,8 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
 
   if (loading && !settings && flyers.length === 0) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
-        <Loader2 className="w-6 h-6 text-amber-400 animate-spin mx-auto mb-2" />
+      <div className="rounded-2xl border border-white/10 bg-forest-900/50 p-12 text-center">
+        <Loader2 className="w-6 h-6 text-gold-400 animate-spin mx-auto mb-2" />
         <p className="text-xs text-zinc-400">Loading studio configuration...</p>
       </div>
     );
@@ -459,12 +459,12 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
         <div
           className={`rounded-2xl border px-4 py-3 text-xs font-semibold flex items-center justify-between gap-3 ${
             feedback.type === 'ok'
-              ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-200'
+              ? 'border-forest-500/40 bg-forest-500/15 text-forest-200'
               : 'border-rose-500/40 bg-rose-500/15 text-rose-200'
           }`}
         >
           <span className="flex items-center gap-2">
-            {feedback.type === 'ok' && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+            {feedback.type === 'ok' && <CheckCircle2 className="w-4 h-4 text-forest-400" />}
             {feedback.text}
           </span>
           <button
@@ -479,11 +479,11 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
       {/* ==================== MODE 1: 7-DAY DAILY BIBLE VERSE FLYER SCHEDULER ==================== */}
       {mode === 'verses' && (
         <div className="space-y-6">
-          <div className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-amber-500/10 via-zinc-900 to-zinc-950 p-5 sm:p-6 space-y-5">
+          <div className="rounded-3xl border border-gold-400/25 bg-gradient-to-br from-gold-500/10 via-forest-900 to-forest-950 p-5 sm:p-6 space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-amber-400" />
+                  <BookOpen className="w-5 h-5 text-gold-400" />
                   7-Day Weekly Bible Verse Flyer Scheduler
                 </h3>
                 <p className="text-xs text-zinc-400 mt-0.5">
@@ -498,7 +498,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   <button
                     type="button"
                     onClick={() => onPreviewDailyFeed('verse')}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3.5 py-2 text-xs font-bold text-amber-300 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/15 px-3.5 py-2 text-xs font-bold text-gold-300 cursor-pointer"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     Preview Pop-Up
@@ -509,7 +509,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   type="button"
                   disabled={saving || pendingDraftCount === 0}
                   onClick={handleScheduleSelectedWeekFlyers}
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-5 py-2 text-xs font-extrabold text-white shadow-lg disabled:opacity-45 cursor-pointer"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-pink-600 px-5 py-2 text-xs font-extrabold text-white shadow-lg disabled:opacity-45 cursor-pointer"
                 >
                   {saving ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -522,7 +522,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
             </div>
 
             {/* Week Range Controls */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-zinc-950/70 px-4 py-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-forest-950/70 px-4 py-2.5">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -533,8 +533,8 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <span className="text-xs font-bold text-white">
-                  7-Day Window: <span className="text-amber-300">{weekDates[0]}</span> →{' '}
-                  <span className="text-amber-300">{weekDates[6]}</span>
+                  7-Day Window: <span className="text-gold-300">{weekDates[0]}</span> →{' '}
+                  <span className="text-gold-300">{weekDates[6]}</span>
                 </span>
                 <button
                   type="button"
@@ -550,7 +550,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 <button
                   type="button"
                   onClick={() => setWeekStartIso(todayIso)}
-                  className="rounded-lg bg-amber-500/15 border border-amber-400/30 px-2.5 py-1 text-[11px] font-bold text-amber-300 hover:bg-amber-500/25 cursor-pointer"
+                  className="rounded-lg bg-gold-500/15 border border-gold-400/30 px-2.5 py-1 text-[11px] font-bold text-gold-300 hover:bg-gold-500/25 cursor-pointer"
                 >
                   Start Today ({todayIso})
                 </button>
@@ -558,7 +558,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   type="date"
                   value={weekStartIso}
                   onChange={(e) => e.target.value && setWeekStartIso(e.target.value)}
-                  className="rounded-lg border border-white/15 bg-zinc-900 px-2.5 py-1 text-xs text-white"
+                  className="rounded-lg border border-white/15 bg-forest-900 px-2.5 py-1 text-xs text-white"
                 />
               </div>
             </div>
@@ -581,10 +581,10 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                     key={dateStr}
                     className={`rounded-2xl border p-3 flex flex-col justify-between gap-2.5 ${
                       isToday
-                        ? 'border-amber-400/60 bg-amber-500/10'
+                        ? 'border-gold-400/60 bg-gold-500/10'
                         : existing
-                        ? 'border-emerald-500/35 bg-emerald-500/5'
-                        : 'border-white/10 bg-zinc-950/75'
+                        ? 'border-forest-500/35 bg-forest-500/5'
+                        : 'border-white/10 bg-forest-950/75'
                     }`}
                   >
                     <div className="space-y-2">
@@ -593,11 +593,11 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                           Day {idx + 1} • {dayLabel}
                         </span>
                         {isToday ? (
-                          <span className="rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-black uppercase text-zinc-950">
+                          <span className="rounded-full bg-gold-400 px-2 py-0.5 text-[9px] font-black uppercase text-forest-950">
                             Today
                           </span>
                         ) : existing ? (
-                          <span className="rounded-full bg-emerald-500/25 px-2 py-0.5 text-[9px] font-bold text-emerald-300">
+                          <span className="rounded-full bg-forest-500/25 px-2 py-0.5 text-[9px] font-bold text-forest-300">
                             Scheduled
                           </span>
                         ) : (
@@ -608,7 +608,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                       </div>
 
                       {/* Preview Image */}
-                      <label className="group relative block aspect-[4/5] w-full rounded-xl border border-dashed border-white/15 bg-zinc-900 overflow-hidden cursor-pointer hover:border-amber-400 transition">
+                      <label className="group relative block aspect-[4/5] w-full rounded-xl border border-dashed border-white/15 bg-forest-900 overflow-hidden cursor-pointer hover:border-gold-400 transition">
                         {draft?.previewUrl ? (
                           <img
                             src={draft.previewUrl}
@@ -622,7 +622,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="h-full w-full flex flex-col items-center justify-center p-2 text-center text-zinc-400 group-hover:text-amber-300">
+                          <div className="h-full w-full flex flex-col items-center justify-center p-2 text-center text-zinc-400 group-hover:text-gold-300">
                             <ImageIcon className="w-6 h-6 mb-1.5" />
                             <span className="text-[10px] font-bold">Select Flyer</span>
                             <span className="text-[9px] text-zinc-500">{dateStr}</span>
@@ -654,7 +654,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                           updateDayDraft(dateStr, { scriptureRef: e.target.value })
                         }
                         placeholder="Verse (e.g. Ps 23:1)"
-                        className="w-full rounded-lg border border-white/10 bg-zinc-900 px-2.5 py-1.5 text-[11px] text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none"
+                        className="w-full rounded-lg border border-white/10 bg-forest-900 px-2.5 py-1.5 text-[11px] text-white placeholder-zinc-500 focus:border-gold-400 focus:outline-none"
                       />
 
                       <input
@@ -662,7 +662,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                         value={draft?.caption ?? existing?.caption ?? ''}
                         onChange={(e) => updateDayDraft(dateStr, { caption: e.target.value })}
                         placeholder="Short note (optional)"
-                        className="w-full rounded-lg border border-white/10 bg-zinc-900 px-2.5 py-1.5 text-[11px] text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none"
+                        className="w-full rounded-lg border border-white/10 bg-forest-900 px-2.5 py-1.5 text-[11px] text-white placeholder-zinc-500 focus:border-gold-400 focus:outline-none"
                       />
                     </div>
 
@@ -696,7 +696,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                               setSaving(false);
                             }
                           }}
-                          className="w-full inline-flex items-center justify-center gap-1 rounded-lg bg-amber-500 hover:bg-amber-400 py-1.5 text-[10px] font-extrabold text-zinc-950 cursor-pointer"
+                          className="w-full inline-flex items-center justify-center gap-1 rounded-lg bg-gold-500 hover:bg-gold-400 py-1.5 text-[10px] font-extrabold text-forest-950 cursor-pointer"
                         >
                           <Upload className="w-3 h-3" />
                           Save Day {idx + 1}
@@ -721,9 +721,9 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
           </div>
 
           {/* Scheduled & Past Flyers List */}
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-5 space-y-3">
+          <div className="rounded-2xl border border-white/10 bg-forest-900/50 p-5 space-y-3">
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-amber-400" />
+              <Calendar className="w-4 h-4 text-gold-400" />
               All Scheduled & Published Daily Verse Flyers ({flyers.length})
             </h4>
 
@@ -740,7 +740,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   return (
                     <div
                       key={f.id}
-                      className="flex items-center gap-3 rounded-xl border border-white/10 bg-zinc-950/70 p-3"
+                      className="flex items-center gap-3 rounded-xl border border-white/10 bg-forest-950/70 p-3"
                     >
                       <img
                         src={f.flyer_url}
@@ -753,11 +753,11 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                             {f.scheduled_date}
                           </span>
                           {isToday ? (
-                            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                            <span className="rounded-full bg-forest-500/20 px-2 py-0.5 text-[10px] font-bold text-forest-300">
                               Live Today
                             </span>
                           ) : isFuture ? (
-                            <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                            <span className="rounded-full bg-gold-500/20 px-2 py-0.5 text-[10px] font-bold text-gold-300">
                               Scheduled
                             </span>
                           ) : (
@@ -766,7 +766,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-amber-200 truncate mt-0.5">
+                        <p className="text-xs text-gold-200 truncate mt-0.5">
                           {f.scripture_ref || 'Daily Bible Verse'}
                         </p>
                         <div className="flex items-center gap-2 mt-1.5">
@@ -775,7 +775,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                             onClick={() => handleToggleFlyerPopup(f)}
                             className={`rounded-md px-2 py-0.5 text-[10px] font-bold cursor-pointer ${
                               f.show_popup
-                                ? 'bg-amber-500/20 text-amber-300'
+                                ? 'bg-gold-500/20 text-gold-300'
                                 : 'bg-white/5 text-zinc-400'
                             }`}
                           >
@@ -804,18 +804,18 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <form
             onSubmit={handlePublishAnnouncement}
-            className="lg:col-span-5 rounded-3xl border border-white/10 bg-zinc-900/60 p-5 space-y-4"
+            className="lg:col-span-5 rounded-3xl border border-white/10 bg-forest-900/60 p-5 space-y-4"
           >
             <div className="flex items-center justify-between">
               <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-amber-400" />
+                <Megaphone className="w-5 h-5 text-gold-400" />
                 Post or Schedule Announcement
               </h3>
               {onPreviewDailyFeed && (
                 <button
                   type="button"
                   onClick={() => onPreviewDailyFeed('announcements')}
-                  className="text-xs font-bold text-amber-300 hover:underline cursor-pointer"
+                  className="text-xs font-bold text-gold-300 hover:underline cursor-pointer"
                 >
                   Preview Pop-Up
                 </button>
@@ -832,7 +832,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 value={annTitle}
                 onChange={(e) => setAnnTitle(e.target.value)}
                 placeholder="e.g. National Convention & Sabbath Gathering"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-xs text-white focus:border-gold-400 focus:outline-none"
               />
             </div>
 
@@ -846,7 +846,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 value={annBody}
                 onChange={(e) => setAnnBody(e.target.value)}
                 placeholder="Write full announcement details for Listeners and Artistes..."
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-xs text-white focus:border-gold-400 focus:outline-none"
               />
             </div>
 
@@ -858,7 +858,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   onChange={(e) =>
                     setAnnAudience(e.target.value as 'all' | 'listeners' | 'artistes')
                   }
-                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white"
+                  className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white"
                 >
                   <option value="all">Everyone (Users & Artistes)</option>
                   <option value="listeners">Listeners Only</option>
@@ -873,7 +873,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   onChange={(e) =>
                     setAnnPriority(e.target.value as 'normal' | 'important' | 'urgent')
                   }
-                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white"
+                  className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white"
                 >
                   <option value="normal">Normal</option>
                   <option value="important">Important</option>
@@ -883,8 +883,8 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
             </div>
 
             <div>
-              <label className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 bg-zinc-950 px-3.5 py-2.5 text-xs text-zinc-300 hover:border-amber-400 cursor-pointer">
-                <ImageIcon className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <label className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 bg-forest-950 px-3.5 py-2.5 text-xs text-zinc-300 hover:border-gold-400 cursor-pointer">
+                <ImageIcon className="w-4 h-4 text-gold-400 flex-shrink-0" />
                 <span className="truncate">
                   {annFlyerFile
                     ? `Attached Flyer: ${annFlyerFile.name}`
@@ -905,18 +905,18 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 value={annCtaLabel}
                 onChange={(e) => setAnnCtaLabel(e.target.value)}
                 placeholder="Button Label (optional)"
-                className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white"
+                className="rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white"
               />
               <input
                 type="url"
                 value={annCtaUrl}
                 onChange={(e) => setAnnCtaUrl(e.target.value)}
                 placeholder="https://... (optional)"
-                className="rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white"
+                className="rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white"
               />
             </div>
 
-            <div className="space-y-2 rounded-xl border border-white/10 bg-zinc-950/60 p-3">
+            <div className="space-y-2 rounded-xl border border-white/10 bg-forest-950/60 p-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-zinc-300">When to Publish</span>
                 <div className="flex gap-1.5">
@@ -925,7 +925,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                     onClick={() => setAnnScheduleMode('now')}
                     className={`rounded-lg px-2.5 py-1 text-[11px] font-bold cursor-pointer ${
                       annScheduleMode === 'now'
-                        ? 'bg-amber-500 text-zinc-950'
+                        ? 'bg-gold-500 text-forest-950'
                         : 'bg-white/5 text-zinc-400'
                     }`}
                   >
@@ -936,7 +936,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                     onClick={() => setAnnScheduleMode('scheduled')}
                     className={`rounded-lg px-2.5 py-1 text-[11px] font-bold cursor-pointer ${
                       annScheduleMode === 'scheduled'
-                        ? 'bg-amber-500 text-zinc-950'
+                        ? 'bg-gold-500 text-forest-950'
                         : 'bg-white/5 text-zinc-400'
                     }`}
                   >
@@ -955,7 +955,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                     required
                     value={annPublishAt}
                     onChange={(e) => setAnnPublishAt(e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-1.5 text-xs text-white"
+                    className="w-full rounded-lg border border-white/10 bg-forest-900 px-3 py-1.5 text-xs text-white"
                   />
                 </div>
               )}
@@ -968,16 +968,16 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   type="datetime-local"
                   value={annExpiresAt}
                   onChange={(e) => setAnnExpiresAt(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-1.5 text-xs text-white"
+                  className="w-full rounded-lg border border-white/10 bg-forest-900 px-3 py-1.5 text-xs text-white"
                 />
               </div>
 
-              <label className="flex items-center gap-2 pt-1 text-xs font-semibold text-amber-200 cursor-pointer">
+              <label className="flex items-center gap-2 pt-1 text-xs font-semibold text-gold-200 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={annShowPopup}
                   onChange={(e) => setAnnShowPopup(e.target.checked)}
-                  className="rounded accent-amber-400"
+                  className="rounded accent-gold-400"
                 />
                 Pop up automatically on User & Artiste accounts
               </label>
@@ -986,7 +986,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
             <button
               type="submit"
               disabled={saving}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-600 py-2.5 text-xs font-extrabold text-white shadow-lg cursor-pointer disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-pink-600 py-2.5 text-xs font-extrabold text-white shadow-lg cursor-pointer disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -998,7 +998,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
           </form>
 
           {/* Existing Announcements */}
-          <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-zinc-900/50 p-5 space-y-3">
+          <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-forest-900/50 p-5 space-y-3">
             <h3 className="text-base font-extrabold text-white">
               Published & Scheduled Announcements ({announcements.length})
             </h3>
@@ -1015,7 +1015,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   return (
                     <div
                       key={ann.id}
-                      className="rounded-2xl border border-white/10 bg-zinc-950/70 p-4 flex items-start justify-between gap-3"
+                      className="rounded-2xl border border-white/10 bg-forest-950/70 p-4 flex items-start justify-between gap-3"
                     >
                       <div className="flex items-start gap-3 min-w-0">
                         {ann.flyer_url && (
@@ -1032,15 +1032,15 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                               {ann.audience}
                             </span>
                             {isFuture ? (
-                              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                              <span className="rounded-full bg-gold-500/20 px-2 py-0.5 text-[10px] font-bold text-gold-300">
                                 Scheduled: {new Date(ann.publish_at).toLocaleString()}
                               </span>
                             ) : ann.is_active ? (
-                              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                              <span className="rounded-full bg-forest-500/20 px-2 py-0.5 text-[10px] font-bold text-forest-300">
                                 Active
                               </span>
                             ) : (
-                              <span className="rounded-full bg-zinc-700 px-2 py-0.5 text-[10px] text-zinc-300">
+                              <span className="rounded-full bg-forest-800 px-2 py-0.5 text-[10px] text-zinc-300">
                                 Paused
                               </span>
                             )}
@@ -1078,11 +1078,11 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <form
             onSubmit={handleSaveAdSense}
-            className="lg:col-span-7 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-zinc-900 to-zinc-950 p-6 space-y-4"
+            className="lg:col-span-7 rounded-3xl border border-forest-500/30 bg-gradient-to-br from-forest-500/10 via-forest-900 to-forest-950 p-6 space-y-4"
           >
             <div className="flex items-center gap-3">
-              <div className="h-11 w-11 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-emerald-300" />
+              <div className="h-11 w-11 rounded-2xl bg-forest-500/20 border border-forest-400/30 flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-forest-300" />
               </div>
               <div>
                 <h3 className="text-lg font-extrabold text-white">
@@ -1095,7 +1095,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
               </div>
             </div>
 
-            <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-zinc-950/80 p-4 cursor-pointer">
+            <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-forest-950/80 p-4 cursor-pointer">
               <div>
                 <p className="text-sm font-bold text-white">Enable Google Ads on Gyidi Nnwom</p>
                 <p className="text-xs text-zinc-400">
@@ -1106,12 +1106,12 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 type="checkbox"
                 checked={adsEnabled}
                 onChange={(e) => setAdsEnabled(e.target.checked)}
-                className="h-5 w-5 accent-emerald-400 rounded cursor-pointer"
+                className="h-5 w-5 accent-forest-400 rounded cursor-pointer"
               />
             </label>
 
             <div>
-              <label className="block text-xs font-bold text-emerald-300 mb-1">
+              <label className="block text-xs font-bold text-forest-300 mb-1">
                 Google AdSense Key / Publisher ID (or full Google script snippet) *
               </label>
               <input
@@ -1119,21 +1119,21 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 value={adsPublisherInput}
                 onChange={(e) => setAdsPublisherInput(e.target.value)}
                 placeholder="ca-pub-1234567890123456"
-                className="w-full rounded-xl border border-white/15 bg-zinc-950 px-4 py-2.5 text-sm font-mono text-white placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/15 bg-forest-950 px-4 py-2.5 text-sm font-mono text-white placeholder-zinc-600 focus:border-forest-400 focus:outline-none"
               />
               <p className="text-[11px] text-zinc-400 mt-1">
-                Tip: You can paste either <code className="text-emerald-300">ca-pub-XXXX...</code>{' '}
+                Tip: You can paste either <code className="text-forest-300">ca-pub-XXXX...</code>{' '}
                 or the entire <code className="text-zinc-300">&lt;script async src=...&gt;</code>{' '}
                 tag from Google AdSense — we automatically extract your Publisher ID!
               </p>
             </div>
 
-            <label className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-zinc-950/60 px-3.5 py-2.5 text-xs font-semibold text-zinc-200 cursor-pointer">
+            <label className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-forest-950/60 px-3.5 py-2.5 text-xs font-semibold text-zinc-200 cursor-pointer">
               <input
                 type="checkbox"
                 checked={adsAutoAds}
                 onChange={(e) => setAdsAutoAds(e.target.checked)}
-                className="rounded accent-emerald-400"
+                className="rounded accent-forest-400"
               />
               Enable Google Auto Ads (Recommended — Google automatically places high-earning ads)
             </label>
@@ -1148,7 +1148,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   value={adsHomeSlot}
                   onChange={(e) => setAdsHomeSlot(e.target.value)}
                   placeholder="e.g. 8923749823"
-                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-xs font-mono text-white placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-xs font-mono text-white placeholder-zinc-600 focus:border-forest-400 focus:outline-none"
                 />
               </div>
 
@@ -1161,7 +1161,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   value={adsSidebarSlot}
                   onChange={(e) => setAdsSidebarSlot(e.target.value)}
                   placeholder="e.g. 5412983741"
-                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-xs font-mono text-white placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-xs font-mono text-white placeholder-zinc-600 focus:border-forest-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -1169,23 +1169,23 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
             <button
               type="submit"
               disabled={saving}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 py-3 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-3 text-xs font-extrabold text-forest-950 shadow-lg cursor-pointer disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Save Google AdSense Settings
             </button>
           </form>
 
-          <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-zinc-900/60 p-6 space-y-4">
+          <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-forest-900/60 p-6 space-y-4">
             <h4 className="text-sm font-extrabold text-white">How to Connect Google AdSense</h4>
             <ol className="space-y-3 text-xs text-zinc-300 list-decimal list-inside leading-relaxed">
               <li>
                 Create or sign into your account at{' '}
-                <strong className="text-emerald-300">google.com/adsense</strong> and add your live
+                <strong className="text-forest-300">google.com/adsense</strong> and add your live
                 Gyidi Nnwom domain.
               </li>
               <li>
-                Copy your Publisher ID (<code className="text-amber-300">ca-pub-XXXXXXXXXXXX</code>)
+                Copy your Publisher ID (<code className="text-gold-300">ca-pub-XXXXXXXXXXXX</code>)
                 or the verification script Google gives you.
               </li>
               <li>
@@ -1209,11 +1209,11 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <form
               onSubmit={handleSavePremiumSettings}
-              className="lg:col-span-7 rounded-3xl border border-amber-500/35 bg-gradient-to-br from-amber-500/12 via-zinc-900 to-zinc-950 p-6 space-y-4"
+              className="lg:col-span-7 rounded-3xl border border-gold-500/35 bg-gradient-to-br from-gold-500/12 via-forest-900 to-forest-950 p-6 space-y-4"
             >
               <div className="flex items-center gap-3">
-                <div className="h-11 w-11 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center">
-                  <Crown className="w-6 h-6 text-amber-300" />
+                <div className="h-11 w-11 rounded-2xl bg-gold-500/20 border border-gold-400/30 flex items-center justify-center">
+                  <Crown className="w-6 h-6 text-gold-300" />
                 </div>
                 <div>
                   <h3 className="text-lg font-extrabold text-white">
@@ -1226,14 +1226,14 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-emerald-400/25 bg-zinc-950 p-4 space-y-2">
-                <p className="text-sm font-bold text-emerald-300">Paystack Webhook Setup (one-time)</p>
+              <div className="rounded-2xl border border-forest-400/25 bg-forest-950 p-4 space-y-2">
+                <p className="text-sm font-bold text-forest-300">Paystack Webhook Setup (one-time)</p>
                 <p className="text-xs text-zinc-300">In Paystack Dashboard → Settings → API Keys &amp; Webhooks, set the webhook URL below in the matching Live/Test mode. Keep PAYSTACK_SECRET_KEY only in Supabase Edge Function Secrets.</p>
-                <code className="block break-all text-xs text-amber-200 select-all">{`${SUPABASE_URL}/functions/v1/verify-premium-payment?webhook=1`}</code>
+                <code className="block break-all text-xs text-gold-200 select-all">{`${SUPABASE_URL}/functions/v1/verify-premium-payment?webhook=1`}</code>
                 <p className="text-xs text-zinc-400">The endpoint validates the raw-body signature, verifies the transaction with Paystack, and activates the account even when the app is closed.</p>
               </div>
 
-              <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-zinc-950/80 p-4 cursor-pointer">
+              <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-forest-950/80 p-4 cursor-pointer">
                 <div>
                   <p className="text-sm font-bold text-white">Enable New Premium Checkouts</p>
                   <p className="text-xs text-zinc-400">
@@ -1244,13 +1244,13 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   type="checkbox"
                   checked={premiumEnabled}
                   onChange={(e) => setPremiumEnabled(e.target.checked)}
-                  className="h-5 w-5 accent-amber-400 rounded cursor-pointer"
+                  className="h-5 w-5 accent-gold-400 rounded cursor-pointer"
                 />
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-amber-300 mb-1">
+                  <label className="block text-xs font-bold text-gold-300 mb-1">
                     Monthly Price (GHS — Cedis) *
                   </label>
                   <input
@@ -1259,13 +1259,13 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                     min="1"
                     value={monthlyPriceInput}
                     onChange={(e) => setMonthlyPriceInput(e.target.value)}
-                    className="w-full rounded-xl border border-white/15 bg-zinc-950 px-4 py-2.5 text-sm font-extrabold text-white focus:border-amber-400 focus:outline-none"
+                    className="w-full rounded-xl border border-white/15 bg-forest-950 px-4 py-2.5 text-sm font-extrabold text-white focus:border-gold-400 focus:outline-none"
                   />
                   <p className="text-[11px] text-zinc-400 mt-1">Default: 5.00 GHS / month</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-amber-300 mb-1">
+                  <label className="block text-xs font-bold text-gold-300 mb-1">
                     Yearly Price (GHS — Cedis) *
                   </label>
                   <input
@@ -1274,14 +1274,14 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                     min="1"
                     value={yearlyPriceInput}
                     onChange={(e) => setYearlyPriceInput(e.target.value)}
-                    className="w-full rounded-xl border border-white/15 bg-zinc-950 px-4 py-2.5 text-sm font-extrabold text-white focus:border-amber-400 focus:outline-none"
+                    className="w-full rounded-xl border border-white/15 bg-forest-950 px-4 py-2.5 text-sm font-extrabold text-white focus:border-gold-400 focus:outline-none"
                   />
                   <p className="text-[11px] text-zinc-400 mt-1">Default: 50.00 GHS / year</p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-emerald-300 mb-1">
+                <label className="block text-xs font-bold text-forest-300 mb-1">
                   Paystack Public Key (pk_live_... or pk_test_...)
                 </label>
                 <input
@@ -1289,7 +1289,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                   value={paystackKeyInput}
                   onChange={(e) => setPaystackKeyInput(e.target.value)}
                   placeholder="pk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                  className="w-full rounded-xl border border-white/15 bg-zinc-950 px-4 py-2.5 text-sm font-mono text-white placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-forest-950 px-4 py-2.5 text-sm font-mono text-white placeholder-zinc-600 focus:border-forest-400 focus:outline-none"
                 />
                 <p className="text-[11px] text-zinc-400 mt-1">
                   Copy your Public Key from{' '}
@@ -1303,7 +1303,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 py-3 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gold-500 hover:bg-gold-400 py-3 text-xs font-extrabold text-forest-950 shadow-lg cursor-pointer disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -1314,21 +1314,21 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
               </button>
             </form>
 
-            <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-zinc-900/60 p-6 space-y-4">
+            <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-forest-900/60 p-6 space-y-4">
               <div className="flex items-center gap-2 text-sm font-extrabold text-white">
-                <CreditCard className="w-4 h-4 text-amber-400" />
+                <CreditCard className="w-4 h-4 text-gold-400" />
                 Paystack Subscription Summary
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-white/10 bg-zinc-950 p-3.5">
+                <div className="rounded-2xl border border-white/10 bg-forest-950 p-3.5">
                   <p className="text-[11px] text-zinc-400">Total Payments</p>
                   <p className="text-2xl font-extrabold text-white mt-0.5">
                     {subscriptions.length}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 p-3.5">
-                  <p className="text-[11px] text-emerald-300">Gross Revenue</p>
+                <div className="rounded-2xl border border-forest-500/25 bg-forest-500/10 p-3.5">
+                  <p className="text-[11px] text-forest-300">Gross Revenue</p>
                   <p className="text-2xl font-extrabold text-white mt-0.5">
                     GHS{' '}
                     {subscriptions
@@ -1339,11 +1339,11 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
               </div>
 
               <div className="space-y-2 text-xs text-zinc-300 leading-relaxed pt-1">
-                <p className="font-bold text-amber-300">How Paystack Works on Gyidi Nnwom:</p>
+                <p className="font-bold text-gold-300">How Paystack Works on Gyidi Nnwom:</p>
                 <ol className="list-decimal list-inside space-y-1.5 text-zinc-400">
                   <li>
-                    Paste your <code className="text-emerald-300">pk_test_...</code> (testing) or{' '}
-                    <code className="text-emerald-300">pk_live_...</code> (production) key from
+                    Paste your <code className="text-forest-300">pk_test_...</code> (testing) or{' '}
+                    <code className="text-forest-300">pk_live_...</code> (production) key from
                     Paystack Ghana.
                   </li>
                   <li>
@@ -1360,7 +1360,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
           </div>
 
           {/* Recent Paystack Transactions */}
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-5 space-y-3">
+          <div className="rounded-2xl border border-white/10 bg-forest-900/50 p-5 space-y-3">
             <h4 className="text-sm font-extrabold text-white">
               Recent Paystack Subscription Payments ({subscriptions.length})
             </h4>
@@ -1386,7 +1386,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                           {new Date(sub.created_at).toLocaleString()}
                         </td>
                         <td className="py-2 pr-3">{sub.user_email || sub.user_id.slice(0, 8)}</td>
-                        <td className="py-2 pr-3 capitalize text-amber-300 font-semibold">
+                        <td className="py-2 pr-3 capitalize text-gold-300 font-semibold">
                           {sub.plan_interval}
                         </td>
                         <td className="py-2 pr-3 font-bold">

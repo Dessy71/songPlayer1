@@ -1,10 +1,44 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Brand palette — Savior Church of Ghana.
+   Two brand hues only (forest green and golden yellow) plus the neutral greys
+   used for text hierarchy. Functional colours are kept deliberately narrow:
+     verified -> blue, support -> pink, live -> cyan, destructive -> rose.
+   --------------------------------------------------------------------------- */
+@theme {
+  /* Forest green — surfaces and green accents. */
+  --color-forest-50: #eefaf0;
+  --color-forest-100: #c9f4cc;
+  --color-forest-200: #9ae89f;
+  --color-forest-300: #5fd469;
+  --color-forest-400: #2fbf42;
+  --color-forest-500: #1a9c2a;
+  --color-forest-600: #107a1c;
+  --color-forest-700: #0a5c12;
+  --color-forest-800: #06400a;
+  --color-forest-900: #032b04;
+  --color-forest-950: #012300;
+
+  /* Golden yellow — the single accent, used for Premium and primary actions. */
+  --color-gold-100: #ffe9b3;
+  --color-gold-200: #ffd873;
+  --color-gold-300: #ffc73d;
+  --color-gold-400: #ffb700;
+  --color-gold-500: #fdb300;
+  --color-gold-600: #b37d00;
+
+  /* Semantic aliases so intent is readable in markup. */
+  --color-premium: var(--color-gold-400);
+  --color-verified: #1d9bf0;
+  --color-support: #ec4899;
+}
+
 @layer base {
   html,
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: #09090b;
+    background-color: #012300;
     color: #f4f4f5;
     width: 100%;
     max-width: 100%;
@@ -180,9 +214,9 @@ html[data-theme="light"] :is([class~="text-white"], [class~="text-zinc-100"], [c
 html[data-theme="light"] :is([class~="text-zinc-300"], [class~="text-zinc-400"], [class~="text-zinc-500"]) { color: #52525b; }
 html[data-theme="light"] :is([class*="border-white/"], [class*="border-zinc-800"]) { border-color: #cbd5e1; }
 html[data-theme="light"] :is([class*="bg-white/5"], [class*="bg-white/10"]) { background-color: #e2e8f0; }
-html[data-theme="light"] :is([class~="text-amber-300"], [class~="text-amber-400"], [class~="text-amber-200"]) { color: #92400e; }
-html[data-theme="light"] :is([class~="text-emerald-300"], [class~="text-emerald-400"], [class~="text-emerald-200"]) { color: #065f46; }
+html[data-theme="light"] :is([class~="text-gold-300"], [class~="text-gold-400"], [class~="text-gold-200"]) { color: #92400e; }
+html[data-theme="light"] :is([class~="text-forest-300"], [class~="text-forest-400"], [class~="text-forest-200"]) { color: #065f46; }
 html[data-theme="light"] :is([class~="text-pink-300"], [class~="text-pink-400"]) { color: #9d174d; }
-html[data-theme="light"] :is([class*="from-zinc-9"], [class*="via-zinc-9"], [class*="to-zinc-9"]) {
+html[data-theme="light"] :is([class*="from-forest-9"], [class*="via-forest-9"], [class*="to-forest-9"], [class*="from-zinc-9"], [class*="via-zinc-9"], [class*="to-zinc-9"]) {
   --tw-gradient-from: #f1f5f9; --tw-gradient-via: #f8fafc; --tw-gradient-to: #fff;
 }

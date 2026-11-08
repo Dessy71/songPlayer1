@@ -262,7 +262,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-forest-900 p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
         <button
           onClick={onClose}
           aria-label="Close support details"
@@ -274,7 +274,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
         {/* Header: badge shows profile picture only, never a name */}
         <div className="flex items-center gap-2.5 pr-8">
           {hasSupportBadge && (
-            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-emerald-500/40 bg-emerald-500/15 text-emerald-400">
+            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-forest-500/40 bg-forest-500/15 text-forest-400">
               {artiste?.avatar_url ? (
                 <img src={artiste.avatar_url} alt="" className="h-full w-full object-cover" />
               ) : (
@@ -297,13 +297,13 @@ export const SupportModal: React.FC<SupportModalProps> = ({
         {/* ADMIN: Paystack configuration + approval */}
         {isAdminViewer && (
           <form
-            className="mt-4 space-y-4 rounded-xl border border-amber-400/20 bg-amber-400/5 p-4"
+            className="mt-4 space-y-4 rounded-xl border border-gold-400/20 bg-gold-400/5 p-4"
             onSubmit={(e) => {
               e.preventDefault();
               void saveDetails(false);
             }}
           >
-            <div className="flex items-center gap-2 text-xs font-bold uppercase text-amber-400">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase text-gold-400">
               <AlertCircle className="w-3.5 h-3.5" />
               Paystack subaccount &amp; payment page
             </div>
@@ -319,7 +319,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                     inputMode="url"
                     value={supportUrl}
                     onChange={(e) => setSupportUrl(e.target.value)}
-                    className="w-full rounded-lg border border-amber-400/20 bg-zinc-800/50 px-3 py-2 pr-10 text-sm text-zinc-200 focus:border-amber-400 focus:outline-none"
+                    className="w-full rounded-lg border border-gold-400/20 bg-forest-800/50 px-3 py-2 pr-10 text-sm text-zinc-200 focus:border-gold-400 focus:outline-none"
                     placeholder="https://paystack.shop/pay/..."
                   />
                   <button
@@ -327,7 +327,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                     onClick={() => handleCopy(supportUrl)}
                     disabled={!supportUrl}
                     aria-label="Copy payment page URL"
-                    className="absolute right-2 top-2 p-1 text-zinc-400 transition-colors hover:text-amber-400 disabled:opacity-30"
+                    className="absolute right-2 top-2 p-1 text-zinc-400 transition-colors hover:text-gold-400 disabled:opacity-30"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -343,7 +343,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                     type="text"
                     value={subaccountCode}
                     onChange={(e) => setSubaccountCode(e.target.value)}
-                    className="w-full rounded-lg border border-amber-400/20 bg-zinc-800/50 px-3 py-2 pr-10 font-mono text-sm text-zinc-200 focus:border-amber-400 focus:outline-none"
+                    className="w-full rounded-lg border border-gold-400/20 bg-forest-800/50 px-3 py-2 pr-10 font-mono text-sm text-zinc-200 focus:border-gold-400 focus:outline-none"
                     placeholder="ACCT_xxxxxxxxxxxx"
                     spellCheck={false}
                   />
@@ -352,19 +352,19 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                     onClick={() => handleCopy(subaccountCode)}
                     disabled={!subaccountCode}
                     aria-label="Copy subaccount code"
-                    className="absolute right-2 top-2 p-1 text-zinc-400 transition-colors hover:text-amber-400 disabled:opacity-30"
+                    className="absolute right-2 top-2 p-1 text-zinc-400 transition-colors hover:text-gold-400 disabled:opacity-30"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               </div>
 
-              <label className="flex items-start gap-2 rounded-lg border border-white/10 bg-zinc-950/40 p-2.5 text-[11px] text-zinc-300">
+              <label className="flex items-start gap-2 rounded-lg border border-white/10 bg-forest-950/40 p-2.5 text-[11px] text-zinc-300">
                 <input
                   type="checkbox"
                   checked={enabled}
                   onChange={(e) => setEnabled(e.target.checked)}
-                  className="mt-0.5 accent-emerald-400"
+                  className="mt-0.5 accent-forest-400"
                 />
                 <span>
                   Enable listener checkout for this {isGyidi ? 'platform' : 'artiste'} once the
@@ -379,7 +379,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
               </p>
             )}
             {notice && (
-              <p role="status" className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-xs text-emerald-300">
+              <p role="status" className="rounded-lg border border-forest-500/30 bg-forest-500/10 p-2.5 text-xs text-forest-300">
                 {notice}
               </p>
             )}
@@ -388,14 +388,14 @@ export const SupportModal: React.FC<SupportModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg border border-white/10 bg-zinc-800 px-4 py-2 text-sm font-bold text-zinc-200 transition-colors hover:bg-zinc-700"
+                className="rounded-lg border border-white/10 bg-forest-800 px-4 py-2 text-sm font-bold text-zinc-200 transition-colors hover:bg-forest-800"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400 px-4 py-2 text-sm font-bold text-zinc-950 transition-colors hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-gold-400 px-4 py-2 text-sm font-bold text-forest-950 transition-colors hover:bg-gold-300 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                 {isSaving ? 'Saving...' : 'Save Changes'}
@@ -405,7 +405,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                   type="button"
                   onClick={() => void saveDetails(true)}
                   disabled={isSaving}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-forest-500 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-forest-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   {isSaving ? 'Approving...' : 'Approve & Activate Support'}
@@ -417,7 +417,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 
         {/* ADMIN: adopt Paystack payment-page donations that the webhook missed */}
         {isAdminViewer && (
-          <div className="mt-4 space-y-2.5 rounded-xl border border-white/10 bg-zinc-950/40 p-4">
+          <div className="mt-4 space-y-2.5 rounded-xl border border-white/10 bg-forest-950/40 p-4">
             <div className="flex items-center gap-2 text-xs font-bold uppercase text-zinc-400">
               <RefreshCw className="h-3.5 w-3.5" />
               Supporter sync
@@ -432,7 +432,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
               type="button"
               onClick={() => void syncPayments()}
               disabled={isSyncing}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-zinc-800 px-3.5 py-2 text-xs font-bold text-zinc-200 transition-colors hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-forest-800 px-3.5 py-2 text-xs font-bold text-zinc-200 transition-colors hover:bg-forest-800 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
             >
               {isSyncing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -442,7 +442,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
               {isSyncing ? 'Syncing…' : 'Sync Paystack payments'}
             </button>
             {syncResult && (
-              <p role="status" className="text-[11px] text-emerald-300">
+              <p role="status" className="text-[11px] text-forest-300">
                 {syncResult}
               </p>
             )}
@@ -457,7 +457,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
             {/* Without this guard the first open flashes "not configured yet"
                 while platform_support_summary() is still in flight. */}
             {platformLoading && !platform ? (
-              <div className="flex items-center justify-center rounded-xl border border-white/10 bg-zinc-950/60 px-3.5 py-4">
+              <div className="flex items-center justify-center rounded-xl border border-white/10 bg-forest-950/60 px-3.5 py-4">
                 <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
               </div>
             ) : canShowSupportButton ? (
@@ -470,12 +470,12 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                 <button
                   type="button"
                   onClick={openPaymentPage}
-                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-3 text-left transition-colors hover:bg-emerald-500/20 cursor-pointer"
+                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-forest-500/30 bg-forest-500/10 px-3.5 py-3 text-left transition-colors hover:bg-forest-500/20 cursor-pointer"
                 >
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <Wallet className="w-5 h-5 flex-shrink-0 text-emerald-400" />
+                    <Wallet className="w-5 h-5 flex-shrink-0 text-forest-400" />
                     <span className="min-w-0">
-                      <span className="block text-sm font-bold text-emerald-300">
+                      <span className="block text-sm font-bold text-forest-300">
                         Support {isGyidi ? 'Gyidi Nnwom' : displayName}
                       </span>
                       <span className="block truncate text-[11px] text-zinc-400">
@@ -483,11 +483,11 @@ export const SupportModal: React.FC<SupportModalProps> = ({
                       </span>
                     </span>
                   </span>
-                  <ExternalLink className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                  <ExternalLink className="w-4 h-4 flex-shrink-0 text-forest-400" />
                 </button>
               </>
             ) : (
-              <div className="rounded-xl border border-white/10 bg-zinc-950/60 p-3.5 text-xs italic text-zinc-400">
+              <div className="rounded-xl border border-white/10 bg-forest-950/60 p-3.5 text-xs italic text-zinc-400">
                 {isGyidi
                   ? 'Gyidi Nnwom support is not configured yet.'
                   : artiste?.approval_status === 'pending'

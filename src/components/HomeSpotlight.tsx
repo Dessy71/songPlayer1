@@ -41,13 +41,13 @@ export function HomeSpotlight({ slides }: { slides: SpotlightSlide[] }) {
     <section aria-label="Church spotlight" aria-roledescription="carousel"
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
       onFocusCapture={(event) => { if (!(event.target as HTMLElement).closest('[data-rotation-toggle]')) setPaused(true); }}>
-      <div data-testid="spotlight-card" className="flex h-24 overflow-hidden rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-500/15 via-zinc-900 to-violet-950/50">
+      <div data-testid="spotlight-card" className="flex h-24 overflow-hidden rounded-2xl border border-gold-400/30 bg-gradient-to-r from-gold-500/15 via-forest-900 to-forest-950">
       <button type="button" onClick={current.onOpen}
         className="flex h-full min-w-0 flex-1 items-center gap-3 px-3 py-2 text-left hover:bg-white/5 cursor-pointer">
         {current.image ? <img src={current.image} alt="" className="h-14 w-14 shrink-0 rounded-xl object-cover" />
-          : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-400/10 text-amber-300">{current.icon}</span>}
+          : <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gold-400/10 text-gold-300">{current.icon}</span>}
         <span className="min-w-0 flex-1" role="group" aria-roledescription="slide" aria-label={`${index % slides.length + 1} of ${slides.length}`}>
-          <span className="block truncate text-[10px] font-extrabold uppercase tracking-wide text-amber-300">{current.label}</span>
+          <span className="block truncate text-[10px] font-extrabold uppercase tracking-wide text-gold-300">{current.label}</span>
           <span className="block line-clamp-2 text-sm font-extrabold leading-5 text-white">{current.title}</span>
           <span className="block truncate text-xs text-zinc-400">{current.description}</span>
         </span>

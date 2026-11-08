@@ -127,8 +127,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     isPro?: boolean;
   }> = [
     { id: 'discover', label: 'Discover', icon: <Compass className="w-4 h-4" /> },
-    { id: 'trending', label: 'Trending Now', icon: <Flame className="w-4 h-4 text-orange-400" /> },
-    { id: 'new-music', label: 'New Music', icon: <Sparkles className="w-4 h-4 text-amber-400" /> },
+    { id: 'trending', label: 'Trending Now', icon: <Flame className="w-4 h-4 text-gold-400" /> },
+    { id: 'new-music', label: 'New Music', icon: <Sparkles className="w-4 h-4 text-gold-400" /> },
     {
       id: 'upcoming',
       label: 'Upcoming Premieres',
@@ -138,13 +138,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'albums',
       label: 'Albums & EPs',
-      icon: <Disc3 className="w-4 h-4 text-violet-400" />,
+      icon: <Disc3 className="w-4 h-4 text-gold-400" />,
       badge: albumsCount || undefined,
     },
     {
       id: 'artistes',
       label: 'SCG & SACSU Artistes',
-      icon: <BadgeCheck className="w-4 h-4 text-sky-400" />,
+      icon: <BadgeCheck className="w-4 h-4 text-gold-400" />,
     },
     {
       id: 'live',
@@ -173,7 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'offline',
       label: 'Offline Saved',
-      icon: <CloudDownload className="w-4 h-4 text-emerald-400" />,
+      icon: <CloudDownload className="w-4 h-4 text-forest-400" />,
       badge: isPremium && offlineCount > 0 ? offlineCount : !isPremium ? 'PRO' : undefined,
       isPro: true,
     },
@@ -212,7 +212,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         onClick={() => handleSelect(item.id)}
         className={`w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer ${
           active
-            ? 'bg-gradient-to-r from-amber-500/20 via-pink-500/15 to-transparent text-amber-300 border border-amber-500/25'
+            ? 'bg-gradient-to-r from-gold-500/20 via-pink-500/15 to-transparent text-gold-300 border border-gold-500/25'
             : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100 border border-transparent'
         }`}
       >
@@ -224,7 +224,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span
             className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
               item.badge === 'PRO'
-                ? 'bg-amber-500/20 border border-amber-400/40 text-amber-300 uppercase tracking-wider'
+                ? 'bg-gold-500/20 border border-gold-400/40 text-gold-300 uppercase tracking-wider'
                 : item.badge === 'Soon'
                 ? 'bg-rose-500/20 border border-rose-400/35 text-rose-200 uppercase tracking-wider'
                 : 'bg-white/10 text-zinc-200'
@@ -238,7 +238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const sidebarContent = (
-    <div className="flex h-full flex-col bg-zinc-950 border-r border-white/10 w-64 px-4 py-4 select-none">
+    <div className="flex h-full flex-col bg-forest-950 border-r border-white/10 w-64 px-4 py-4 select-none">
       {/* Custom Generated Gyidi Nnwom Logo + Mobile Close Button */}
       <div className="flex items-center justify-between gap-2 px-1.5 mb-4">
         <div
@@ -248,13 +248,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <img
             src="/logo-mark.png"
             alt="Gyidi Nnwom Logo"
-            className="h-10 w-10 rounded-xl object-cover border border-amber-500/30 shadow-lg shadow-amber-500/15 flex-shrink-0"
+            className="h-10 w-10 rounded-xl object-cover border border-gold-500/30 shadow-lg shadow-gold-500/15 flex-shrink-0"
           />
           <div className="min-w-0">
             <h1 className="text-base font-extrabold tracking-tight text-white leading-none truncate">
               Gyidi Nnwom
             </h1>
-            <p className="text-[11px] text-amber-400/90 font-medium mt-1 truncate">
+            <p className="text-[11px] text-gold-400/90 font-medium mt-1 truncate">
               SCG &amp; SACSU Streaming
             </p>
           </div>
@@ -276,8 +276,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         onClick={() => handleSelect('premium')}
         className={`mb-3 w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-extrabold transition cursor-pointer ${
           activeTab === 'premium'
-            ? 'bg-gradient-to-r from-amber-400 to-pink-500 text-zinc-950 shadow-lg'
-            : 'bg-gradient-to-r from-amber-500/20 via-pink-500/15 to-amber-500/10 text-amber-200 border border-amber-400/35 hover:border-amber-400/60'
+            ? 'bg-gradient-to-r from-gold-400 to-pink-500 text-forest-950 shadow-lg'
+            : 'bg-gradient-to-r from-gold-500/20 via-pink-500/15 to-gold-500/10 text-gold-200 border border-gold-400/35 hover:border-gold-400/60'
         }`}
       >
         <span className="flex items-center gap-2">
@@ -287,8 +287,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <span
           className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
             activeTab === 'premium'
-              ? 'bg-zinc-950 text-amber-300'
-              : 'bg-amber-400 text-zinc-950'
+              ? 'bg-forest-950 text-gold-300'
+              : 'bg-gold-400 text-forest-950'
           }`}
         >
           {isPremium ? 'Active ✓' : `GHS ${monthlyPrice}`}
@@ -299,7 +299,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <nav className="space-y-4 flex-1 min-h-0 overflow-y-auto pr-0.5">
         {(isAdmin || userEmail) && (
           <div className="space-y-1">
-            <p className="px-2.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-amber-400/90">
+            <p className="px-2.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-gold-400/90">
               Creator & Admin
             </p>
             {isAdmin && (
@@ -307,8 +307,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => handleSelect('admin')}
                 className={`w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition cursor-pointer ${
                   activeTab === 'admin'
-                    ? 'bg-amber-500 text-zinc-950'
-                    : 'bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25'
+                    ? 'bg-gold-500 text-forest-950'
+                    : 'bg-gold-500/15 text-gold-300 border border-gold-500/30 hover:bg-gold-500/25'
                 }`}
               >
                 <span className="flex items-center gap-2.5">
@@ -342,12 +342,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => handleSelect('messages')}
                 className={`w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition cursor-pointer ${
                   activeTab === 'messages'
-                    ? 'bg-amber-500/20 text-amber-200 border border-amber-400/40'
+                    ? 'bg-gold-500/20 text-gold-200 border border-gold-400/40'
                     : 'text-zinc-300 hover:bg-white/5 border border-transparent'
                 }`}
               >
                 <span className="flex items-center gap-2.5">
-                  <MessageSquare className="w-4 h-4 text-amber-400" />
+                  <MessageSquare className="w-4 h-4 text-gold-400" />
                   Messages & Broadcasts
                 </span>
                 {unreadMessagesCount > 0 && (
@@ -371,10 +371,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onCloseMobile();
                 onOpenDailyFeed();
               }}
-              className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold text-amber-200 hover:bg-white/5 transition cursor-pointer"
+              className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold text-gold-200 hover:bg-white/5 transition cursor-pointer"
             >
               <span className="flex items-center gap-2.5">
-                <BookOpen className="w-4 h-4 text-amber-400" />
+                <BookOpen className="w-4 h-4 text-gold-400" />
                 Daily Verse & Notices
               </span>
               {hasUnseenDailyFeed && (
@@ -401,13 +401,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onCloseMobile();
                 onOpenInstallApp();
               }}
-              className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold text-emerald-200 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition cursor-pointer"
+              className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold text-forest-200 bg-forest-500/10 border border-forest-500/20 hover:bg-forest-500/20 transition cursor-pointer"
             >
               <span className="flex items-center gap-2.5">
-                <Smartphone className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <Smartphone className="w-4 h-4 text-forest-400 flex-shrink-0" />
                 Install Mobile App
               </span>
-              <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300">
+              <span className="text-[9px] font-extrabold uppercase tracking-wider text-forest-300">
                 PWA
               </span>
             </button>
@@ -438,9 +438,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onCloseMobile();
                 onOpenDeveloper();
               }}
-              className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-amber-200 bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/20 transition cursor-pointer"
+              className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-gold-200 bg-gold-500/10 border border-gold-500/20 hover:bg-gold-500/20 transition cursor-pointer"
             >
-              <Code2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <Code2 className="w-4 h-4 text-gold-400 flex-shrink-0" />
               Desmond Kofi Antwi
             </button>
           </div>
@@ -452,7 +452,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Account Footer */}
       <div className="pt-3 mt-2 border-t border-white/10 pb-20 lg:pb-16">
         {userEmail ? (
-          <div className="rounded-xl bg-zinc-900/90 border border-white/10 p-2.5">
+          <div className="rounded-xl bg-forest-900/90 border border-white/10 p-2.5">
             <div className="flex items-center gap-2">
               {profile?.avatar_url && (
                 <img
@@ -465,7 +465,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <p className="text-xs font-bold text-white truncate">
                   {profile?.stage_name || profile?.display_name || userEmail.split('@')[0]}
                 </p>
-                <p className="text-[10px] uppercase tracking-wider text-amber-400 font-semibold">
+                <p className="text-[10px] uppercase tracking-wider text-gold-400 font-semibold">
                   {profile?.is_sacsu ? 'SACSU Artiste' : profile?.role || 'listener'}
                 </p>
               </div>
@@ -473,7 +473,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {profile && profile.role === 'listener' && (
               <div className="mt-3 space-y-1.5">
                 <label
-                  className="flex w-full items-center gap-2 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 hover:border-amber-400 cursor-pointer transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="flex w-full items-center gap-2 rounded-xl border border-white/15 bg-forest-950 px-3 py-2 text-xs text-zinc-300 hover:border-gold-400 cursor-pointer transition disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <Camera className="w-3.5 h-3.5 flex-shrink-0" />
                   {photoBusy ? 'Updating…' : 'Change Profile Photo'}
@@ -504,7 +504,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onCloseMobile();
                 onOpenAuth(false);
               }}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 py-2 text-xs font-extrabold text-zinc-950 transition cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gold-500 hover:bg-gold-400 py-2 text-xs font-extrabold text-forest-950 transition cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
               Create Account / Sign In
@@ -514,7 +514,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onCloseMobile();
                 onOpenAuth(true);
               }}
-              className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-pink-500/20 border border-amber-500/30 py-1.5 text-[11px] font-bold text-amber-300 hover:bg-amber-500/30 transition cursor-pointer"
+              className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-gold-500/20 to-pink-500/20 border border-gold-500/30 py-1.5 text-[11px] font-bold text-gold-300 hover:bg-gold-500/30 transition cursor-pointer"
             >
               <UploadCloud className="w-3.5 h-3.5" />
               Artiste / SACSU Sign Up

@@ -47,7 +47,7 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md rounded-3xl border border-amber-400/30 bg-zinc-950 p-6 shadow-2xl space-y-5">
+      <div className="relative w-full max-w-md rounded-3xl border border-gold-400/30 bg-forest-950 p-6 shadow-2xl space-y-5">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-2 text-zinc-400 hover:bg-white/10 hover:text-white cursor-pointer"
@@ -59,10 +59,10 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
           <img
             src="/logo-mark.png"
             alt="Gyidi Nnwom App"
-            className="h-14 w-14 rounded-2xl border border-amber-400/40 object-cover shadow-lg"
+            className="h-14 w-14 rounded-2xl border border-gold-400/40 object-cover shadow-lg"
           />
           <div>
-            <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
+            <span className="rounded-full bg-gold-500/20 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-gold-300">
               Mobile &amp; Desktop App
             </span>
             <h3 className="text-lg font-extrabold text-white mt-1">Install Gyidi Nnwom App</h3>
@@ -73,8 +73,8 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
         </div>
 
         {installedNow ? (
-          <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/15 p-4 text-center space-y-2">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+          <div className="rounded-2xl border border-forest-500/40 bg-forest-500/15 p-4 text-center space-y-2">
+            <CheckCircle2 className="w-8 h-8 text-forest-400 mx-auto" />
             <p className="text-sm font-extrabold text-white">Gyidi Nnwom App Installed!</p>
             <p className="text-xs text-zinc-300">
               You can now open Gyidi Nnwom directly from your Home Screen anytime.
@@ -89,31 +89,31 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
             <button
               disabled={installing}
               onClick={handleNativeInstall}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-600 py-3 text-xs font-extrabold text-white shadow-lg cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-pink-600 py-3 text-xs font-extrabold text-white shadow-lg cursor-pointer"
             >
               <Download className="w-4 h-4" />
               {installing ? 'Installing...' : 'Install Gyidi Nnwom Now'}
             </button>
           </div>
         ) : isIos ? (
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4 space-y-3 text-xs text-zinc-200">
-            <p className="font-bold text-amber-300">Install on iPhone / iPad in 2 quick steps:</p>
+          <div className="rounded-2xl border border-white/10 bg-forest-900/70 p-4 space-y-3 text-xs text-zinc-200">
+            <p className="font-bold text-gold-300">Install on iPhone / iPad in 2 quick steps:</p>
             <div className="flex items-center gap-2.5">
-              <Share className="w-4 h-4 text-sky-400 flex-shrink-0" />
+              <Share className="w-4 h-4 text-gold-400 flex-shrink-0" />
               <span>
                 1. Tap the <strong>Share</strong> icon at the bottom of Safari.
               </span>
             </div>
             <div className="flex items-center gap-2.5">
-              <PlusSquare className="w-4 h-4 text-amber-400 flex-shrink-0" />
+              <PlusSquare className="w-4 h-4 text-gold-400 flex-shrink-0" />
               <span>
                 2. Scroll down and tap <strong>Add to Home Screen</strong>.
               </span>
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4 space-y-2.5 text-xs text-zinc-300">
-            <div className="flex items-center gap-2 text-amber-300 font-bold">
+          <div className="rounded-2xl border border-white/10 bg-forest-900/70 p-4 space-y-2.5 text-xs text-zinc-300">
+            <div className="flex items-center gap-2 text-gold-300 font-bold">
               <Smartphone className="w-4 h-4" />
               Add to Your Home Screen / Desktop
             </div>

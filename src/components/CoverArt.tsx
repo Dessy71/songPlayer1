@@ -1,46 +1,51 @@
 import React from 'react';
 import { Mic2, Music2, Radio } from 'lucide-react';
 
+/**
+ * Generated cover art. Every theme now draws from the two brand hues only —
+ * forest green and golden yellow — varying by depth rather than by hue, so the
+ * catalogue looks like one product instead of eight unrelated gradients.
+ */
 const THEME_MAP: Record<string, { gradient: string; ring: string; accent: string }> = {
   gold: {
-    gradient: 'from-amber-500 via-orange-600 to-rose-700',
-    ring: 'border-amber-300/30',
-    accent: 'text-amber-100',
+    gradient: 'from-gold-300 via-gold-400 to-gold-600',
+    ring: 'border-gold-200/40',
+    accent: 'text-forest-950',
   },
   emerald: {
-    gradient: 'from-emerald-500 via-teal-600 to-cyan-800',
-    ring: 'border-emerald-300/30',
-    accent: 'text-emerald-100',
+    gradient: 'from-forest-400 via-forest-600 to-forest-800',
+    ring: 'border-forest-200/30',
+    accent: 'text-forest-100',
   },
   sunset: {
-    gradient: 'from-pink-500 via-rose-600 to-purple-800',
-    ring: 'border-pink-300/30',
-    accent: 'text-pink-100',
+    gradient: 'from-gold-300 via-gold-500 to-forest-700',
+    ring: 'border-gold-200/40',
+    accent: 'text-forest-950',
   },
   violet: {
-    gradient: 'from-violet-500 via-purple-600 to-indigo-900',
-    ring: 'border-violet-300/30',
-    accent: 'text-violet-100',
+    gradient: 'from-forest-500 via-forest-700 to-forest-950',
+    ring: 'border-forest-200/30',
+    accent: 'text-forest-100',
   },
   ocean: {
-    gradient: 'from-sky-500 via-blue-600 to-indigo-900',
-    ring: 'border-sky-300/30',
-    accent: 'text-sky-100',
+    gradient: 'from-forest-600 via-forest-800 to-forest-950',
+    ring: 'border-forest-200/30',
+    accent: 'text-forest-100',
   },
   crimson: {
-    gradient: 'from-rose-500 via-red-600 to-amber-800',
-    ring: 'border-rose-300/30',
-    accent: 'text-rose-100',
+    gradient: 'from-gold-400 via-forest-700 to-forest-950',
+    ring: 'border-gold-200/40',
+    accent: 'text-gold-100',
   },
   amber: {
-    gradient: 'from-yellow-500 via-amber-600 to-stone-800',
-    ring: 'border-yellow-300/30',
-    accent: 'text-yellow-100',
+    gradient: 'from-gold-200 via-gold-400 to-forest-800',
+    ring: 'border-gold-200/40',
+    accent: 'text-forest-950',
   },
   indigo: {
-    gradient: 'from-indigo-500 via-fuchsia-600 to-slate-900',
-    ring: 'border-indigo-300/30',
-    accent: 'text-indigo-100',
+    gradient: 'from-forest-700 via-forest-900 to-forest-950',
+    ring: 'border-forest-200/30',
+    accent: 'text-forest-100',
   },
 };
 
@@ -84,7 +89,7 @@ export const CoverArt: React.FC<CoverArtProps> = ({
 
   if (coverUrl) {
     return (
-      <div className={`relative overflow-hidden bg-zinc-900 select-none ${className}`}>
+      <div className={`relative overflow-hidden bg-forest-900 select-none ${className}`}>
         <img
           src={coverUrl}
           alt={title}

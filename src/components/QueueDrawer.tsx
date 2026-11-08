@@ -16,8 +16,8 @@ export const QueueDrawer: React.FC<QueueDrawerProps> = ({ isOpen, onClose }) => 
 
   return (
     <div className="safe-overlay fixed inset-0 z-40 flex justify-end bg-black/60 backdrop-blur-xs">
-      <div className="w-full max-w-md bg-zinc-950 border-l border-white/10 h-full flex flex-col pb-24 shadow-2xl">
-        <div className="flex items-center justify-between gap-2 px-5 py-3 border-b border-white/10 bg-zinc-900/70">
+      <div className="w-full max-w-md bg-forest-950 border-l border-white/10 h-full flex flex-col pb-24 shadow-2xl">
+        <div className="flex items-center justify-between gap-2 px-5 py-3 border-b border-white/10 bg-forest-900/70">
           <button
             type="button"
             onClick={onClose}
@@ -37,7 +37,7 @@ export const QueueDrawer: React.FC<QueueDrawerProps> = ({ isOpen, onClose }) => 
         </div>
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10">
           <div className="flex items-center gap-2.5">
-            <ListMusic className="w-5 h-5 text-amber-400" />
+            <ListMusic className="w-5 h-5 text-gold-400" />
             <div>
               <h3 className="text-sm font-bold text-white">Up Next Queue</h3>
               <p className="text-xs text-zinc-400">{queue.length} tracks queued</p>
@@ -58,7 +58,7 @@ export const QueueDrawer: React.FC<QueueDrawerProps> = ({ isOpen, onClose }) => 
                   key={song.id}
                   onClick={() => playSong(song)}
                   className={`flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer transition ${
-                    active ? 'bg-amber-500/15 border border-amber-500/30' : 'hover:bg-white/5'
+                    active ? 'bg-gold-500/15 border border-gold-500/30' : 'hover:bg-white/5'
                   }`}
                 >
                   <CoverArt
@@ -72,7 +72,7 @@ export const QueueDrawer: React.FC<QueueDrawerProps> = ({ isOpen, onClose }) => 
                   <div className="min-w-0 flex-1">
                     <p
                       className={`text-xs font-semibold truncate ${
-                        active ? 'text-amber-300' : 'text-zinc-100'
+                        active ? 'text-gold-300' : 'text-zinc-100'
                       }`}
                     >
                       {song.title}
@@ -82,7 +82,7 @@ export const QueueDrawer: React.FC<QueueDrawerProps> = ({ isOpen, onClose }) => 
                     </p>
                   </div>
                   {active ? (
-                    <Play className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                    <Play className="w-3.5 h-3.5 text-gold-400 fill-gold-400" />
                   ) : (
                     <button
                       onClick={(e) => {

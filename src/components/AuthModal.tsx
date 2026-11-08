@@ -206,7 +206,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-forest-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
@@ -232,13 +232,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {promptReason && (
-          <div className="mb-3 flex items-start gap-2 rounded-xl border border-amber-400/35 bg-amber-500/15 px-3.5 py-2.5 text-xs font-semibold text-amber-200">
-            <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="mb-3 flex items-start gap-2 rounded-xl border border-gold-400/35 bg-gold-500/15 px-3.5 py-2.5 text-xs font-semibold text-gold-200">
+            <Sparkles className="w-4 h-4 text-gold-400 flex-shrink-0 mt-0.5" />
             <span>{promptReason}</span>
           </div>
         )}
 
-        <div className="mt-2 grid grid-cols-2 rounded-xl bg-zinc-950 p-1 border border-white/5">
+        <div className="mt-2 grid grid-cols-2 rounded-xl bg-forest-950 p-1 border border-white/5">
           <button
             type="button"
             onClick={() => {
@@ -248,7 +248,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`rounded-lg py-2 text-xs font-semibold transition cursor-pointer ${
               mode === 'signup'
-                ? 'bg-zinc-800 text-white shadow'
+                ? 'bg-forest-800 text-white shadow'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
@@ -262,7 +262,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             }}
             className={`rounded-lg py-2 text-xs font-semibold transition cursor-pointer ${
               mode === 'signin'
-                ? 'bg-zinc-800 text-white shadow'
+                ? 'bg-forest-800 text-white shadow'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
@@ -279,11 +279,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 aria-pressed={accountType === 'listener'}
                 className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition cursor-pointer ${
                   accountType === 'listener'
-                    ? 'border-amber-400 bg-amber-500/15 text-white'
-                    : 'border-white/10 bg-zinc-950 text-zinc-400 hover:text-white'
+                    ? 'border-gold-400 bg-gold-500/15 text-white'
+                    : 'border-white/10 bg-forest-950 text-zinc-400 hover:text-white'
                 }`}
               >
-                <Headphones className="w-4 h-4 text-amber-400" />
+                <Headphones className="w-4 h-4 text-gold-400" />
                 <div>
                   <p className="text-xs font-bold">Listener</p>
                   <p className="text-[10px] text-zinc-400">Listen & explore</p>
@@ -297,7 +297,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition cursor-pointer ${
                   accountType !== 'listener'
                     ? 'border-pink-400 bg-pink-500/15 text-white'
-                    : 'border-white/10 bg-zinc-950 text-zinc-400 hover:text-white'
+                    : 'border-white/10 bg-forest-950 text-zinc-400 hover:text-white'
                 }`}
               >
                 <Mic2 className="w-4 h-4 text-pink-400" />
@@ -320,13 +320,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="e.g. Akosua Mensah"
                   required
-                  className="w-full rounded-xl border border-white/10 bg-zinc-950 pl-10 pr-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-forest-950 pl-10 pr-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 hover:border-amber-400 cursor-pointer transition">
-                  <Camera className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <label className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 bg-forest-950 px-3 py-2 text-xs text-zinc-300 hover:border-gold-400 cursor-pointer transition">
+                  <Camera className="w-4 h-4 text-gold-400 flex-shrink-0" />
                   <span className="truncate">
                     {avatarFile ? `Photo: ${avatarFile.name}` : 'Add Profile Picture (Optional)'}
                   </span>
@@ -342,7 +342,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           )}
 
           {mode === 'signup' && accountType === 'artiste' && (
-            <div className="space-y-3 rounded-xl border border-white/10 bg-zinc-950/60 p-3.5">
+            <div className="space-y-3 rounded-xl border border-white/10 bg-forest-950/60 p-3.5">
               <div className="flex items-center justify-between gap-2 rounded-xl border border-cyan-500/25 bg-cyan-500/10 px-3 py-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-cyan-300 cursor-pointer">
                   <input
@@ -367,7 +367,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={realName}
                     onChange={(e) => setRealName(e.target.value)}
                     placeholder="e.g. Seth Boateng"
-                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -380,7 +380,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={stageName}
                     onChange={(e) => setStageName(e.target.value)}
                     placeholder={isSacsu ? 'e.g. KNUST SACSU Choir' : 'e.g. Obogu Seth'}
-                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -397,7 +397,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={tertiaryInstitution}
                     onChange={(e) => setTertiaryInstitution(e.target.value)}
                     placeholder="e.g. KNUST, University of Ghana (Legon), UCC, UEW, UENR..."
-                    className="w-full rounded-xl border border-cyan-500/30 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-cyan-400 focus:outline-none"
+                    className="w-full rounded-xl border border-cyan-500/30 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-cyan-400 focus:outline-none"
                   />
                 </div>
               )}
@@ -405,7 +405,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
                   <label className="block text-[11px] font-medium text-zinc-300 mb-1">
-                    <MapPin className="w-3 h-3 inline mr-1 text-amber-400" />
+                    <MapPin className="w-3 h-3 inline mr-1 text-gold-400" />
                     SCG Zone {isSacsu ? '(Optional)' : '*'}
                   </label>
                   <input
@@ -414,7 +414,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={scgZone}
                     onChange={(e) => setScgZone(e.target.value)}
                     placeholder="e.g. Obogu Zone, Ashanti Zone"
-                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -427,14 +427,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={scgBranch}
                     onChange={(e) => setScgBranch(e.target.value)}
                     placeholder="e.g. Obogu Branch"
-                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 hover:border-amber-400 cursor-pointer transition">
-                  <Camera className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <label className="flex items-center gap-2 rounded-xl border border-dashed border-white/15 bg-forest-950 px-3 py-2 text-xs text-zinc-300 hover:border-gold-400 cursor-pointer transition">
+                  <Camera className="w-4 h-4 text-gold-400 flex-shrink-0" />
                   <span className="truncate">
                     {avatarFile ? `Photo: ${avatarFile.name}` : 'Upload Artiste Profile Picture'}
                   </span>
@@ -447,8 +447,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </label>
               </div>
 
-              <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-300">
+              <div className="rounded-xl border border-forest-500/25 bg-forest-500/10 p-3">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-forest-300">
                   <Wallet className="w-3.5 h-3.5 inline mr-1" />
                   Fan Support
                 </p>
@@ -463,7 +463,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
           {/* Payout Details - Artiste signup only */}
           {mode === 'signup' && accountType === 'artiste' && (
-            <div className="rounded-xl border border-white/10 bg-zinc-950/60 p-3 space-y-3">
+            <div className="rounded-xl border border-white/10 bg-forest-950/60 p-3 space-y-3">
               <label className="block text-xs font-bold text-zinc-300 mb-2">Payout Method</label>
               <div className="flex gap-3">
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -471,7 +471,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     type="radio"
                     checked={paymentMethod === 'bank'}
                     onChange={() => setPaymentMethod('bank')}
-                    className="rounded accent-amber-400"
+                    className="rounded accent-gold-400"
                   />
                   <span className="text-xs font-medium text-zinc-200">Bank Account</span>
                 </label>
@@ -480,7 +480,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     type="radio"
                     checked={paymentMethod === 'momo'}
                     onChange={() => setPaymentMethod('momo')}
-                    className="rounded accent-emerald-400"
+                    className="rounded accent-forest-400"
                   />
                   <span className="text-xs font-medium text-zinc-200">Mobile Money</span>
                 </label>
@@ -493,7 +493,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <select
                       value={bankName}
                       onChange={(e) => setBankName(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
                     >
                       <option value="">Select a bank</option>
                       <option value="GCB Bank">GCB Bank</option>
@@ -518,7 +518,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={bankAccountNumber}
                       onChange={(e) => setBankAccountNumber(e.target.value)}
                       placeholder="e.g. 1234567890"
-                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -528,7 +528,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={bankAccountName}
                       onChange={(e) => setBankAccountName(e.target.value)}
                       placeholder="e.g. Seth Boateng"
-                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -541,7 +541,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <select
                       value={momoOperator}
                       onChange={(e) => setMomoOperator(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-forest-500 focus:outline-none"
                     >
                       <option value="">Select an operator</option>
                       <option value="MTN">MTN Mobile Money</option>
@@ -556,7 +556,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={momoPhoneNumber}
                       onChange={(e) => setMomoPhoneNumber(e.target.value)}
                       placeholder="e.g. 024XXXXXXX"
-                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-emerald-500 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-forest-500 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -566,7 +566,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={bankAccountName}
                       onChange={(e) => setBankAccountName(e.target.value)}
                       placeholder="e.g. Seth Boateng"
-                      className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                      className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -575,31 +575,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           )}
 
           {mode === 'signup' && accountType === 'artiste' && (
-            <section aria-label="Existing artiste profile" className="space-y-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
-              <h3 className="text-sm font-bold text-emerald-300">Have a Pre-Created Profile Claim Code?</h3>
+            <section aria-label="Existing artiste profile" className="space-y-2 rounded-xl border border-forest-500/30 bg-forest-500/10 p-3.5">
+              <h3 className="text-sm font-bold text-forest-300">Have a Pre-Created Profile Claim Code?</h3>
               <p className="text-xs text-zinc-300">If Admin already created your artiste profile, claim it instead of creating a duplicate.</p>
               <button type="button" onClick={() => { setAccountType('claim'); setError(null); }}
-                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-bold text-zinc-950">
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-forest-500 px-4 py-2 text-xs font-bold text-forest-950">
                 <KeyRound className="h-4 w-4" /> Claim Profile
               </button>
             </section>
           )}
 
           {mode === 'signup' && accountType === 'claim' && (
-            <div className="space-y-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
-              <p className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+            <div className="space-y-2.5 rounded-xl border border-forest-500/30 bg-forest-500/10 p-3.5">
+              <p className="text-xs font-bold text-forest-300 flex items-center gap-1.5">
                 <KeyRound className="w-4 h-4" />
                 Claim Your Pre-Created Artiste Profile
               </p>
               <button type="button" onClick={() => { setAccountType('artiste'); setError(null); }}
-                className="min-h-11 text-xs font-bold text-amber-300 hover:underline">← Create a new artiste profile instead</button>
+                className="min-h-11 text-xs font-bold text-gold-300 hover:underline">← Create a new artiste profile instead</button>
               <p className="text-[11px] text-zinc-300 leading-relaxed">
                 Already have songs on Gyidi Nnwom (e.g. Obogu Seth, Yaw Baidoo, Osiem Choir)? Enter
                 the <strong>Claim Code</strong> provided by the Admin plus your preferred login
                 email & password below.
               </p>
               <div>
-                <label className="block text-[11px] font-bold text-emerald-200 mb-1">
+                <label className="block text-[11px] font-bold text-forest-200 mb-1">
                   Admin Claim Code *
                 </label>
                 <input
@@ -608,7 +608,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   value={claimCode}
                   onChange={(e) => setClaimCode(e.target.value.toUpperCase())}
                   placeholder="e.g. GN-OBOGU-B15A"
-                  className="w-full rounded-xl border border-emerald-400/40 bg-zinc-950 px-3.5 py-2 text-sm font-mono font-bold tracking-wider text-emerald-300 placeholder-zinc-600 focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-forest-400/40 bg-forest-950 px-3.5 py-2 text-sm font-mono font-bold tracking-wider text-forest-300 placeholder-zinc-600 focus:border-forest-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -624,7 +624,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 pl-10 pr-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 pl-10 pr-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -640,7 +640,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 placeholder="Minimum 6 characters"
                 minLength={6}
                 required
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 pl-10 pr-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 pl-10 pr-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -654,7 +654,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-pink-500 to-violet-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-pink-500/20 hover:opacity-95 disabled:opacity-60 transition cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 via-pink-500 to-gold-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-pink-500/20 hover:opacity-95 disabled:opacity-60 transition cursor-pointer"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {mode === 'signin'

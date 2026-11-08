@@ -281,7 +281,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-forest-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white cursor-pointer"
@@ -290,7 +290,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-10 w-10 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400">
+          <div className="h-10 w-10 rounded-xl bg-gold-500/15 border border-gold-400/30 flex items-center justify-center text-gold-400">
             {isAlbumMode ? <Disc3 className="w-5 h-5" /> : <Music className="w-5 h-5" />}
           </div>
           <div>
@@ -305,7 +305,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
-          <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-zinc-950/70 p-3.5">
+          <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-forest-950/70 p-3.5">
             <CoverArt
               title={title || 'Track'}
               category={category}
@@ -318,7 +318,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
               <p className="text-xs font-bold text-white">
                 {isAlbumMode ? 'General Album Cover Art' : 'Song Cover Art'}
               </p>
-              <label className="inline-flex items-center gap-2 rounded-xl border border-amber-400/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 cursor-pointer transition">
+              <label className="inline-flex items-center gap-2 rounded-xl border border-gold-400/40 bg-gold-500/10 px-3 py-1.5 text-xs font-semibold text-gold-300 hover:bg-gold-500/20 cursor-pointer transition">
                 <ImageIcon className="w-3.5 h-3.5" />
                 {coverFile ? `Selected: ${coverFile.name}` : 'Upload / Change Cover Art'}
                 <input
@@ -341,7 +341,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-sm text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
 
@@ -354,7 +354,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                 required
                 value={artist}
                 onChange={(e) => setArtist(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-sm text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -369,7 +369,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Optional album description..."
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           )}
@@ -380,7 +380,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               >
                 <option value="Songs">Songs</option>
                 <option value="Sermons">Sermons</option>
@@ -395,7 +395,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
               <select
                 value={choirGroup}
                 onChange={(e) => setChoirGroup(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               >
                 {CHOIR_GROUPS.map((g) => (
                   <option key={g} value={g}>
@@ -421,37 +421,37 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                       value={preacherName}
                       onChange={(e) => setPreacherName(e.target.value)}
                       placeholder="Preacher Name"
-                      className="rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
+                      className="rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
                     />
                     <input
                       type="text"
                       value={sermonTopic}
                       onChange={(e) => setSermonTopic(e.target.value)}
                       placeholder="Topic / Occasion"
-                      className="rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
+                      className="rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
                     />
                     <input
                       type="text"
                       value={bibleBook}
                       onChange={(e) => setBibleBook(e.target.value)}
                       placeholder="Bible Book"
-                      className="rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
+                      className="rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
                     />
                     <input
                       type="number"
                       value={conventionYear}
                       onChange={(e) => setConventionYear(e.target.value)}
                       placeholder="Year (e.g. 2026)"
-                      className="rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
+                      className="rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
                     />
                   </div>
                 </div>
               )}
 
-              <div className="rounded-xl border border-amber-400/25 bg-zinc-950/80 p-3.5 space-y-2.5">
+              <div className="rounded-xl border border-gold-400/25 bg-forest-950/80 p-3.5 space-y-2.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-extrabold text-white flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-amber-400" />
+                    <FileText className="w-4 h-4 text-gold-400" />
                     Song Lyrics (Text or Any Lyrics File)
                   </span>
 
@@ -459,7 +459,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                     <select
                       value={lyricsLanguage}
                       onChange={(e) => setLyricsLanguage(e.target.value)}
-                      className="rounded-lg border border-white/10 bg-zinc-900 px-2 py-1 text-[11px] text-white"
+                      className="rounded-lg border border-white/10 bg-forest-900 px-2 py-1 text-[11px] text-white"
                     >
                       <option value="Twi">Twi</option>
                       <option value="Twi & English">Twi &amp; English</option>
@@ -467,7 +467,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                       <option value="Other">Other</option>
                     </select>
 
-                    <label className="inline-flex items-center gap-1 rounded-lg bg-amber-500/20 border border-amber-400/35 px-2.5 py-1 text-[11px] font-bold text-amber-300 cursor-pointer hover:bg-amber-500/30">
+                    <label className="inline-flex items-center gap-1 rounded-lg bg-gold-500/20 border border-gold-400/35 px-2.5 py-1 text-[11px] font-bold text-gold-300 cursor-pointer hover:bg-gold-500/30">
                       <FileText className="w-3 h-3" />
                       Upload Lyrics File
                       <input
@@ -481,7 +481,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                 </div>
 
                 {lyricsNotice && (
-                  <p className="text-[11px] font-semibold text-emerald-300">✓ {lyricsNotice}</p>
+                  <p className="text-[11px] font-semibold text-forest-300">✓ {lyricsNotice}</p>
                 )}
 
                 <textarea
@@ -492,7 +492,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                     setLyricsTimed(null);
                   }}
                   placeholder="Type or paste Twi / English lyrics here, OR upload any lyrics file (.lrc, .srt, .vtt, .txt, .docx, .rtf, .ttml, .json)..."
-                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-forest-900 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-400 focus:outline-none"
                 />
               </div>
             </>
@@ -500,7 +500,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
 
           {/* Individual Track Titles + Per-Track Lyrics File Import when editing an Album */}
           {isAlbumMode && albumTracks.length > 0 && (
-            <div className="rounded-xl border border-white/10 bg-zinc-950/70 p-3 space-y-2">
+            <div className="rounded-xl border border-white/10 bg-forest-950/70 p-3 space-y-2">
               <p className="text-xs font-bold text-zinc-300">
                 Edit Track Titles &amp; Lyrics ({albumTracks.length} tracks)
               </p>
@@ -509,7 +509,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                   .sort((a, b) => (a.track_number || 0) - (b.track_number || 0))
                   .map((trk, idx) => (
                     <div key={trk.id} className="flex items-center gap-2">
-                      <span className="w-5 text-xs font-bold text-amber-400 tabular-nums">
+                      <span className="w-5 text-xs font-bold text-gold-400 tabular-nums">
                         {trk.track_number || idx + 1}.
                       </span>
                       <input
@@ -519,10 +519,10 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
                         onChange={(e) =>
                           setTrackTitles((prev) => ({ ...prev, [trk.id]: e.target.value }))
                         }
-                        className="flex-1 rounded-lg border border-white/10 bg-zinc-900 px-2.5 py-1.5 text-xs text-white focus:border-amber-400 focus:outline-none"
+                        className="flex-1 rounded-lg border border-white/10 bg-forest-900 px-2.5 py-1.5 text-xs text-white focus:border-gold-400 focus:outline-none"
                       />
                       <label
-                        className="rounded-lg bg-amber-500/15 border border-amber-400/30 px-2 py-1 text-[10px] font-bold text-amber-300 cursor-pointer"
+                        className="rounded-lg bg-gold-500/15 border border-gold-400/30 px-2 py-1 text-[10px] font-bold text-gold-300 cursor-pointer"
                         title="Upload lyrics file for this album track"
                       >
                         {trk.lyrics_text ? 'Lyrics ✓' : '+ Lyrics File'}
@@ -564,7 +564,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
           )}
 
           {okMsg && (
-            <div className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-xs text-emerald-300">
+            <div className="flex items-center gap-1.5 rounded-xl border border-forest-500/30 bg-forest-500/10 p-2.5 text-xs text-forest-300">
               <CheckCircle2 className="w-4 h-4" />
               {okMsg}
             </div>
@@ -588,7 +588,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
             <button
               type="submit"
               disabled={saving || deleting}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-600 px-6 py-2.5 text-xs font-extrabold text-white shadow-lg cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-pink-600 px-6 py-2.5 text-xs font-extrabold text-white shadow-lg cursor-pointer disabled:opacity-50"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Save Changes

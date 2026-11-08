@@ -55,7 +55,7 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
+      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-forest-900 p-6 shadow-2xl">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition"
@@ -64,7 +64,7 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
         </button>
 
         <div className="flex items-center gap-2.5 mb-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-400">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold-500/15 border border-gold-500/30 text-gold-400">
             <ListPlus className="w-5 h-5" />
           </div>
           <div className="min-w-0">
@@ -88,7 +88,7 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
                   key={pl.id}
                   onClick={() => handleQuickAdd(pl.id)}
                   disabled={alreadyIn}
-                  className="w-full flex items-center justify-between rounded-xl border border-white/5 bg-zinc-950/70 px-3.5 py-2.5 text-left hover:border-white/20 transition cursor-pointer disabled:opacity-70"
+                  className="w-full flex items-center justify-between rounded-xl border border-white/5 bg-forest-950/70 px-3.5 py-2.5 text-left hover:border-white/20 transition cursor-pointer disabled:opacity-70"
                 >
                   <div>
                     <p className="text-sm font-medium text-white">{pl.name}</p>
@@ -97,7 +97,7 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
                     </p>
                   </div>
                   {alreadyIn ? (
-                    <span className="flex items-center gap-1 text-xs font-medium text-emerald-400">
+                    <span className="flex items-center gap-1 text-xs font-medium text-forest-400">
                       <Check className="w-4 h-4" /> Added
                     </span>
                   ) : (
@@ -119,19 +119,19 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="e.g. Sabbath Morning Hymns"
-            className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
           />
           <input
             type="text"
             value={newDesc}
             onChange={(e) => setNewDesc(e.target.value)}
             placeholder="Optional description..."
-            className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
           />
           <button
             type="submit"
             disabled={creating || !newName.trim()}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-600 py-2.5 text-sm font-semibold text-white hover:opacity-95 disabled:opacity-50 transition cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-pink-600 py-2.5 text-sm font-semibold text-white hover:opacity-95 disabled:opacity-50 transition cursor-pointer"
           >
             {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             {song ? 'Create & Add Song' : 'Create Playlist'}
