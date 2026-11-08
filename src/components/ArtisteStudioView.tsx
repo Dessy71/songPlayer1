@@ -22,6 +22,7 @@ import {
   Edit3,
   Trash2,
   MessageSquare,
+  AlertTriangle,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
@@ -394,6 +395,30 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             </p>
           </div>
         </div>
+
+      {/* Why an administrator turned the profile down. Sits at the top of the
+          studio so it is seen whichever tab the artiste is on. */}
+      {profile.approval_status === 'rejected' && (
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-rose-300 flex-shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="text-sm font-extrabold text-rose-200">
+                Your artiste profile was not approved
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-rose-100/90">
+                {profile.rejection_reason
+                  ? profile.rejection_reason
+                  : 'An administrator rejected this profile without leaving a reason. Contact the SCG & SACSU streaming team to find out what needs to change.'}
+              </p>
+              <p className="mt-2 text-[11px] text-rose-200/80">
+                Fix the issue and save your profile again — it goes back into the approval
+                queue automatically.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
         {isArtisteOrAdmin && (
           <div className="flex flex-wrap items-center gap-2.5">

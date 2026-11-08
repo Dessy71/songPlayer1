@@ -96,6 +96,10 @@ export interface UserProfile {
   approval_status?: ApprovalStatus;
   /** Why an administrator rejected this profile, shown back to the artiste. */
   rejection_reason?: string | null;
+  /** Admin-controlled: a banned account is met with a ban page instead of the app. */
+  is_banned?: boolean;
+  ban_reason?: string | null;
+  banned_at?: string | null;
   is_verified_artiste?: boolean;
   is_premium?: boolean;
   premium_plan?: 'monthly' | 'yearly' | 'lifetime' | null;
