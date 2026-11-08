@@ -1852,6 +1852,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <GoogleAdBanner
                 settings={platformSettings}
                 slotType="home"
+                adsEnabled={!isPremium}
                 isAdmin={userProfile?.role === 'admin'}
                 onConfigureClick={() => {
                   setAdminInitialSubTab('adsense');
@@ -2674,12 +2675,15 @@ export default function App() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loadingCatalog, setLoadingCatalog] = useState<boolean>(() => songs.length === 0);
 
-  // Dynamically load Google AdSense script whenever Admin activates it
-  useGoogleAdSenseScript(platformSettings);
-
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  // Dynamically load Google AdSense script whenever Admin activates it, but
+  // never for Premium accounts. Gating the script matters as much as gating
+  // the banners: Auto Ads inject units on their own once this is on the page.
+  const adsAllowed = !isUserPremiumActive(userProfile, platformSettings);
+  useGoogleAdSenseScript(platformSettings, adsAllowed);
 
   // Auth modal state hoisted so PlayerProvider & every action gate can open Create Account!
   const [authOpen, setAuthOpen] = useState(false);
