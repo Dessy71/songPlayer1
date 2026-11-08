@@ -57,7 +57,7 @@ export async function syncProfileOfflineLibrary(userId: string): Promise<Set<str
 }
 
 /**
- * Saves a song to the user's Gyidi Nwom profile for in-app offline listening ONLY.
+ * Saves a song to the user's Gyidi Nnwom profile for in-app offline listening ONLY.
  * Does NOT trigger a file download to the user's phone/computer.
  */
 export async function saveSongForOffline(song: Song, userId: string): Promise<void> {

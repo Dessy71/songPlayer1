@@ -86,7 +86,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (mode === 'signup') {
         if (accountType === 'claim') {
           if (!claimCode.trim()) {
-            throw new Error('Please enter the Claim Code sent to you by the Gyidi Nwom Admin.');
+            throw new Error('Please enter the Claim Code sent to you by the Gyidi Nnwom Admin.');
           }
           // Sign up (or sign in if already created) then claim pre-created profile via RPC
           const { error: signUpErr } = await supabase.auth.signUp({
@@ -218,12 +218,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <div className="flex items-center gap-3 mb-3">
           <img
             src="/logo-mark.png"
-            alt="Gyidi Nwom"
+            alt="Gyidi Nnwom"
             className="h-11 w-11 rounded-xl object-cover border border-white/10"
           />
           <div>
             <h2 id="auth-modal-title" className="text-lg font-bold text-white">
-              {mode === 'signup' ? 'Create Your Free Account' : 'Sign In to Gyidi Nwom'}
+              {mode === 'signup' ? 'Create Your Free Account' : 'Sign In to Gyidi Nnwom'}
             </h2>
             <p className="text-xs text-zinc-400">
               Unlock all songs, likes, downloads, playlists & player controls
@@ -594,7 +594,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <button type="button" onClick={() => { setAccountType('artiste'); setError(null); }}
                 className="min-h-11 text-xs font-bold text-amber-300 hover:underline">← Create a new artiste profile instead</button>
               <p className="text-[11px] text-zinc-300 leading-relaxed">
-                Already have songs on Gyidi Nwom (e.g. Obogu Seth, Yaw Baidoo, Osiem Choir)? Enter
+                Already have songs on Gyidi Nnwom (e.g. Obogu Seth, Yaw Baidoo, Osiem Choir)? Enter
                 the <strong>Claim Code</strong> provided by the Admin plus your preferred login
                 email & password below.
               </p>

@@ -111,7 +111,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
       ctx.fillStyle = '#fcd34d';
       ctx.font = 'bold 28px Inter, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('✨ GYIDI NWOM STREAMING', W / 2, 164);
+      ctx.fillText('✨ GYIDI NNWOM STREAMING', W / 2, 164);
 
       // 3. Cover Art Box (640x640)
       const artSize = 620;
@@ -218,7 +218,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
   const deepLink = `${window.location.origin}/?track=${encodeURIComponent(song.slug || song.id)}`;
   const waText = `🎵 *${song.title}* — _${song.artist}_${
     quote.trim() ? `\n\n"${quote.trim()}"` : ''
-  }\n\nListen now on *Gyidi Nwom*:\n${deepLink}`;
+  }\n\nListen now on *Gyidi Nnwom*:\n${deepLink}`;
 
   const handleNativeOrWhatsAppShare = async () => {
     try {
@@ -232,7 +232,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
           });
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
-              title: `${song.title} — Gyidi Nwom`,
+              title: `${song.title} — Gyidi Nnwom`,
               text: waText,
               files: [file],
             });

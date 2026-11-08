@@ -145,7 +145,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
   }, [loadMyCatalogAndAnalytics]);
 
   const handleQuickDeleteSong = async (song: Song) => {
-    if (!window.confirm(`Permanently delete "${song.title}" from Gyidi Nwom?`)) return;
+    if (!window.confirm(`Permanently delete "${song.title}" from Gyidi Nnwom?`)) return;
     const { error: delErr } = await supabase.from('songs').delete().eq('id', song.id);
     if (!delErr) {
       if (song.storage_path?.startsWith('uploads/')) {

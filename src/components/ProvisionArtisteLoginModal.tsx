@@ -136,14 +136,14 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
 
   const inviteCodeMessage = `Hello ${
     artiste.stage_name || 'Artiste'
-  }! Your verified Artiste profile and songs are live on Gyidi Nwom (${
+  }! Your verified Artiste profile and songs are live on Gyidi Nnwom (${
     window.location.origin
   }).\n\nTo log in & manage your songs/analytics:\n1. Click "Create Account" → select "Claim Profile"\n2. Enter Claim Code: ${currentCode}\n3. Choose your Email & Password!`;
 
   const directCredsMessage = createdCreds
     ? `Hello ${
         artiste.stage_name || 'Artiste'
-      }! Your verified Artiste account on Gyidi Nwom (${
+      }! Your verified Artiste account on Gyidi Nnwom (${
         window.location.origin
       }) is ready.\n\nSign In Credentials:\nEmail: ${createdCreds.email}\nPassword: ${
         createdCreds.password

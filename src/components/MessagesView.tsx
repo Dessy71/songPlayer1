@@ -245,7 +245,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           sender_profile_id: currentProfile.id,
           recipient_profile_id: null,
           is_broadcast: true,
-          subject: broadcastSubject.trim() || 'Official Gyidi Nwom Announcement',
+          subject: broadcastSubject.trim() || 'Official Gyidi Nnwom Announcement',
           body: broadcastBody.trim(),
         })
         .select('*')
@@ -427,7 +427,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                           Master Admin Broadcast
                         </span>
                         <span className="text-[11px] text-zinc-400">
-                          {sender?.stage_name || sender?.display_name || 'Gyidi Nwom Admin'} •{' '}
+                          {sender?.stage_name || sender?.display_name || 'Gyidi Nnwom Admin'} •{' '}
                           {new Date(b.created_at).toLocaleString()}
                         </span>
                       </div>

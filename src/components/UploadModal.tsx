@@ -471,7 +471,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
         desiredStatus === 'approved'
           ? isPremiere
             ? 'Premiere approved! Countdown & cover art are now live.'
-            : 'Published live on Gyidi Nwom!'
+            : 'Published live on Gyidi Nnwom!'
           : uploadFormat === 'album'
           ? `Album (${albumTracks.length} tracks) submitted to Admin for pre-listening & approval!`
           : 'Submitted to Admin Dashboard for pre-listening & approval!'

@@ -47,7 +47,7 @@ export const PREMIUM_BENEFITS = [
     icon: CloudDownload,
     title: 'In-App Offline Profile Vault',
     description:
-      'Save unlimited songs & convention sermons directly to your Gyidi Nwom profile for zero-data offline listening inside the app — without downloading files to your phone storage.',
+      'Save unlimited songs & convention sermons directly to your Gyidi Nnwom profile for zero-data offline listening inside the app — without downloading files to your phone storage.',
     accent: 'text-emerald-400 bg-emerald-500/15 border-emerald-400/30',
   },
   {
@@ -217,7 +217,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
     setStatusMessage(null);
 
     if (!userId || !userEmail) {
-      onOpenAuth('Create or sign in to your free Gyidi Nwom account first to subscribe to Premium.');
+      onOpenAuth('Create or sign in to your free Gyidi Nnwom account first to subscribe to Premium.');
       return;
     }
 
@@ -275,7 +275,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
           <div className="space-y-2.5 max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-400/40 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-300">
               <Crown className="w-3.5 h-3.5" />
-              Gyidi Nwom Premium • Pricing &amp; Billing
+              Gyidi Nnwom Premium • Pricing &amp; Billing
             </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
               Unlock Offline Listening, Playlists, Likes, Daily Verses &amp; Live Streams
@@ -441,7 +441,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             </div>
 
             <p className="text-xs text-zinc-200 leading-relaxed">
-              12 full months of uninterrupted Gyidi Nwom Premium across conventions, Sabbath study,
+              12 full months of uninterrupted Gyidi Nnwom Premium across conventions, Sabbath study,
               and offline listening — at just{' '}
               <strong className="text-amber-300">
                 {currency} {(yearlyPrice / 12).toFixed(2)}/month
@@ -519,12 +519,12 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
         </section>
       )}
 
-      {/* ALL BENEFITS OF GYIDI NWOM PREMIUM */}
+      {/* ALL BENEFITS OF GYIDI NNWOM PREMIUM */}
       <section className="space-y-4">
         <div>
           <h3 className="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
             <Crown className="w-5 h-5 text-amber-400" />
-            Everything Included in Gyidi Nwom Premium
+            Everything Included in Gyidi Nnwom Premium
           </h3>
           <p className="text-xs text-zinc-400 mt-0.5">
             Every Monthly ({currency} {monthlyPrice}) and Yearly ({currency} {yearlyPrice}) plan

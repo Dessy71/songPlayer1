@@ -76,7 +76,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
     }
     if (!isPremium) {
       onRequirePremium?.(
-        'Live Convention Video & Sabbath Radio access is included in Gyidi Nwom Premium!'
+        'Live Convention Video & Sabbath Radio access is included in Gyidi Nnwom Premium!'
       );
       return;
     }
@@ -114,7 +114,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
             </div>
             <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/25 border border-amber-400/40 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-200">
               <Crown className="w-3.5 h-3.5 text-amber-300" />
-              Gyidi Nwom Premium
+              Gyidi Nnwom Premium
             </div>
           </div>
 
@@ -125,7 +125,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
           <p className="text-sm sm:text-base text-zinc-200 leading-relaxed">
             Soon, SCG Headquarters, Zones, Branches, Choirs, and SACSU Tertiary Campuses will be
             able to broadcast <strong>Live HD Convention Video</strong> and{' '}
-            <strong>Low-Data Sabbath Audio Radio</strong> directly inside Gyidi Nwom — connecting
+            <strong>Low-Data Sabbath Audio Radio</strong> directly inside Gyidi Nnwom — connecting
             brethren across Ghana and the diaspora in real time!
           </p>
 

@@ -312,7 +312,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
       }
       if (!isPremium) {
         openPremiumPrompt(
-          'Saving songs & sermons to your profile for zero-data offline listening is a Gyidi Nwom Premium feature.'
+          'Saving songs & sermons to your profile for zero-data offline listening is a Gyidi Nnwom Premium feature.'
         );
         return;
       }
@@ -335,7 +335,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
       }
       if (!isPremium) {
         openPremiumPrompt(
-          'Adding songs to playlists and building custom worship sets is a Gyidi Nwom Premium feature.'
+          'Adding songs to playlists and building custom worship sets is a Gyidi Nnwom Premium feature.'
         );
         return;
       }
@@ -347,7 +347,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
   const handleOpenLyrics = (song: Song) => {
     if (!isPremium) {
-      openPremiumPrompt('Viewing song lyrics is a Gyidi Nwom Premium feature.');
+      openPremiumPrompt('Viewing song lyrics is a Gyidi Nnwom Premium feature.');
       return;
     }
     setLyricsDrawerSong(song);
@@ -355,7 +355,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
   const handleOpenShareCard = (song: Song, quote = '') => {
     if (!isPremium) {
-      openPremiumPrompt('Sharing songs and WhatsApp Status cards is a Gyidi Nwom Premium feature.');
+      openPremiumPrompt('Sharing songs and WhatsApp Status cards is a Gyidi Nnwom Premium feature.');
       return;
     }
     setShareCardInitialQuote(quote);
@@ -626,7 +626,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
       }
       if (!isPremium) {
         openPremiumPrompt(
-          'Liking songs and saving to your Liked Songs library is a Gyidi Nwom Premium feature.'
+          'Liking songs and saving to your Liked Songs library is a Gyidi Nnwom Premium feature.'
         );
         return;
       }
@@ -1051,12 +1051,12 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           ) {
             openPremiumPrompt(
               t === 'favorites'
-                ? 'Liked Songs is a Gyidi Nwom Premium feature.'
+                ? 'Liked Songs is a Gyidi Nnwom Premium feature.'
                 : t === 'offline'
-                ? 'Offline Saved (in-app profile offline listening) is a Gyidi Nwom Premium feature.'
+                ? 'Offline Saved (in-app profile offline listening) is a Gyidi Nnwom Premium feature.'
                 : t === 'live'
-                ? 'Live Convention Video & Sabbath Radio access is a Gyidi Nwom Premium feature.'
-                : 'Custom Playlists are a Gyidi Nwom Premium feature.'
+                ? 'Live Convention Video & Sabbath Radio access is a Gyidi Nnwom Premium feature.'
+                : 'Custom Playlists are a Gyidi Nnwom Premium feature.'
             );
             return;
           }
@@ -1086,7 +1086,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             return;
           }
           if (!isPremium && activeRoleAnnouncements.length === 0) {
-            openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.');
+            openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nnwom Premium feature.');
             return;
           }
           setDailyFeedInitialTab(isPremium ? undefined : 'announcements');
@@ -1154,7 +1154,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <button
                 onClick={() => setInstallAppOpen(true)}
                 className="hidden xl:inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/35 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/25 cursor-pointer"
-                title="Install Gyidi Nwom as a mobile app + offline listening"
+                title="Install Gyidi Nnwom as a mobile app + offline listening"
               >
                 <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
                 Install App
@@ -1251,7 +1251,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <button
                 onClick={() =>
                   openAccountPrompt(
-                    'Create your free Gyidi Nwom account to unlock all 295+ tracks!'
+                    'Create your free Gyidi Nnwom account to unlock all 295+ tracks!'
                   )
                 }
                 className="rounded-full bg-amber-400 px-4 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-amber-300 cursor-pointer"
@@ -1721,7 +1721,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             <div className="space-y-4 sm:space-y-6 max-w-[1400px] mx-auto">
               <HomeSpotlight slides={[
                 {
-                  id: 'welcome', label: 'SCG & SACSU · Gyidi Nwom',
+                  id: 'welcome', label: 'SCG & SACSU · Gyidi Nnwom',
                   title: 'Savior Church of Ghana Digital Sanctuary',
                   description: `Stream ${playableSongs.length} hymns, choir recordings & convention sermons.`,
                   image: '/logo-mark.png', icon: <Music2 className="h-6 w-6" />,
@@ -1734,7 +1734,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   image: isPremium ? activePopupVerse?.flyer_url : undefined,
                   icon: <BookOpen className="h-6 w-6" />,
                   onOpen: () => {
-                    if (!isPremium) { openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.'); return; }
+                    if (!isPremium) { openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nnwom Premium feature.'); return; }
                     setDailyFeedInitialTab('verse'); setDailyFeedOpen(true);
                   },
                 },
@@ -2035,16 +2035,16 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 </div>
               </section>
 
-              {/* SUPPORT GYIDI NWOM */}
+              {/* SUPPORT GYIDI NNWOM */}
               <section className="rounded-3xl border border-pink-500/25 bg-gradient-to-r from-pink-500/10 via-zinc-900 to-zinc-900 p-6">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
                   <div className="space-y-1.5 max-w-xl">
                     <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-pink-400">
                       <HeartHandshake className="w-4 h-4" />
-                      Support Gyidi Nwom
+                      Support Gyidi Nnwom
                     </div>
                     <h3 className="text-xl font-extrabold text-white">
-                      Partner With the Gyidi Nwom Digital Ministry
+                      Partner With the Gyidi Nnwom Digital Ministry
                     </h3>
                     <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
                       Help us maintain high-speed cloud streaming and archive more SCG choirs,
@@ -2177,7 +2177,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         <Sparkles className="w-6 h-6 text-amber-400" /> New Music Releases
                       </>
                     )}
-                    {activeTab === 'browse' && 'All Gyidi Nwom Tracks'}
+                    {activeTab === 'browse' && 'All Gyidi Nnwom Tracks'}
                     {activeTab === 'choirs' && 'Choirs & Singers'}
                     {activeTab === 'sermons' && (
                       <>
@@ -2609,7 +2609,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         viewerRole={userProfile?.role || null}
         isPremium={isPremium}
         onUpgradeToPremium={() =>
-          openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.')
+          openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nnwom Premium feature.')
         }
         initialTab={dailyFeedInitialTab}
       />

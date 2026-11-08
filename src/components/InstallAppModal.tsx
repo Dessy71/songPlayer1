@@ -58,14 +58,14 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
         <div className="flex items-center gap-3.5">
           <img
             src="/logo-mark.png"
-            alt="Gyidi Nwom App"
+            alt="Gyidi Nnwom App"
             className="h-14 w-14 rounded-2xl border border-amber-400/40 object-cover shadow-lg"
           />
           <div>
             <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-300">
               Mobile &amp; Desktop App
             </span>
-            <h3 className="text-lg font-extrabold text-white mt-1">Install Gyidi Nwom App</h3>
+            <h3 className="text-lg font-extrabold text-white mt-1">Install Gyidi Nnwom App</h3>
             <p className="text-xs text-zinc-400">
               Fast home-screen launch &amp; offline saved songs!
             </p>
@@ -75,15 +75,15 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
         {installedNow ? (
           <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/15 p-4 text-center space-y-2">
             <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-            <p className="text-sm font-extrabold text-white">Gyidi Nwom App Installed!</p>
+            <p className="text-sm font-extrabold text-white">Gyidi Nnwom App Installed!</p>
             <p className="text-xs text-zinc-300">
-              You can now open Gyidi Nwom directly from your Home Screen anytime.
+              You can now open Gyidi Nnwom directly from your Home Screen anytime.
             </p>
           </div>
         ) : deferredPrompt ? (
           <div className="space-y-3">
             <p className="text-xs text-zinc-300 leading-relaxed">
-              Install Gyidi Nwom directly onto your phone or computer for 1-tap access, full-screen
+              Install Gyidi Nnwom directly onto your phone or computer for 1-tap access, full-screen
               playback, lock-screen controls, and offline saved hymns &amp; sermons.
             </p>
             <button
@@ -92,7 +92,7 @@ export const InstallAppModal: React.FC<InstallAppModalProps> = ({
               className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-600 py-3 text-xs font-extrabold text-white shadow-lg cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              {installing ? 'Installing...' : 'Install Gyidi Nwom Now'}
+              {installing ? 'Installing...' : 'Install Gyidi Nnwom Now'}
             </button>
           </div>
         ) : isIos ? (

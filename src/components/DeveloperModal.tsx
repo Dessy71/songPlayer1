@@ -26,7 +26,7 @@ export const DeveloperModal: React.FC<DeveloperModalProps> = ({ isOpen, onClose 
           </div>
           <div>
             <h2 className="text-lg font-bold text-white">Meet the Developer</h2>
-            <p className="text-xs text-zinc-400">Creator & Platform Administrator of Gyidi Nwom</p>
+            <p className="text-xs text-zinc-400">Creator & Platform Administrator of Gyidi Nnwom</p>
           </div>
         </div>
 
@@ -35,7 +35,7 @@ export const DeveloperModal: React.FC<DeveloperModalProps> = ({ isOpen, onClose 
             <div>
               <h3 className="text-base font-extrabold text-white">Desmond Kofi Antwi</h3>
               <p className="text-xs text-amber-400 font-medium mt-0.5">
-                Software Developer & Founder, Gyidi Nwom
+                Software Developer & Founder, Gyidi Nnwom
               </p>
             </div>
             <Sparkles className="w-5 h-5 text-amber-400" />

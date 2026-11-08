@@ -299,7 +299,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
             </h2>
             <p className="text-xs text-zinc-400">
               Update cover art, title, {isAlbumMode ? 'tracklist' : 'lyrics (text or file)'}, or
-              remove from Gyidi Nwom
+              remove from Gyidi Nnwom
             </p>
           </div>
         </div>

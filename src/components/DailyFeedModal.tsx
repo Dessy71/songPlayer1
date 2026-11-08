@@ -103,13 +103,13 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
     unlockedFlyers.find((f) => f.id === selectedFlyerId) || todaysFlyer || null;
 
   const handleShareFlyer = async (flyer: DailyVerseFlyer) => {
-    const shareText = `${flyer.scripture_ref ? `📖 ${flyer.scripture_ref} — ` : ''}Daily Bible Verse on Gyidi Nwom${
+    const shareText = `${flyer.scripture_ref ? `📖 ${flyer.scripture_ref} — ` : ''}Daily Bible Verse on Gyidi Nnwom${
       flyer.caption ? `\n"${flyer.caption}"` : ''
     }\n${window.location.origin}`;
     try {
       if (navigator.share) {
         await navigator.share({
-          title: flyer.scripture_ref || 'Daily Bible Verse — Gyidi Nwom',
+          title: flyer.scripture_ref || 'Daily Bible Verse — Gyidi Nnwom',
           text: shareText,
           url: window.location.origin,
         });
@@ -137,7 +137,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                 Daily Word & Church Announcements
               </h2>
               <p className="text-xs text-zinc-400">
-                Spiritual nourishment & official updates on Gyidi Nwom
+                Spiritual nourishment & official updates on Gyidi Nnwom
               </p>
             </div>
           </div>
@@ -212,7 +212,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                     Daily Bible Verse Flyers are a Premium Feature
                   </h4>
                   <p className="text-xs text-zinc-300 leading-relaxed">
-                    Upgrade to Gyidi Nwom Premium to unlock daily scheduled Scripture flyers,
+                    Upgrade to Gyidi Nnwom Premium to unlock daily scheduled Scripture flyers,
                     Offline Saved songs, Playlists, Liked Songs, Artiste Support, and Live Streams.
                   </p>
                 </div>

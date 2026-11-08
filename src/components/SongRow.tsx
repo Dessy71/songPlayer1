@@ -74,7 +74,7 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
     const handleRowClick = () => {
       if (lockedForGuest) {
         requireAccount(
-          'Guests can preview 5 songs. Create a free account to unlock all 295+ Gyidi Nwom songs!'
+          'Guests can preview 5 songs. Create a free account to unlock all 295+ Gyidi Nnwom songs!'
         );
         return;
       }

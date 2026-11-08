@@ -239,7 +239,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const sidebarContent = (
     <div className="flex h-full flex-col bg-zinc-950 border-r border-white/10 w-64 px-4 py-4 select-none">
-      {/* Custom Generated Gyidi Nwom Logo + Mobile Close Button */}
+      {/* Custom Generated Gyidi Nnwom Logo + Mobile Close Button */}
       <div className="flex items-center justify-between gap-2 px-1.5 mb-4">
         <div
           onClick={() => handleSelect('discover')}
@@ -247,12 +247,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <img
             src="/logo-mark.png"
-            alt="Gyidi Nwom Logo"
+            alt="Gyidi Nnwom Logo"
             className="h-10 w-10 rounded-xl object-cover border border-amber-500/30 shadow-lg shadow-amber-500/15 flex-shrink-0"
           />
           <div className="min-w-0">
             <h1 className="text-base font-extrabold tracking-tight text-white leading-none truncate">
-              Gyidi Nwom
+              Gyidi Nnwom
             </h1>
             <p className="text-[11px] text-amber-400/90 font-medium mt-1 truncate">
               SCG &amp; SACSU Streaming
@@ -425,7 +425,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-pink-200 bg-pink-500/10 border border-pink-500/20 hover:bg-pink-500/20 transition cursor-pointer"
             >
               <HeartHandshake className="w-4 h-4 text-pink-400 flex-shrink-0" />
-              Support Gyidi Nwom
+              Support Gyidi Nnwom
             </button>
           </div>
 

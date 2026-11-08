@@ -77,7 +77,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
       timedLines.map((l) => l.text).join('\n');
     if (!body) return;
     await navigator.clipboard.writeText(
-      `${targetSong.title} — ${targetSong.artist}\n\n${body}\n\nStream on Gyidi Nwom`
+      `${targetSong.title} — ${targetSong.artist}\n\n${body}\n\nStream on Gyidi Nnwom`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2200);

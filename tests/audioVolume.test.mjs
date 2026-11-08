@@ -6,9 +6,11 @@ import ts from 'typescript';
 const source=ts.transpileModule(fs.readFileSync('src/lib/audioVolume.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
 const module=new vm.SourceTextModule(source);await module.link(()=>{throw new Error('Unexpected dependency');});await module.evaluate();
 const {usesSystemVolume,applyAudioVolume}=module.namespace;
-test('iPhone, iPad and desktop-mode iPad use system loudness controls',()=>{
- for(const device of [{userAgent:'iPhone',platform:'iPhone',maxTouchPoints:5},{userAgent:'iPad',platform:'iPad',maxTouchPoints:5},{userAgent:'Safari',platform:'MacIntel',maxTouchPoints:5}]) assert.equal(usesSystemVolume(device),true);
- for(const device of [{userAgent:'Safari',platform:'MacIntel',maxTouchPoints:0},{userAgent:'Android',platform:'Linux',maxTouchPoints:5},{userAgent:'Chrome',platform:'Win32',maxTouchPoints:0}]) assert.equal(usesSystemVolume(device),false);
+test('phones and tablets use system loudness controls',()=>{
+ for(const device of [{userAgent:'iPhone',platform:'iPhone',maxTouchPoints:5},{userAgent:'iPad',platform:'iPad',maxTouchPoints:5},{userAgent:'Safari',platform:'MacIntel',maxTouchPoints:5},{userAgent:'Mozilla/5.0 (Linux; Android 14; Pixel 8) Mobile',platform:'Linux armv8l',maxTouchPoints:5},{userAgent:'Mozilla/5.0 (Linux; Android 11) Tablet',platform:'Linux',maxTouchPoints:5}]) assert.equal(usesSystemVolume(device),true);
+});
+test('desktops keep the in-app loudness slider, touch-screen laptops included',()=>{
+ for(const device of [{userAgent:'Safari',platform:'MacIntel',maxTouchPoints:0},{userAgent:'Chrome',platform:'Win32',maxTouchPoints:0},{userAgent:'Chrome',platform:'Win32',maxTouchPoints:10},{userAgent:'Chrome',platform:'Linux x86_64',maxTouchPoints:0}]) assert.equal(usesSystemVolume(device),false);
 });
 test('native mute works even when iPhone ignores volume writes',()=>{
  const audio={muted:false,get volume(){return 1;},set volume(value){}};

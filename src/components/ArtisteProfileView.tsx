@@ -167,7 +167,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       return;
     }
     onRequirePremium?.(
-      `Upgrade to Gyidi Nwom Premium to view ${stageTitle}'s direct support details!`
+      `Upgrade to Gyidi Nnwom Premium to view ${stageTitle}'s direct support details!`
     );
   };
 
@@ -303,7 +303,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             </div>
           </div>
 
-          {/* Fan Support Card (Approval + Gyidi Nwom Premium gated, admin always visible) */}
+          {/* Fan Support Card (Approval + Gyidi Nnwom Premium gated, admin always visible) */}
           <div className="w-full md:w-80 rounded-2xl border border-emerald-500/30 bg-zinc-950/90 p-4 shadow-xl">
             <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
@@ -384,7 +384,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               <div className="rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   Direct Artiste Fan Support is part of{' '}
-                  <strong className="text-amber-300">Gyidi Nwom Premium</strong>.
+                  <strong className="text-amber-300">Gyidi Nnwom Premium</strong>.
                 </p>
                 <button
                   type="button"

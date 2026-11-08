@@ -397,7 +397,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   };
 
   const handleDeleteSong = async (song: Song) => {
-    if (!window.confirm(`Delete "${song.title}" permanently from Gyidi Nwom?`)) return;
+    if (!window.confirm(`Delete "${song.title}" permanently from Gyidi Nnwom?`)) return;
     setBusyId(song.id);
     await supabase.from('songs').delete().eq('id', song.id);
     setAdminSongs((prev) => prev.filter((s) => s.id !== song.id));
@@ -1386,7 +1386,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                               ? 'bg-amber-500/25 text-amber-200 border border-amber-400/40'
                               : 'bg-white/5 text-zinc-400 hover:text-amber-300'
                           }`}
-                          title="Grant or revoke Gyidi Nwom Premium"
+                          title="Grant or revoke Gyidi Nnwom Premium"
                         >
                           <Crown className="w-3 h-3 shrink-0" />
                           {p.is_premium ? 'Premium ✓' : '+ Premium'}

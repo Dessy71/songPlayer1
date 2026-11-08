@@ -394,7 +394,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-zinc-300">
             <button type="button" onClick={toggleMute} className="min-h-11 rounded-full bg-white/10 px-4">{isMuted ? 'Unmute audio' : 'Mute audio'}</button>
-            {systemVolumeControlled ? <span>Adjust loudness with your iPhone volume buttons or Control Center.</span> :
+            {systemVolumeControlled ? <span>Adjust loudness with your device&rsquo;s volume buttons.</span> :
               <input aria-label="Expanded playback volume" type="range" min={0} max={1} step={0.02} value={isMuted ? 0 : volume} onChange={(event) => setVolume(Number(event.target.value))} className="w-28 accent-amber-400" />}
           </div>
         </div>
@@ -692,7 +692,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 )}
               </button>
 
-              {/* Native iPhone loudness is controlled by the device, not HTMLMediaElement.volume. */}
+              {/* Phones and tablets control loudness with the hardware buttons, not HTMLMediaElement.volume. */}
               <div className={`relative flex items-center gap-1.5 ${systemVolumeControlled ? 'w-28' : 'w-24'}`}>
                 <button
                   type="button"
@@ -709,7 +709,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 {systemVolumeControlled ? (
                   <>
                     <button type="button" onClick={() => setVolumeHelp((value) => !value)}
-                      aria-label="iPhone volume instructions" aria-expanded={volumeHelp}
+                      aria-label="Device volume instructions" aria-expanded={volumeHelp}
                       className="min-h-8 text-[10px] font-semibold leading-tight text-amber-200">Device volume</button>
 
                   </>
@@ -731,7 +731,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               </button>
             </div>
           </div>
-          {systemVolumeControlled && volumeHelp && <p role="status" className="mt-1 rounded-lg bg-amber-400/10 px-2 py-1 text-[11px] text-amber-200">Use your iPhone’s side volume buttons or Control Center for loudness. The speaker button mutes or unmutes this app.</p>}
+          {systemVolumeControlled && volumeHelp && <p role="status" className="mt-1 rounded-lg bg-amber-400/10 px-2 py-1 text-[11px] text-amber-200">Use your device’s volume buttons for loudness. The speaker button mutes or unmutes this app.</p>}
         </div>
       </div>
     </>

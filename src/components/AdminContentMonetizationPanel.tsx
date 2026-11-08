@@ -377,7 +377,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
       setFeedback({
         type: 'ok',
         text: adsEnabled
-          ? `Google AdSense (${normalizedKey}) saved and activated across Gyidi Nwom!`
+          ? `Google AdSense (${normalizedKey}) saved and activated across Gyidi Nnwom!`
           : 'Google AdSense settings saved (currently paused).',
       });
     } catch (err: unknown) {
@@ -1090,14 +1090,14 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 </h3>
                 <p className="text-xs text-zinc-400">
                   Paste your Google Ads Publisher Key below anytime to activate monetization across
-                  Gyidi Nwom.
+                  Gyidi Nnwom.
                 </p>
               </div>
             </div>
 
             <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-zinc-950/80 p-4 cursor-pointer">
               <div>
-                <p className="text-sm font-bold text-white">Enable Google Ads on Gyidi Nwom</p>
+                <p className="text-sm font-bold text-white">Enable Google Ads on Gyidi Nnwom</p>
                 <p className="text-xs text-zinc-400">
                   Automatically loads your Google AdSense script and ad banners when switched ON
                 </p>
@@ -1182,7 +1182,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
               <li>
                 Create or sign into your account at{' '}
                 <strong className="text-emerald-300">google.com/adsense</strong> and add your live
-                Gyidi Nwom domain.
+                Gyidi Nnwom domain.
               </li>
               <li>
                 Copy your Publisher ID (<code className="text-amber-300">ca-pub-XXXXXXXXXXXX</code>)
@@ -1217,7 +1217,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 </div>
                 <div>
                   <h3 className="text-lg font-extrabold text-white">
-                    Gyidi Nwom Premium Pricing &amp; Paystack Integration
+                    Gyidi Nnwom Premium Pricing &amp; Paystack Integration
                   </h3>
                   <p className="text-xs text-zinc-400">
                     Edit Monthly &amp; Yearly prices in Ghana Cedis (GHS) and configure your
@@ -1339,7 +1339,7 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
               </div>
 
               <div className="space-y-2 text-xs text-zinc-300 leading-relaxed pt-1">
-                <p className="font-bold text-amber-300">How Paystack Works on Gyidi Nwom:</p>
+                <p className="font-bold text-amber-300">How Paystack Works on Gyidi Nnwom:</p>
                 <ol className="list-decimal list-inside space-y-1.5 text-zinc-400">
                   <li>
                     Paste your <code className="text-emerald-300">pk_test_...</code> (testing) or{' '}
