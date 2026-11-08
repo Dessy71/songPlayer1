@@ -11,6 +11,7 @@ import {
   Users,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { probeAnalytics, type AnalyticsProbe } from '../lib/appAnalytics';
 
 /**
  * App usage analytics for the admin dashboard.
@@ -134,13 +135,16 @@ export const AdminAppAnalytics: React.FC = () => {
   const [data, setData] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [probe, setProbe] = useState<AnalyticsProbe | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const { data: row, error: rpcError } = await supabase.rpc('admin_app_analytics', {
-      p_days: days,
-    });
+    const [{ data: row, error: rpcError }, health] = await Promise.all([
+      supabase.rpc('admin_app_analytics', { p_days: days }),
+      probeAnalytics(),
+    ]);
+    setProbe(health);
     setLoading(false);
     if (rpcError) {
       setData(null);
@@ -208,6 +212,28 @@ export const AdminAppAnalytics: React.FC = () => {
           className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300"
         >
           {error}
+        </p>
+      )}
+
+      {/* The beacon swallows its own failures, so an undeployed function looks
+          identical to an app with no users. Say which one it is. */}
+      {!error && probe && !probe.ok && (
+        <div
+          role="alert"
+          className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200"
+        >
+          <p className="font-bold">Analytics are not being recorded</p>
+          <p className="mt-1">{probe.detail}</p>
+          <p className="mt-1 text-amber-200/80">
+            Until this is fixed the numbers below will stay at zero.
+          </p>
+        </div>
+      )}
+
+      {!error && probe?.ok && data && data.sessions === 0 && data.plays === 0 && (
+        <p className="rounded-xl border border-white/10 bg-zinc-900/70 p-3 text-xs text-zinc-400">
+          {probe.detail} No events have arrived yet. Counting starts from the moment the
+          function was deployed, so check back after a few tracks have been played.
         </p>
       )}
 
