@@ -25,6 +25,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { PLATFORM_SUPPORT_EMAIL } from '../lib/constants';
 import {
   Album,
   PlayEventItem,
@@ -409,11 +410,21 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               <p className="mt-1 text-xs leading-relaxed text-rose-100/90">
                 {profile.rejection_reason
                   ? profile.rejection_reason
-                  : 'An administrator rejected this profile without leaving a reason. Contact the SCG & SACSU streaming team to find out what needs to change.'}
+                  : 'An administrator rejected this profile without leaving a reason.'}
               </p>
               <p className="mt-2 text-[11px] text-rose-200/80">
                 Fix the issue and save your profile again — it goes back into the approval
                 queue automatically.
+              </p>
+              <p className="mt-1.5 text-[11px] text-rose-200/80">
+                To appeal for a review, email{' '}
+                <a
+                  href={`mailto:${PLATFORM_SUPPORT_EMAIL}`}
+                  className="font-bold underline hover:no-underline"
+                >
+                  {PLATFORM_SUPPORT_EMAIL}
+                </a>
+                .
               </p>
             </div>
           </div>
@@ -1096,12 +1107,10 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 Fan Support &amp; Payouts
               </p>
               <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-300">
-                When listeners support you, Paystack pays the money out to you — we never
-                hold it. To set that up, an administrator creates your Paystack subaccount
-                and payment page using the account details below. They are the only details
-                we ask for, they are stored privately, and they are never shown on your
-                public profile. Your profile stays hidden from listeners until an
-                administrator approves it.
+                We collect your payout details so that when a fan supports you, the money is
+                transferred to your account after processing and our platform commission. They
+                are stored privately and are never shown on your public profile. Your profile
+                stays hidden from listeners until it is approved.
               </p>
             </div>
 
@@ -1211,8 +1220,8 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               )}
               {profile.approval_status === 'pending' && payoutLoaded && (
                 <p className="rounded-lg border border-gold-500/30 bg-gold-500/10 p-2.5 text-[11px] text-gold-200">
-                  Details received. An administrator will create your Paystack payment page
-                  and approve your profile.
+                  Details received. Your profile is now in the queue for review and goes
+                  live once an administrator approves it.
                 </p>
               )}
             </div>

@@ -31,6 +31,7 @@ import {
   SupportSummary,
 } from '../types/music';
 import { supabase } from '../lib/supabase';
+import { PLATFORM_SUPPORT_EMAIL } from '../lib/constants';
 import { SongRow } from './SongRow';
 import { PremiereCard } from './PremiereCard';
 import { AlbumPremiereCard } from './AlbumPremiereCard';
@@ -250,6 +251,16 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               <p className="mt-2 text-[11px] text-rose-200/80">
                 Listeners cannot see this profile yet. Update your details in the studio and it
                 goes back into the approval queue.
+              </p>
+              <p className="mt-1.5 text-[11px] text-rose-200/80">
+                To appeal for a review, email{' '}
+                <a
+                  href={`mailto:${PLATFORM_SUPPORT_EMAIL}`}
+                  className="font-bold underline hover:no-underline"
+                >
+                  {PLATFORM_SUPPORT_EMAIL}
+                </a>
+                .
               </p>
             </div>
           </div>

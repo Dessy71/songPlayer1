@@ -450,12 +450,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="rounded-xl border border-forest-500/25 bg-forest-500/10 p-3">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-forest-300">
                   <Wallet className="w-3.5 h-3.5 inline mr-1" />
-                  Fan Support
+                  Fan Support &amp; Payouts
                 </p>
                 <p className="mt-1 text-[11px] leading-relaxed text-zinc-300">
-                  Payout details are no longer collected here. Once your profile is approved,
-                  an administrator configures your Paystack payment page so listeners can
-                  support you securely — and your payout details stay private.
+                  We collect your payout details so that when a fan supports you, the money
+                  is transferred to your account after processing and our platform commission.
+                  They are stored privately and are never shown on your public profile. Your
+                  profile stays hidden from listeners until it is approved.
                 </p>
               </div>
             </div>

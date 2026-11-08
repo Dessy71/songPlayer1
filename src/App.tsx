@@ -2085,10 +2085,11 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     href="https://desmondantwi.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 transition shadow-lg flex-shrink-0"
+                    className="w-full sm:w-auto flex items-center gap-2.5 rounded-xl px-3 py-3 text-xs font-semibold text-gold-200 bg-gold-500/10 border border-gold-500/20 hover:bg-gold-500/20 transition cursor-pointer flex-shrink-0"
                   >
-                    Visit Developer Website
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <Code2 className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                    <span className="flex-1 text-left">Visit Developer Website</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-gold-300 flex-shrink-0" />
                   </a>
                 </div>
               </section>
