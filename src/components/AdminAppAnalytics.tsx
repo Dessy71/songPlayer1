@@ -77,7 +77,7 @@ function StatCard({
       className={`rounded-2xl border p-4 ${
         highlight
           ? 'border-gold-400/40 bg-gold-500/10'
-          : 'border-white/10 bg-forest-900/70'
+          : 'border-white/10 bg-zinc-900/70'
       }`}
     >
       <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
@@ -95,7 +95,7 @@ function StatCard({
 function BreakdownBar({ title, rows }: { title: string; rows: Breakdown[] }) {
   const total = rows.reduce((sum, row) => sum + row.value, 0) || 1;
   return (
-    <div className="rounded-2xl border border-white/10 bg-forest-900/70 p-4">
+    <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
       <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-300">{title}</h4>
       {rows.length === 0 ? (
         <p className="mt-3 text-[11px] italic text-zinc-500">No data yet.</p>
@@ -174,7 +174,7 @@ export const AdminAppAnalytics: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-forest-950 p-1">
+          <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-zinc-950 p-1">
             {WINDOWS.map((option) => (
               <button
                 key={option}
@@ -182,7 +182,7 @@ export const AdminAppAnalytics: React.FC = () => {
                 onClick={() => setDays(option)}
                 className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${
                   days === option
-                    ? 'bg-gold-500 text-forest-950'
+                    ? 'bg-gold-500 text-zinc-950'
                     : 'text-zinc-300 hover:bg-white/5'
                 }`}
               >
@@ -195,7 +195,7 @@ export const AdminAppAnalytics: React.FC = () => {
             onClick={() => void load()}
             disabled={loading}
             aria-label="Refresh app usage"
-            className="rounded-xl border border-white/10 bg-forest-900 p-2 text-zinc-300 hover:bg-white/5 disabled:opacity-50 cursor-pointer"
+            className="rounded-xl border border-white/10 bg-zinc-900 p-2 text-zinc-300 hover:bg-white/5 disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -212,7 +212,7 @@ export const AdminAppAnalytics: React.FC = () => {
       )}
 
       {loading && !data && (
-        <div className="rounded-2xl border border-white/10 bg-forest-900/70 p-8 text-center">
+        <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-8 text-center">
           <RefreshCw className="mx-auto w-5 h-5 animate-spin text-zinc-500" />
         </div>
       )}
@@ -253,7 +253,7 @@ export const AdminAppAnalytics: React.FC = () => {
             <BreakdownBar title="Browsers" rows={data.browsers} />
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-forest-900/70 p-4">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
             <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
               Sessions per day
             </h4>

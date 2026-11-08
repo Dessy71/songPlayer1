@@ -89,7 +89,7 @@ export const GoogleAdBanner: React.FC<GoogleAdBannerProps> = ({
   if (canRenderLiveUnit) {
     return (
       <div
-        className={`rounded-2xl border border-white/10 bg-forest-900/40 overflow-hidden ${
+        className={`rounded-2xl border border-white/10 bg-zinc-900/40 overflow-hidden ${
           slotType === 'home' ? 'p-3 my-2' : 'p-2.5'
         }`}
       >

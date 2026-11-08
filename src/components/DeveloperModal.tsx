@@ -11,7 +11,7 @@ export const DeveloperModal: React.FC<DeveloperModalProps> = ({ isOpen, onClose 
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-forest-900 p-6 shadow-2xl">
+      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
@@ -30,7 +30,7 @@ export const DeveloperModal: React.FC<DeveloperModalProps> = ({ isOpen, onClose 
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-forest-950 p-4">
+        <div className="rounded-2xl border border-white/10 bg-zinc-950 p-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-extrabold text-white">Desmond Kofi Antwi</h3>

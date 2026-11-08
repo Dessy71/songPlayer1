@@ -55,7 +55,7 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-forest-900 p-6 shadow-2xl">
+      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition"
@@ -88,7 +88,7 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
                   key={pl.id}
                   onClick={() => handleQuickAdd(pl.id)}
                   disabled={alreadyIn}
-                  className="w-full flex items-center justify-between rounded-xl border border-white/5 bg-forest-950/70 px-3.5 py-2.5 text-left hover:border-white/20 transition cursor-pointer disabled:opacity-70"
+                  className="w-full flex items-center justify-between rounded-xl border border-white/5 bg-zinc-950/70 px-3.5 py-2.5 text-left hover:border-white/20 transition cursor-pointer disabled:opacity-70"
                 >
                   <div>
                     <p className="text-sm font-medium text-white">{pl.name}</p>
@@ -119,14 +119,14 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="e.g. Sabbath Morning Hymns"
-            className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
           />
           <input
             type="text"
             value={newDesc}
             onChange={(e) => setNewDesc(e.target.value)}
             placeholder="Optional description..."
-            className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
           />
           <button
             type="submit"

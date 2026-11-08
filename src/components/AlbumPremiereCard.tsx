@@ -38,8 +38,8 @@ export const AlbumPremiereCard: React.FC<AlbumPremiereCardProps> = ({
   );
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-forest-900/75 hover:border-gold-500/40 transition shadow-xl">
-      <div className="relative aspect-square w-full overflow-hidden bg-forest-950">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/75 hover:border-gold-500/40 transition shadow-xl">
+      <div className="relative aspect-square w-full overflow-hidden bg-zinc-950">
         <CoverArt
           title={album.title}
           category={album.category}
@@ -48,7 +48,7 @@ export const AlbumPremiereCard: React.FC<AlbumPremiereCardProps> = ({
           size="lg"
           className="h-full w-full rounded-none object-cover group-hover:scale-105 transition duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-950 via-forest-950/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
 
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
           <span className="inline-flex items-center gap-1 rounded-full bg-black/75 backdrop-blur-md border border-gold-400/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gold-200">
@@ -101,7 +101,7 @@ export const AlbumPremiereCard: React.FC<AlbumPremiereCardProps> = ({
               </button>
 
               {showTracks && (
-                <ol className="mt-2 max-h-32 overflow-y-auto space-y-1 rounded-lg bg-forest-950/90 border border-white/5 p-2 text-[11px] text-zinc-300">
+                <ol className="mt-2 max-h-32 overflow-y-auto space-y-1 rounded-lg bg-zinc-950/90 border border-white/5 p-2 text-[11px] text-zinc-300">
                   {sortedTracks.map((t, i) => (
                     <li key={t.id} className="truncate">
                       <span className="text-gold-400 font-bold mr-1.5">
@@ -120,9 +120,9 @@ export const AlbumPremiereCard: React.FC<AlbumPremiereCardProps> = ({
           <button
             type="button"
             onClick={() => onOpenAlbum(album.id)}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-2 text-xs font-bold text-forest-950 transition cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-2 text-xs font-bold text-zinc-950 transition cursor-pointer"
           >
-            <Play className="w-3.5 h-3.5 fill-forest-950" />
+            <Play className="w-3.5 h-3.5 fill-zinc-950" />
             Open & Stream Album
           </button>
         ) : (

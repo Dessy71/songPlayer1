@@ -152,7 +152,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-xl rounded-3xl border border-white/15 bg-forest-950 p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
+      <div className="relative w-full max-w-xl rounded-3xl border border-white/15 bg-zinc-950 p-6 shadow-2xl max-h-[92vh] overflow-y-auto space-y-5">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-2 text-zinc-400 hover:bg-white/10 hover:text-white cursor-pointer"
@@ -210,7 +210,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. oboguseth@gmail.com"
-                  className="w-full rounded-xl border border-white/15 bg-forest-900 pl-9 pr-3 py-2 text-xs text-white focus:border-forest-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-zinc-900 pl-9 pr-3 py-2 text-xs text-white focus:border-forest-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -234,7 +234,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-forest-900 pl-9 pr-3 py-2 text-xs font-mono text-white focus:border-forest-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-zinc-900 pl-9 pr-3 py-2 text-xs font-mono text-white focus:border-forest-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -243,18 +243,18 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
           <button
             type="submit"
             disabled={busy}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-2.5 text-xs font-extrabold text-forest-950 cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-2.5 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
           >
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             Create & Link Login Credentials
           </button>
 
           {createdCreds && (
-            <div className="rounded-xl border border-forest-400/50 bg-forest-950 p-3.5 space-y-2">
+            <div className="rounded-xl border border-forest-400/50 bg-zinc-950 p-3.5 space-y-2">
               <p className="text-xs font-extrabold text-forest-300">
                 ✓ Login Ready! Send these credentials to {artiste.stage_name}:
               </p>
-              <div className="text-xs font-mono text-zinc-200 space-y-0.5 bg-forest-900 rounded-lg p-2.5">
+              <div className="text-xs font-mono text-zinc-200 space-y-0.5 bg-zinc-900 rounded-lg p-2.5">
                 <p>
                   Email: <strong className="text-white">{createdCreds.email}</strong>
                 </p>
@@ -302,7 +302,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
               </button>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-forest-900 px-4 py-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5">
               <span className="text-sm font-mono font-extrabold tracking-widest text-gold-300">
                 {currentCode || 'Click "New Code" to generate'}
               </span>
@@ -329,7 +329,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                   <button
                     type="button"
                     onClick={() => copyText('invite', inviteCodeMessage)}
-                    className="inline-flex items-center gap-1 rounded-lg bg-gold-500 px-2.5 py-1 text-[11px] font-extrabold text-forest-950 hover:bg-gold-400 cursor-pointer"
+                    className="inline-flex items-center gap-1 rounded-lg bg-gold-500 px-2.5 py-1 text-[11px] font-extrabold text-zinc-950 hover:bg-gold-400 cursor-pointer"
                   >
                     {copiedKey === 'invite' ? 'Invite Copied!' : 'Copy WhatsApp Invite'}
                   </button>

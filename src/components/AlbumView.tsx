@@ -103,7 +103,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
       </div>
 
       {/* Streaming Platform Album Header */}
-      <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-gold-500/20 via-gold-600/15 to-forest-950 p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-end gap-6">
+      <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-gold-500/20 via-gold-600/15 to-zinc-950 p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-end gap-6">
         <CoverArt
           title={album.title}
           category={album.category}
@@ -164,9 +164,9 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <button
                 onClick={() => playSong(sortedTracks[0], sortedTracks)}
-                className="inline-flex items-center gap-2 rounded-full bg-gold-500 hover:bg-gold-400 px-6 py-2.5 text-xs font-extrabold text-forest-950 shadow-lg cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-full bg-gold-500 hover:bg-gold-400 px-6 py-2.5 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer"
               >
-                <Play className="w-4 h-4 fill-forest-950" />
+                <Play className="w-4 h-4 fill-zinc-950" />
                 Play Album
               </button>
 
@@ -192,7 +192,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
       </div>
 
       {/* Album Tracklist */}
-      <div className="rounded-2xl border border-white/10 bg-forest-900/50 p-2 sm:p-3">
+      <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-2 sm:p-3">
         {playable ? (
           sortedTracks.map((song, idx) => (
             <SongRow

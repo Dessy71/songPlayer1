@@ -35,9 +35,9 @@ export const PremiereCard: React.FC<PremiereCardProps> = ({
     : '';
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-gold-500/25 bg-gradient-to-b from-forest-900/90 to-forest-950 shadow-xl">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-gold-500/25 bg-gradient-to-b from-zinc-900/90 to-zinc-950 shadow-xl">
       {/* Premiere Cover Art */}
-      <div className="relative aspect-square w-full overflow-hidden bg-forest-900">
+      <div className="relative aspect-square w-full overflow-hidden bg-zinc-900">
         <CoverArt
           title={song.title}
           artist={song.artist}
@@ -50,7 +50,7 @@ export const PremiereCard: React.FC<PremiereCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
 
         <div className="absolute top-3 left-3">
-          <span className="inline-flex items-center gap-1 rounded-full bg-gold-500 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-forest-950 shadow">
+          <span className="inline-flex items-center gap-1 rounded-full bg-gold-500 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-zinc-950 shadow">
             Premiere
           </span>
         </div>
@@ -129,9 +129,9 @@ export const PremiereCard: React.FC<PremiereCardProps> = ({
         ) : (
           <button
             onClick={() => onPlayIfUnlocked?.(song)}
-            className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-forest-500 py-2 text-xs font-bold text-forest-950 hover:bg-forest-400 transition cursor-pointer"
+            className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-forest-500 py-2 text-xs font-bold text-zinc-950 hover:bg-forest-400 transition cursor-pointer"
           >
-            <Play className="w-3.5 h-3.5 fill-forest-950" />
+            <Play className="w-3.5 h-3.5 fill-zinc-950" />
             Stream Premiere Now
           </button>
         )}

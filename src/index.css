@@ -38,7 +38,7 @@
   html,
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: #012300;
+    background-color: #09090b;
     color: #f4f4f5;
     width: 100%;
     max-width: 100%;
@@ -217,6 +217,6 @@ html[data-theme="light"] :is([class*="bg-white/5"], [class*="bg-white/10"]) { ba
 html[data-theme="light"] :is([class~="text-gold-300"], [class~="text-gold-400"], [class~="text-gold-200"]) { color: #92400e; }
 html[data-theme="light"] :is([class~="text-forest-300"], [class~="text-forest-400"], [class~="text-forest-200"]) { color: #065f46; }
 html[data-theme="light"] :is([class~="text-pink-300"], [class~="text-pink-400"]) { color: #9d174d; }
-html[data-theme="light"] :is([class*="from-forest-9"], [class*="via-forest-9"], [class*="to-forest-9"], [class*="from-zinc-9"], [class*="via-zinc-9"], [class*="to-zinc-9"]) {
+html[data-theme="light"] :is([class*="from-zinc-9"], [class*="via-zinc-9"], [class*="to-zinc-9"]) {
   --tw-gradient-from: #f1f5f9; --tw-gradient-via: #f8fafc; --tw-gradient-to: #fff;
 }

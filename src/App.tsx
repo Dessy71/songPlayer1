@@ -1051,7 +1051,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     .sort((a, b) => new Date(a.premiere_at || 0).getTime() - new Date(b.premiere_at || 0).getTime())[0];
 
   return (
-    <div className="app-shell flex w-full max-w-full overflow-hidden bg-forest-950 text-zinc-100">
+    <div className="app-shell flex w-full max-w-full overflow-hidden bg-zinc-950 text-zinc-100">
       <Sidebar
         activeTab={activeTab}
         onSelectTab={(t) => {
@@ -1130,7 +1130,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
       <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
         {/* Top Bar */}
-        <header className="mobile-header shrink-0 z-30 flex items-center justify-between gap-2 sm:gap-3 border-b border-white/10 bg-forest-950/85 backdrop-blur-xl px-4 sm:px-7 py-3">
+        <header className="mobile-header shrink-0 z-30 flex items-center justify-between gap-2 sm:gap-3 border-b border-white/10 bg-zinc-950/85 backdrop-blur-xl px-4 sm:px-7 py-3">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 basis-full sm:basis-auto min-w-0 sm:max-w-xl">
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -1160,7 +1160,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   }
                 }}
                 placeholder="Search songs, Twi/English lyrics, artistes, campuses, sermons..."
-                className="w-full rounded-full border border-white/10 bg-forest-900/90 pl-10 pr-9 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500/70 focus:outline-none transition"
+                className="w-full rounded-full border border-white/10 bg-zinc-900/90 pl-10 pr-9 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500/70 focus:outline-none transition"
               />
               {searchQuery && (
                 <button
@@ -1236,7 +1236,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           {activeTab !== 'discover' &&
             !(activeTab === 'albums' && selectedAlbum) &&
             !(activeTab === 'artistes' && selectedArtiste) && (
-              <div className="max-w-[1400px] mx-auto mb-5 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-forest-900/75 px-3.5 py-2.5">
+              <div className="max-w-[1400px] mx-auto mb-5 flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-zinc-900/75 px-3.5 py-2.5">
                 <button
                   type="button"
                   onClick={handleGoBack}
@@ -1280,7 +1280,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     'Create your free Gyidi Nnwom account to unlock all 295+ tracks!'
                   )
                 }
-                className="rounded-full bg-gold-400 px-4 py-1.5 text-xs font-extrabold text-forest-950 hover:bg-gold-300 cursor-pointer"
+                className="rounded-full bg-gold-400 px-4 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-300 cursor-pointer"
               >
                 Create Free Account
               </button>
@@ -1409,7 +1409,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               </div>
 
               {upcomingAlbums.length === 0 && playableAlbums.length === 0 ? (
-                <div className="rounded-2xl border border-white/10 bg-forest-900/50 p-12 text-center">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
                   <Disc3 className="w-10 h-10 text-gold-400 mx-auto mb-3" />
                   <h3 className="text-base font-bold text-white">No full albums published yet</h3>
                   <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1">
@@ -1418,7 +1418,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   </p>
                   <button
                     onClick={handleUploadTrigger}
-                    className="mt-4 rounded-full bg-white px-5 py-2 text-xs font-extrabold text-forest-950 hover:bg-gold-100 cursor-pointer"
+                    className="mt-4 rounded-full bg-white px-5 py-2 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 cursor-pointer"
                   >
                     Upload First Album
                   </button>
@@ -1458,7 +1458,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                             <div
                               key={alb.id}
                               onClick={() => handleOpenAlbumView(alb.id)}
-                              className="group rounded-2xl border border-white/10 bg-forest-900/55 p-3 hover:bg-forest-900 hover:border-gold-500/40 transition cursor-pointer"
+                              className="group rounded-2xl border border-white/10 bg-zinc-900/55 p-3 hover:bg-zinc-900 hover:border-gold-500/40 transition cursor-pointer"
                             >
                               <CoverArt
                                 title={alb.title}
@@ -1547,7 +1547,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     onClick={() => setArtisteDirectoryFilter('all')}
                     className={`rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
                       artisteDirectoryFilter === 'all'
-                        ? 'bg-white text-forest-950'
+                        ? 'bg-white text-zinc-950'
                         : 'bg-white/5 text-zinc-300 hover:bg-white/10'
                     }`}
                   >
@@ -1558,7 +1558,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     onClick={() => setArtisteDirectoryFilter('curated')}
                     className={`rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
                       artisteDirectoryFilter === 'curated'
-                        ? 'bg-gold-500 text-forest-950'
+                        ? 'bg-gold-500 text-zinc-950'
                         : 'bg-gold-500/10 border border-gold-500/30 text-gold-300 hover:bg-gold-500/20'
                     }`}
                   >
@@ -1569,7 +1569,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     onClick={() => setArtisteDirectoryFilter('sacsu')}
                     className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
                       artisteDirectoryFilter === 'sacsu'
-                        ? 'bg-cyan-400 text-forest-950'
+                        ? 'bg-cyan-400 text-zinc-950'
                         : 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20'
                     }`}
                   >
@@ -1584,13 +1584,13 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     value={institutionFilter}
                     onChange={(e) => setInstitutionFilter(e.target.value)}
                     placeholder="Filter by Tertiary Institution (e.g. KNUST, UG, UCC)..."
-                    className="w-full sm:w-72 rounded-full border border-cyan-500/30 bg-forest-900 px-4 py-1.5 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                    className="w-full sm:w-72 rounded-full border border-cyan-500/30 bg-zinc-900 px-4 py-1.5 text-xs text-white focus:border-cyan-400 focus:outline-none"
                   />
                 )}
               </div>
 
               {artisteDirectoryFilter === 'sacsu' && (
-                <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 via-forest-900 to-forest-900 p-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/10 via-zinc-900 to-zinc-900 p-4 flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
                       <GraduationCap className="w-4 h-4" />
@@ -1608,7 +1608,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         true
                       )
                     }
-                    className="rounded-full bg-cyan-400 px-4 py-1.5 text-xs font-extrabold text-forest-950 hover:bg-cyan-300 cursor-pointer"
+                    className="rounded-full bg-cyan-400 px-4 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-cyan-300 cursor-pointer"
                   >
                     Create Campus SACSU Profile
                   </button>
@@ -1626,7 +1626,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     <div
                       key={art.id}
                       onClick={() => handleOpenArtisteProfile(art.id)}
-                      className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-forest-900/60 p-4 hover:bg-forest-900 hover:border-gold-500/40 transition cursor-pointer"
+                      className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-4 hover:bg-zinc-900 hover:border-gold-500/40 transition cursor-pointer"
                     >
                       {art.avatar_url ? (
                         <img
@@ -1704,7 +1704,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               </div>
 
               {upcomingAlbums.length === 0 && upcomingSinglePremieres.length === 0 ? (
-                <div className="rounded-2xl border border-white/10 bg-forest-900/40 p-12 text-center">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-12 text-center">
                   <CalendarClock className="w-10 h-10 text-gold-400 mx-auto mb-3" />
                   <p className="text-sm font-bold text-white">
                     No scheduled premieres counting down
@@ -1829,7 +1829,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <button
                         key={song.id}
                         onClick={() => playSong(song, trendingSongs)}
-                        className="flex items-center gap-2 rounded-full bg-forest-900 border border-white/10 px-3 py-1 text-xs text-zinc-200 hover:border-gold-400/50 transition flex-shrink-0 cursor-pointer"
+                        className="flex items-center gap-2 rounded-full bg-zinc-900 border border-white/10 px-3 py-1 text-xs text-zinc-200 hover:border-gold-400/50 transition flex-shrink-0 cursor-pointer"
                       >
                         {!isAuthenticated && !guestUnlockedIds.has(song.id) && (
                           <Lock className="w-3 h-3 text-gold-400" />
@@ -1841,7 +1841,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   </div>
                 )}
 
-                <div className="rounded-2xl border border-white/10 bg-forest-900/40 p-2">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-2">
                   {trendingSongs.slice(0, 7).map((song, i) => (
                     <SongRow
                       key={song.id}
@@ -1910,7 +1910,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <div
                         key={art.id}
                         onClick={() => handleOpenArtisteProfile(art.id)}
-                        className="group rounded-2xl border border-white/10 bg-forest-900/55 p-3.5 text-center hover:bg-forest-900 hover:border-gold-500/40 transition cursor-pointer"
+                        className="group rounded-2xl border border-white/10 bg-zinc-900/55 p-3.5 text-center hover:bg-zinc-900 hover:border-gold-500/40 transition cursor-pointer"
                       >
                         {art.avatar_url ? (
                           <img
@@ -1962,7 +1962,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         key={song.id}
                         onMouseEnter={() => !locked && warmTrack(song)}
                         onClick={() => playSong(song, newMusicSongs)}
-                        className="group rounded-2xl border border-white/10 bg-forest-900/50 p-3 hover:bg-forest-900 hover:border-gold-500/35 transition cursor-pointer"
+                        className="group rounded-2xl border border-white/10 bg-zinc-900/50 p-3 hover:bg-zinc-900 hover:border-gold-500/35 transition cursor-pointer"
                       >
                         <div className="relative">
                           <CoverArt
@@ -1978,8 +1978,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                               <Lock className="w-3.5 h-3.5" />
                             </span>
                           ) : (
-                            <span className="absolute bottom-2 right-2 h-9 w-9 rounded-full bg-gold-500 text-forest-950 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition">
-                              <Play className="w-4 h-4 fill-forest-950 ml-0.5" />
+                            <span className="absolute bottom-2 right-2 h-9 w-9 rounded-full bg-gold-500 text-zinc-950 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition">
+                              <Play className="w-4 h-4 fill-zinc-950 ml-0.5" />
                             </span>
                           )}
                         </div>
@@ -2020,7 +2020,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <div
                         key={mix.title}
                         onClick={() => playableMixTrack && playSong(playableMixTrack, mix.tracks)}
-                        className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-forest-900/60 p-3 hover:bg-forest-900 hover:border-gold-500/35 transition cursor-pointer"
+                        className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-3 hover:bg-zinc-900 hover:border-gold-500/35 transition cursor-pointer"
                       >
                         <CoverArt
                           title={mix.title}
@@ -2052,8 +2052,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                             )}
                           </div>
                         </div>
-                        <div className="h-10 w-10 rounded-full bg-gold-500 text-forest-950 flex items-center justify-center opacity-90 group-hover:scale-105 shadow-md transition flex-shrink-0 mr-1">
-                          <Play className="w-4 h-4 fill-forest-950 ml-0.5" />
+                        <div className="h-10 w-10 rounded-full bg-gold-500 text-zinc-950 flex items-center justify-center opacity-90 group-hover:scale-105 shadow-md transition flex-shrink-0 mr-1">
+                          <Play className="w-4 h-4 fill-zinc-950 ml-0.5" />
                         </div>
                       </div>
                     );
@@ -2062,7 +2062,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               </section>
 
               {/* SUPPORT GYIDI NNWOM */}
-              <section className="rounded-3xl border border-pink-500/25 bg-gradient-to-r from-pink-500/10 via-forest-900 to-forest-900 p-6">
+              <section className="rounded-3xl border border-pink-500/25 bg-gradient-to-r from-pink-500/10 via-zinc-900 to-zinc-900 p-6">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
                   <div className="space-y-1.5 max-w-xl">
                     <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-pink-400">
@@ -2088,7 +2088,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               </section>
 
               {/* MEET THE DEVELOPER (Separate Standalone Section Below Support Gyidi) */}
-              <section className="rounded-3xl border border-gold-500/25 bg-gradient-to-r from-gold-500/10 via-forest-900 to-forest-950 p-6">
+              <section className="rounded-3xl border border-gold-500/25 bg-gradient-to-r from-gold-500/10 via-zinc-900 to-zinc-950 p-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-400">
@@ -2106,7 +2106,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     href="https://desmondantwi.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-forest-950 hover:bg-gold-100 transition shadow-lg flex-shrink-0"
+                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 transition shadow-lg flex-shrink-0"
                   >
                     Visit Developer Website
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -2133,7 +2133,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               </div>
 
               {playlists.length === 0 ? (
-                <div className="rounded-2xl border border-white/10 bg-forest-900/50 p-10 text-center">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-10 text-center">
                   <Music2 className="w-10 h-10 text-gold-400 mx-auto mb-3" />
                   <p className="text-sm text-zinc-300 font-medium">No playlists yet</p>
                   <p className="text-xs text-zinc-500 mt-1">
@@ -2146,7 +2146,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     <div
                       key={pl.id}
                       onClick={() => setActivePlaylistId(pl.id)}
-                      className="group relative flex items-center gap-4 rounded-2xl border border-white/10 bg-forest-900/60 p-4 hover:bg-forest-900 hover:border-gold-500/35 transition cursor-pointer"
+                      className="group relative flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-4 hover:bg-zinc-900 hover:border-gold-500/35 transition cursor-pointer"
                     >
                       <CoverArt
                         title={pl.name}
@@ -2245,9 +2245,9 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                               filteredSongs[0];
                           playSong(target, filteredSongs);
                         }}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-gold-500 px-4 py-2 text-xs font-bold text-forest-950 hover:bg-gold-400 transition cursor-pointer"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-gold-500 px-4 py-2 text-xs font-bold text-zinc-950 hover:bg-gold-400 transition cursor-pointer"
                       >
-                        <Play className="w-3.5 h-3.5 fill-forest-950" />
+                        <Play className="w-3.5 h-3.5 fill-zinc-950" />
                         Play
                       </button>
                       <button
@@ -2268,7 +2268,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                           e.target.value as 'title' | 'popular' | 'duration' | 'newest'
                         )
                       }
-                      className="rounded-full border border-white/10 bg-forest-900 px-3.5 py-2 text-xs font-medium text-zinc-200 focus:border-gold-500 focus:outline-none"
+                      className="rounded-full border border-white/10 bg-zinc-900 px-3.5 py-2 text-xs font-medium text-zinc-200 focus:border-gold-500 focus:outline-none"
                     >
                       <option value="title">Sort: A – Z</option>
                       <option value="popular">Sort: Most Played</option>
@@ -2283,7 +2283,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 <div className="space-y-4">
                   {/* CONTINUE LISTENING SERMON RESUME SHELF */}
                   {inProgressSermons.length > 0 && (
-                    <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/12 via-forest-900 to-forest-950 p-4 space-y-3">
+                    <div className="rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-cyan-500/12 via-zinc-900 to-zinc-950 p-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <RotateCw className="w-4 h-4 text-cyan-400" />
@@ -2312,7 +2312,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                                   startAtSeconds: entry.positionSec,
                                 })
                               }
-                              className="group rounded-xl border border-white/10 bg-forest-950/85 p-3 hover:border-cyan-400/50 transition cursor-pointer"
+                              className="group rounded-xl border border-white/10 bg-zinc-950/85 p-3 hover:border-cyan-400/50 transition cursor-pointer"
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <p className="text-xs font-bold text-white truncate">
@@ -2357,7 +2357,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   )}
 
                   {/* SERMON PREACHER, TOPIC & BIBLE BOOK FILTERS */}
-                  <div className="rounded-2xl border border-white/10 bg-forest-900/55 p-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="rounded-2xl border border-white/10 bg-zinc-900/55 p-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-[10px] font-bold uppercase tracking-wider text-gold-300/90 mb-1">
                         Preacher / Speaker
@@ -2365,7 +2365,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <select
                         value={sermonPreacherFilter}
                         onChange={(e) => setSermonPreacherFilter(e.target.value)}
-                        className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
                       >
                         <option value="All">All Preachers ({allSermons.length})</option>
                         {sermonFilterOptions.preachers.map((p) => (
@@ -2383,7 +2383,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <select
                         value={sermonTopicFilter}
                         onChange={(e) => setSermonTopicFilter(e.target.value)}
-                        className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
                       >
                         <option value="All">All Topics</option>
                         {sermonFilterOptions.topics.map((t) => (
@@ -2401,7 +2401,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <select
                         value={sermonBookFilter}
                         onChange={(e) => setSermonBookFilter(e.target.value)}
-                        className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
                       >
                         <option value="All">All Bible Books</option>
                         {sermonFilterOptions.books.map((b) => (
@@ -2440,7 +2440,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       onClick={() => setSelectedCategory(cat)}
                       className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition cursor-pointer ${
                         selectedCategory === cat
-                          ? 'bg-white text-forest-950'
+                          ? 'bg-white text-zinc-950'
                           : 'bg-white/5 text-zinc-300 hover:bg-white/10'
                       }`}
                     >
@@ -2457,7 +2457,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     className={`flex-shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold border transition cursor-pointer ${
                       selectedChoir === 'All'
                         ? 'bg-gold-500/20 border-gold-400 text-gold-300'
-                        : 'bg-forest-900/70 border-white/10 text-zinc-400 hover:text-white'
+                        : 'bg-zinc-900/70 border-white/10 text-zinc-400 hover:text-white'
                     }`}
                   >
                     <Users className="w-3.5 h-3.5 inline mr-1" />
@@ -2470,7 +2470,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       className={`flex-shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold border transition cursor-pointer ${
                         selectedChoir === g.name
                           ? 'bg-gold-500/20 border-gold-400 text-gold-300'
-                          : 'bg-forest-900/70 border-white/10 text-zinc-400 hover:text-white'
+                          : 'bg-zinc-900/70 border-white/10 text-zinc-400 hover:text-white'
                       }`}
                     >
                       {g.name} ({g.count})
@@ -2480,14 +2480,14 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               )}
 
               {filteredSongs.length === 0 ? (
-                <div className="rounded-2xl border border-white/10 bg-forest-900/40 p-12 text-center">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-12 text-center">
                   <p className="text-sm font-semibold text-zinc-300">No matching tracks found</p>
                   <p className="text-xs text-zinc-500 mt-1">
                     Try clearing your search or selecting another filter.
                   </p>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-white/10 bg-forest-900/40 p-2">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-2">
                   {filteredSongs.slice(0, visibleCount).map((song, idx) => (
                     <SongRow
                       key={song.id}

@@ -85,9 +85,9 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm">
-      <div className="w-full max-w-xl bg-gradient-to-b from-forest-900 via-forest-950 to-black border-l border-white/10 h-full flex flex-col pb-24 shadow-2xl">
+      <div className="w-full max-w-xl bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-l border-white/10 h-full flex flex-col pb-24 shadow-2xl">
         {/* Go Back & Close Bar */}
-        <div className="flex items-center justify-between gap-2 px-5 py-2.5 border-b border-white/10 bg-forest-950/90">
+        <div className="flex items-center justify-between gap-2 px-5 py-2.5 border-b border-white/10 bg-zinc-950/90">
           <button
             type="button"
             onClick={onClose}
@@ -220,7 +220,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
                     onClose();
                     onEditLyrics(targetSong);
                   }}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-gold-500 hover:bg-gold-400 px-5 py-2 text-xs font-extrabold text-forest-950 cursor-pointer"
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-gold-500 hover:bg-gold-400 px-5 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   Upload Lyrics Now

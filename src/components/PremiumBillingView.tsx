@@ -245,18 +245,18 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
               <span key={i} className="premium-confetti" style={{ left: `${(i * 37) % 100}%`, backgroundColor: ['#fbbf24', '#f472b6', '#34d399', '#60a5fa'][i % 4], animationDelay: `${(i % 13) * 0.07}s`, transform: `rotate(${i * 29}deg)` }} />
             ))}
           </div>
-          <div className="relative max-w-md rounded-3xl border border-gold-400/50 bg-forest-900 p-8 text-center shadow-2xl" role="status">
+          <div className="relative max-w-md rounded-3xl border border-gold-400/50 bg-zinc-900 p-8 text-center shadow-2xl" role="status">
             <Crown className="mx-auto mb-4 h-14 w-14 text-gold-400" />
             <h2 id="premium-success-title" className="text-2xl font-extrabold text-white">Welcome to Premium!</h2>
             <p className="mt-3 text-zinc-300">Medaase! Your payment is verified and your Premium membership is active.</p>
             <p className="mt-3 text-sm text-gold-200">Refreshing to unlock your Premium experience…</p>
-            <button onClick={() => window.location.reload()} className="mt-5 rounded-full bg-gold-400 px-5 py-2 font-bold text-forest-950">Continue now</button>
+            <button onClick={() => window.location.reload()} className="mt-5 rounded-full bg-gold-400 px-5 py-2 font-bold text-zinc-950">Continue now</button>
           </div>
         </div>
       )}
       {/* Contextual Gated Feature Banner */}
       {promptReason && !isPremium && (
-        <div className="rounded-2xl border border-gold-400/45 bg-gradient-to-r from-gold-500/20 via-pink-500/15 to-forest-900 px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div className="rounded-2xl border border-gold-400/45 bg-gradient-to-r from-gold-500/20 via-pink-500/15 to-zinc-900 px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gold-100">
             <Crown className="w-5 h-5 text-gold-400 flex-shrink-0" />
             <span>
@@ -270,7 +270,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
       )}
 
       {/* Hero Header */}
-      <section className="relative overflow-hidden rounded-3xl border border-gold-500/30 bg-gradient-to-br from-gold-500/20 via-pink-600/15 to-forest-950 p-5 sm:p-8">
+      <section className="relative overflow-hidden rounded-3xl border border-gold-500/30 bg-gradient-to-br from-gold-500/20 via-pink-600/15 to-zinc-950 p-5 sm:p-8">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div className="space-y-2.5 max-w-2xl">
             <div className="inline-flex items-center gap-2 rounded-full bg-gold-500/20 border border-gold-400/40 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-gold-300">
@@ -291,7 +291,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
           </div>
 
           {/* Current Account Plan Badge */}
-          <div className="rounded-2xl border border-white/15 bg-forest-950/90 p-4 sm:p-5 min-w-[250px] space-y-2">
+          <div className="rounded-2xl border border-white/15 bg-zinc-950/90 p-4 sm:p-5 min-w-[250px] space-y-2">
             <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
               Your Current Plan
             </p>
@@ -357,7 +357,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
       {/* PRICING PLANS: MONTHLY (GHS 5) & YEARLY (GHS 50) */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Monthly Plan */}
-        <div className="rounded-3xl border border-white/15 bg-forest-900/70 p-6 flex flex-col justify-between space-y-5">
+        <div className="rounded-3xl border border-white/15 bg-zinc-900/70 p-6 flex flex-col justify-between space-y-5">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-zinc-200">
@@ -399,7 +399,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             type="button"
             disabled={payingPlan !== null || verifying || celebrating}
             onClick={() => handleSubscribe('monthly')}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-gold-100 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-forest-950 transition cursor-pointer shadow-lg"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-gold-100 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
           >
             {payingPlan === 'monthly' ? (
               <>
@@ -418,10 +418,10 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
         </div>
 
         {/* Yearly Plan */}
-        <div className="relative rounded-3xl border-2 border-gold-400/60 bg-gradient-to-br from-gold-500/15 via-forest-900 to-pink-600/15 p-6 flex flex-col justify-between space-y-5 shadow-xl shadow-gold-500/10">
+        <div className="relative rounded-3xl border-2 border-gold-400/60 bg-gradient-to-br from-gold-500/15 via-zinc-900 to-pink-600/15 p-6 flex flex-col justify-between space-y-5 shadow-xl shadow-gold-500/10">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-400 px-3 py-1 text-xs font-extrabold text-forest-950">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-400 px-3 py-1 text-xs font-extrabold text-zinc-950">
                 <Sparkles className="w-3.5 h-3.5" />
                 Yearly Plan • Best Value
               </span>
@@ -469,7 +469,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             type="button"
             disabled={payingPlan !== null || verifying || celebrating}
             onClick={() => handleSubscribe('yearly')}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-gold-400 via-gold-500 to-pink-500 hover:opacity-95 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-forest-950 transition cursor-pointer shadow-lg"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-gold-400 via-gold-500 to-pink-500 hover:opacity-95 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
           >
             {payingPlan === 'yearly' ? (
               <>
@@ -489,7 +489,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
       </section>
 
       {/*Paystack Security Strip*/}
-      <div className="rounded-2xl border border-white/10 bg-forest-900/50 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
+      <div className="rounded-2xl border border-white/10 bg-zinc-900/50 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
         <span className="inline-flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-forest-400 flex-shrink-0" />
           Secured by <strong className="text-zinc-200">Paystack</strong> • Pay with MTN MoMo,
@@ -500,21 +500,21 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
 
       {/* ALREADY PAID? CHECK MY PAYMENT */}
       {userId && (
-        <section className="rounded-2xl border border-white/15 bg-forest-900 p-5 space-y-3">
+        <section className="rounded-2xl border border-white/15 bg-zinc-900 p-5 space-y-3">
           <h3 className="font-bold text-white">Already paid? Check my payment</h3>
           <button type="button" disabled={verifying || payingPlan !== null || celebrating}
             onClick={() => void recoverAccount()}
-            className="rounded-xl bg-forest-400 px-4 py-3 font-bold text-forest-950 disabled:opacity-50">
+            className="rounded-xl bg-forest-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
             {verifying ? 'Checking your account…' : 'Restore my subscription — no reference needed'}
           </button>
           <p className="text-sm text-zinc-300">Sign in to the same account on any device. Payments are saved securely to your account, even if browser data was cleared or the app was reinstalled.</p>
           <p className="text-sm text-zinc-300">Older payment not found? The reference form below is an optional support fallback for payments made before account-linked checkout. Recovery and verification never charge you.</p>
           <form className="flex flex-wrap gap-3" onSubmit={(event) => { event.preventDefault(); void activatePayment(recoveryReference.trim(), recoveryPlan); }}>
-            <input required aria-label="Paystack payment reference" placeholder="Paystack payment reference" value={recoveryReference} onChange={(event) => setRecoveryReference(event.target.value)} className="min-w-0 flex-1 rounded-xl border border-white/20 bg-forest-950 p-3 text-white" />
-            <select aria-label="Paid plan" value={recoveryPlan} onChange={(event) => setRecoveryPlan(event.target.value as PremiumPlan)} className="rounded-xl border border-white/20 bg-forest-950 p-3 text-white">
+            <input required aria-label="Paystack payment reference" placeholder="Paystack payment reference" value={recoveryReference} onChange={(event) => setRecoveryReference(event.target.value)} className="min-w-0 flex-1 rounded-xl border border-white/20 bg-zinc-950 p-3 text-white" />
+            <select aria-label="Paid plan" value={recoveryPlan} onChange={(event) => setRecoveryPlan(event.target.value as PremiumPlan)} className="rounded-xl border border-white/20 bg-zinc-950 p-3 text-white">
               <option value="monthly">Monthly</option><option value="yearly">Yearly</option>
             </select>
-            <button disabled={verifying || payingPlan !== null || celebrating} className="rounded-xl bg-gold-400 px-4 py-3 font-bold text-forest-950 disabled:opacity-50">{verifying ? 'Verifying…' : 'Verify existing payment'}</button>
+            <button disabled={verifying || payingPlan !== null || celebrating} className="rounded-xl bg-gold-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">{verifying ? 'Verifying…' : 'Verify existing payment'}</button>
           </form>
         </section>
       )}
@@ -538,7 +538,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             return (
               <div
                 key={b.title}
-                className="rounded-2xl border border-white/10 bg-forest-900/55 p-4 space-y-2.5"
+                className="rounded-2xl border border-white/10 bg-zinc-900/55 p-4 space-y-2.5"
               >
                 <div
                   className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border ${b.accent}`}
@@ -555,7 +555,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
 
       {/* BILLING & RECEIPTS HISTORY */}
       {userId && (
-        <section className="rounded-2xl border border-white/10 bg-forest-900/50 p-5 space-y-3">
+        <section className="rounded-2xl border border-white/10 bg-zinc-900/50 p-5 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
               <Receipt className="w-4 h-4 text-gold-400" />

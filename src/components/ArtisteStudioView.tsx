@@ -300,7 +300,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
   return (
     <div className="max-w-[1380px] mx-auto space-y-6">
       {/* Studio Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-pink-600/20 via-gold-500/15 to-forest-900 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-pink-600/20 via-gold-500/15 to-zinc-900 p-6">
         <div className="flex items-center gap-4">
           {avatarUrl ? (
             <img
@@ -354,12 +354,12 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
 
       {/* Studio Sub-Navigation */}
       {isArtisteOrAdmin && (
-        <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-forest-900/80 border border-white/10 p-1.5 w-fit">
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-zinc-900/80 border border-white/10 p-1.5 w-fit">
           <button
             onClick={() => setSubTab('analytics')}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'analytics'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -371,7 +371,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             onClick={() => setSubTab('releases')}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'releases'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -383,7 +383,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             onClick={() => setSubTab('messages')}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'messages'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -395,7 +395,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             onClick={() => setSubTab('profile')}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'profile'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -409,7 +409,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
       {isArtisteOrAdmin && subTab === 'analytics' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">Total Song Streams</p>
               <p className="text-2xl font-extrabold text-white mt-1 tabular-nums">
                 {analytics.totalPlays.toLocaleString()}
@@ -419,7 +419,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">7-Day Streams</p>
               <p className="text-2xl font-extrabold text-gold-400 mt-1 tabular-nums">
                 {analytics.plays7d.toLocaleString()}
@@ -427,7 +427,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               <p className="text-[11px] text-zinc-400 mt-1">Recent listener velocity</p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium flex items-center gap-1">
                 <Heart className="w-3 h-3 text-pink-400" /> Total Likes
               </p>
@@ -437,7 +437,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               <p className="text-[11px] text-zinc-400 mt-1">Listener favorites</p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium flex items-center gap-1">
                 <Bell className="w-3 h-3 text-gold-300" /> Premiere Reminders
               </p>
@@ -447,7 +447,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               <p className="text-[11px] text-zinc-400 mt-1">Fans waiting on drops</p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">Your Catalog</p>
               <p className="text-2xl font-extrabold text-white mt-1 tabular-nums">
                 {mySongs.length}
@@ -457,7 +457,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-forest-900/60 p-5">
+            <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-zinc-900/60 p-5">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-gold-400" />
                 Your 7-Day Stream Trend
@@ -493,7 +493,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                     <div
                       key={album.id}
                       onClick={() => onOpenAlbum(album.id)}
-                      className="flex items-center justify-between rounded-xl bg-forest-950/70 px-3 py-2 text-xs hover:bg-forest-950 cursor-pointer"
+                      className="flex items-center justify-between rounded-xl bg-zinc-950/70 px-3 py-2 text-xs hover:bg-zinc-950 cursor-pointer"
                     >
                       <span className="font-semibold text-white truncate">
                         {album.title} ({trackCount} tracks)
@@ -507,7 +507,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               )}
             </div>
 
-            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-forest-900/60 p-5 space-y-4">
+            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-zinc-900/60 p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -537,7 +537,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                     return (
                       <div
                         key={song.id}
-                        className="rounded-xl border border-white/10 bg-forest-950/70 p-3 space-y-2"
+                        className="rounded-xl border border-white/10 bg-zinc-950/70 p-3 space-y-2"
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3 min-w-0">
@@ -611,7 +611,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
       {/* TAB 2: MY ALBUMS & SONGS (WITH POST-UPLOAD EDIT & DELETE!) */}
       {isArtisteOrAdmin && subTab === 'releases' && (
         <div className="space-y-6">
-          <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-5 space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-5 space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -646,7 +646,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                   return (
                     <div
                       key={alb.id}
-                      className="rounded-xl border border-white/10 bg-forest-950/75 p-4 space-y-3"
+                      className="rounded-xl border border-white/10 bg-zinc-950/75 p-4 space-y-3"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-3.5 min-w-0">
@@ -766,7 +766,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
           </div>
 
           {/* Standalone Singles */}
-          <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-5 space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-5 space-y-4">
             <div>
               <h3 className="text-base font-bold text-white">
                 Single Songs & Sermons ({standaloneSongs.length})
@@ -785,7 +785,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                   return (
                     <div
                       key={song.id}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-forest-950/70 p-3"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-zinc-950/70 p-3"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <CoverArt
@@ -885,14 +885,14 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
       {(!isArtisteOrAdmin || subTab === 'profile') && (
         <form
           onSubmit={handleSaveProfile}
-          className="max-w-2xl rounded-2xl border border-white/10 bg-forest-900/60 p-6 space-y-4"
+          className="max-w-2xl rounded-2xl border border-white/10 bg-zinc-900/60 p-6 space-y-4"
         >
           <h3 className="text-base font-bold text-white">
             Artiste / SACSU Identity & Fan Support Account
           </h3>
 
           <div className="flex items-center gap-3">
-            <label className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-forest-950 px-3.5 py-2 text-xs font-semibold text-gold-300 hover:border-gold-400 cursor-pointer transition">
+            <label className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2 text-xs font-semibold text-gold-300 hover:border-gold-400 cursor-pointer transition">
               <Camera className="w-4 h-4" />
               {avatarUrl ? 'Change Profile Photo' : 'Upload Profile Photo'}
               <input
@@ -926,7 +926,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={tertiaryInstitution}
                 onChange={(e) => setTertiaryInstitution(e.target.value)}
                 placeholder="e.g. KNUST, University of Ghana (Legon), UCC, UEW, UENR..."
-                className="w-full rounded-xl border border-white/15 bg-forest-950 px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
               />
             </div>
           </div>
@@ -942,7 +942,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={realName}
                 onChange={(e) => setRealName(e.target.value)}
                 placeholder="e.g. Seth Boateng"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
             <div>
@@ -955,7 +955,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={stageName}
                 onChange={(e) => setStageName(e.target.value)}
                 placeholder={isSacsu ? 'e.g. KNUST SACSU' : 'e.g. Obogu Seth'}
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -972,7 +972,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={scgZone}
                 onChange={(e) => setScgZone(e.target.value)}
                 placeholder="e.g. Obogu Zone, Ashanti Zone"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
             <div>
@@ -985,7 +985,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={scgBranch}
                 onChange={(e) => setScgBranch(e.target.value)}
                 placeholder="e.g. Obogu Branch"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -997,7 +997,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Tell listeners about your choir, SACSU fellowship, or music ministry..."
-              className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+              className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
             />
           </div>
 
@@ -1056,7 +1056,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                   value={claimCodeInput}
                   onChange={(e) => setClaimCodeInput(e.target.value.toUpperCase())}
                   placeholder="GN-OBOGU-B15A"
-                  className="flex-1 rounded-xl border border-white/15 bg-forest-950 px-3 py-2 text-xs font-mono font-bold text-forest-300"
+                  className="flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs font-mono font-bold text-forest-300"
                 />
                 <button
                   type="button"
@@ -1083,7 +1083,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                       setSaving(false);
                     }
                   }}
-                  className="rounded-xl bg-forest-500 hover:bg-forest-400 px-4 py-2 text-xs font-extrabold text-forest-950 cursor-pointer disabled:opacity-50"
+                  className="rounded-xl bg-forest-500 hover:bg-forest-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
                 >
                   Claim
                 </button>
@@ -1092,7 +1092,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             </div>
           )}
 
-          <div className="rounded-3xl border border-white/10 bg-forest-900/60 p-5 space-y-3">
+          <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-5 space-y-3">
             <h4 className="text-sm font-extrabold text-white">Change Account Password</h4>
             <p className="text-xs text-zinc-400">
               Logged in with temporary credentials from Admin? Set your own private password here.
@@ -1104,7 +1104,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="New password (min 6 chars)"
-                className="flex-1 rounded-xl border border-white/15 bg-forest-950 px-3 py-2 text-xs text-white"
+                className="flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white"
               />
               <button
                 type="button"
@@ -1123,7 +1123,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                     setPwdMsg('✓ Password updated successfully!');
                   }
                 }}
-                className="rounded-xl bg-gold-500 hover:bg-gold-400 px-4 py-2 text-xs font-extrabold text-forest-950 cursor-pointer disabled:opacity-50"
+                className="rounded-xl bg-gold-500 hover:bg-gold-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
               >
                 Update
               </button>

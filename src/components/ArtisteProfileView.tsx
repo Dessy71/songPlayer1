@@ -175,7 +175,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
   if (!isApproved && !isAdminViewer && viewerProfile?.id !== artiste.id) {
     return (
       <div className="mx-auto max-w-xl space-y-4 py-10">
-        <div className="rounded-3xl border border-white/10 bg-forest-900/70 p-8 text-center">
+        <div className="rounded-3xl border border-white/10 bg-zinc-900/70 p-8 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-300">
             <Clock className="w-7 h-7" />
           </div>
@@ -235,7 +235,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       </div>
 
       {/* Artiste Hero Header */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-gold-500/20 via-pink-600/15 to-forest-900 p-6 sm:p-8">
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-gold-500/20 via-pink-600/15 to-zinc-900 p-6 sm:p-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             {artiste.avatar_url ? (
@@ -294,9 +294,9 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               {releasedSongs.length > 0 && (
                 <button
                   onClick={() => playSong(releasedSongs[0], releasedSongs)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-forest-950 hover:bg-gold-100 transition cursor-pointer shadow-lg"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 transition cursor-pointer shadow-lg"
                 >
-                  <Play className="w-4 h-4 fill-forest-950" />
+                  <Play className="w-4 h-4 fill-zinc-950" />
                   Play All ({releasedSongs.length})
                 </button>
               )}
@@ -304,7 +304,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           </div>
 
           {/* Fan Support Card (Approval + Gyidi Nnwom Premium gated, admin always visible) */}
-          <div className="w-full md:w-80 rounded-2xl border border-forest-500/30 bg-forest-950/90 p-4 shadow-xl">
+          <div className="w-full md:w-80 rounded-2xl border border-forest-500/30 bg-zinc-950/90 p-4 shadow-xl">
             <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2 text-forest-400 text-xs font-bold uppercase tracking-wider">
                 <Wallet className="w-4 h-4" />
@@ -327,7 +327,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             {showSupportBadge && (
               <div className="mb-3 flex items-center gap-2.5 rounded-xl border border-forest-500/30 bg-forest-500/10 p-2.5">
                 <span className="flex -space-x-2">
-                  <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-forest-950 bg-forest-500/20">
+                  <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-950 bg-forest-500/20">
                     {artiste.avatar_url ? (
                       <img src={artiste.avatar_url} alt="" className="h-full w-full object-cover" />
                     ) : (
@@ -343,7 +343,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             )}
 
             {!isApproved ? (
-              <div className="rounded-xl bg-forest-900 border border-gold-400/25 p-3.5 space-y-2.5">
+              <div className="rounded-xl bg-zinc-900 border border-gold-400/25 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   {isAdminViewer
                     ? 'Add the Paystack payment page URL and subaccount code, then approve this profile to open listener support.'
@@ -353,7 +353,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setSupportModalOpen(true)}
-                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-gold-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-forest-950 hover:opacity-95 cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-gold-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     Configure Paystack &amp; Approve
@@ -361,7 +361,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 )}
               </div>
             ) : !showSupportBadge ? (
-              <div className="rounded-xl bg-forest-900 border border-white/10 p-3.5 space-y-2.5">
+              <div className="rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   {isAdminViewer
                     ? support?.is_placeholder
@@ -381,7 +381,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 )}
               </div>
             ) : !isPremium && !canEditThisArtiste ? (
-              <div className="rounded-xl bg-forest-900 border border-white/10 p-3.5 space-y-2.5">
+              <div className="rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   Direct Artiste Fan Support is part of{' '}
                   <strong className="text-gold-300">Gyidi Nnwom Premium</strong>.
@@ -389,7 +389,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 <button
                   type="button"
                   onClick={requireSupportAccess}
-                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-gold-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-forest-950 hover:opacity-95 cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-gold-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
                 >
                   <Crown className="w-3.5 h-3.5" />
                   Unlock Artiste Support
@@ -503,7 +503,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 <div
                   key={alb.id}
                   onClick={() => onOpenAlbum(alb.id)}
-                  className="group relative rounded-2xl border border-white/10 bg-forest-900/55 p-3 hover:bg-forest-900 hover:border-gold-500/40 transition cursor-pointer"
+                  className="group relative rounded-2xl border border-white/10 bg-zinc-900/55 p-3 hover:bg-zinc-900 hover:border-gold-500/40 transition cursor-pointer"
                 >
                   <CoverArt
                     title={alb.title}
@@ -549,11 +549,11 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
         </div>
 
         {releasedSongs.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-forest-900/40 p-10 text-center text-sm text-zinc-400">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-10 text-center text-sm text-zinc-400">
             No public releases yet. Check back soon for upcoming premieres!
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-forest-900/40 p-2">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-2">
             {releasedSongs.map((song, idx) => (
               <SongRow
                 key={song.id}

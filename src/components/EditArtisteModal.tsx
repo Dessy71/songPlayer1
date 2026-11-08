@@ -201,7 +201,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-forest-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div className="relative w-full max-w-xl rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
@@ -227,7 +227,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                 className="h-14 w-14 rounded-2xl object-cover border border-gold-400/40"
               />
             )}
-            <label className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-forest-950 px-3.5 py-2 text-xs font-semibold text-gold-300 hover:border-gold-400 cursor-pointer">
+            <label className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2 text-xs font-semibold text-gold-300 hover:border-gold-400 cursor-pointer">
               <Camera className="w-4 h-4" />
               {avatarUrl ? 'Change Profile Photo' : 'Upload Profile Photo'}
               <input
@@ -250,7 +250,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                 value={stageName}
                 onChange={(e) => setStageName(e.target.value)}
                 placeholder="e.g. Obogu Seth / KNUST SACSU"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
 
@@ -263,7 +263,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                 value={realName}
                 onChange={(e) => setRealName(e.target.value)}
                 placeholder="e.g. Seth Boateng"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -280,7 +280,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                 value={scgZone}
                 onChange={(e) => setScgZone(e.target.value)}
                 placeholder="e.g. Obogu Zone, Ashanti Zone"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
 
@@ -291,7 +291,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                 value={scgBranch}
                 onChange={(e) => setScgBranch(e.target.value)}
                 placeholder="e.g. Obogu Branch"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -319,7 +319,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                 value={tertiaryInstitution}
                 onChange={(e) => setTertiaryInstitution(e.target.value)}
                 placeholder="e.g. KNUST, University of Ghana (Legon), UCC, UEW, UENR..."
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none"
               />
             </div>
           </div>
@@ -331,12 +331,12 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="About this artiste, choir, or SACSU fellowship..."
-              className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+              className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
             />
           </div>
 
           {/* Payout Details - Bank or Mobile Money */}
-          <div className="rounded-xl border border-white/10 bg-forest-950/60 p-3 space-y-3">
+          <div className="rounded-xl border border-white/10 bg-zinc-950/60 p-3 space-y-3">
             <label className="block text-xs font-bold text-zinc-300 mb-2">Payout Method</label>
             <div className="flex gap-3">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -366,7 +366,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                   <select
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
                   >
                     <option value="">Select a bank</option>
                     <option value="GCB Bank">GCB Bank</option>
@@ -391,7 +391,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                     value={bankAccountNumber}
                     onChange={(e) => setBankAccountNumber(e.target.value)}
                     placeholder="e.g. 1234567890"
-                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -401,7 +401,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                     value={bankAccountName}
                     onChange={(e) => setBankAccountName(e.target.value)}
                     placeholder="e.g. Seth Boateng"
-                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -414,7 +414,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                   <select
                     value={momoOperator}
                     onChange={(e) => setMomoOperator(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-forest-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-forest-500 focus:outline-none"
                   >
                     <option value="">Select an operator</option>
                     <option value="MTN">MTN Mobile Money</option>
@@ -429,7 +429,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                     value={momoPhoneNumber}
                     onChange={(e) => setMomoPhoneNumber(e.target.value)}
                     placeholder="e.g. 024XXXXXXX"
-                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-forest-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-forest-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -439,7 +439,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                     value={bankAccountName}
                     onChange={(e) => setBankAccountName(e.target.value)}
                     placeholder="e.g. Seth Boateng"
-                    className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -456,7 +456,7 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
                 value={assignEmail}
                 onChange={(e) => setAssignEmail(e.target.value)}
                 placeholder="artiste@email.com — gives them self-service access in Artiste Studio"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           )}

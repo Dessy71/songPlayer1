@@ -438,7 +438,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   return (
     <div className="max-w-[1450px] mx-auto space-y-6">
       {/* Admin Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-gold-500/30 bg-gradient-to-r from-gold-500/15 via-gold-600/15 to-forest-900 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-gold-500/30 bg-gradient-to-r from-gold-500/15 via-gold-600/15 to-zinc-900 p-6">
         <div className="flex items-center gap-3.5">
           <div className="h-12 w-12 rounded-2xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center text-gold-300">
             <ShieldCheck className="w-6 h-6" />
@@ -452,12 +452,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 rounded-2xl bg-forest-950/90 border border-white/10 p-1.5">
+        <div className="flex flex-wrap items-center gap-1.5 rounded-2xl bg-zinc-950/90 border border-white/10 p-1.5">
           <button
             onClick={() => setSubTab('usage')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'usage'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -469,7 +469,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('analytics')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'analytics'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -481,7 +481,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('approvals')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'approvals'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -498,7 +498,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('verses')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'verses'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -510,7 +510,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('announcements')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'announcements'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -522,7 +522,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('messages')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'messages'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -539,7 +539,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('users')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'users'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -551,7 +551,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('catalog')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'catalog'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -563,7 +563,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('premium')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'premium'
-                ? 'bg-gold-400 text-forest-950'
+                ? 'bg-gold-400 text-zinc-950'
                 : 'text-gold-300 hover:bg-gold-500/15 border border-gold-400/25'
             }`}
           >
@@ -575,7 +575,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             onClick={() => setSubTab('adsense')}
             className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'adsense'
-                ? 'bg-forest-500 text-forest-950'
+                ? 'bg-forest-500 text-zinc-950'
                 : 'text-forest-300 hover:bg-forest-500/10'
             }`}
           >
@@ -594,7 +594,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           </div>
           <button
             onClick={() => setSubTab('approvals')}
-            className="rounded-full bg-gold-400 px-4 py-1.5 text-xs font-extrabold text-forest-950 hover:bg-gold-300 cursor-pointer"
+            className="rounded-full bg-gold-400 px-4 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-300 cursor-pointer"
           >
             Review Queue Now
           </button>
@@ -608,7 +608,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       {subTab === 'analytics' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">Total All-Time Plays</p>
               <p className="text-2xl font-extrabold text-white mt-1 tabular-nums">
                 {stats.totalPlays.toLocaleString()}
@@ -616,7 +616,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               <p className="text-[11px] text-forest-400 mt-1">+{stats.plays24h} last 24h</p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">Approved Catalog</p>
               <p className="text-2xl font-extrabold text-white mt-1 tabular-nums">
                 {stats.approvedSongs.length}
@@ -627,7 +627,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">Pending Approvals</p>
               <p className="text-2xl font-extrabold text-gold-400 mt-1 tabular-nums">
                 {stats.pendingTotal}
@@ -637,7 +637,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">Active Premieres</p>
               <p className="text-2xl font-extrabold text-pink-400 mt-1 tabular-nums">
                 {stats.upcomingPremieres}
@@ -645,7 +645,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               <p className="text-[11px] text-zinc-400 mt-1">Counting down</p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">Artistes & SACSU</p>
               <p className="text-2xl font-extrabold text-white mt-1 tabular-nums">
                 {stats.artistesCount}
@@ -653,7 +653,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               <p className="text-[11px] text-cyan-400 mt-1">{stats.sacsuCount} SACSU profiles</p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-forest-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] text-zinc-400 font-medium">Supabase Storage</p>
                 <HardDrive className="w-3.5 h-3.5 text-gold-400" />
@@ -674,7 +674,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-forest-900/60 p-5">
+            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-zinc-900/60 p-5">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-gold-400" />
                 7-Day Platform Stream Activity
@@ -702,7 +702,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               </div>
             </div>
 
-            <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-forest-900/60 p-5 space-y-4">
+            <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-zinc-900/60 p-5 space-y-4">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Activity className="w-4 h-4 text-forest-400" />
                 Top Streamed Songs
@@ -712,7 +712,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   <div
                     key={s.id}
                     onClick={() => playSong(s, stats.topSongs)}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-forest-950/60 px-3 py-2 hover:bg-forest-950 cursor-pointer transition"
+                    className="flex items-center justify-between gap-3 rounded-xl bg-zinc-950/60 px-3 py-2 hover:bg-zinc-950 cursor-pointer transition"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <span className="text-xs font-bold text-gold-400 w-4">{idx + 1}</span>
@@ -750,7 +750,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   onClick={() => setApprovalFilter(st)}
                   className={`rounded-full px-4 py-1.5 text-xs font-bold capitalize transition cursor-pointer ${
                     approvalFilter === st
-                      ? 'bg-white text-forest-950'
+                      ? 'bg-white text-zinc-950'
                       : 'bg-white/5 text-zinc-400 hover:text-white'
                   }`}
                 >
@@ -782,7 +782,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 {profileApprovalQueue.map((p) => (
                   <div
                     key={p.id}
-                    className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-forest-950/60 p-3"
+                    className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-zinc-950/60 p-3"
                   >
                     <div className="flex items-start gap-2.5 min-w-0">
                       {p.avatar_url ? (
@@ -831,7 +831,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           )}
 
           {filteredAlbumQueue.length === 0 && filteredSingleQueue.length === 0 ? (
-            <div className="rounded-2xl border border-white/10 bg-forest-900/40 p-14 text-center">
+            <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-14 text-center">
               <CheckCircle2 className="w-10 h-10 text-forest-400 mx-auto mb-2" />
               <p className="text-sm font-bold text-white">
                 No {approvalFilter} album or song submissions
@@ -848,7 +848,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 return (
                   <div
                     key={album.id}
-                    className="rounded-2xl border border-gold-500/35 bg-forest-900/75 p-5 space-y-4"
+                    className="rounded-2xl border border-gold-500/35 bg-zinc-900/75 p-5 space-y-4"
                   >
                     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                       <div className="flex items-center gap-4 min-w-0">
@@ -896,7 +896,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           <button
                             disabled={busyId === album.id}
                             onClick={() => handleReviewAlbum(album, true)}
-                            className="inline-flex items-center gap-1.5 rounded-xl bg-forest-500 hover:bg-forest-400 px-4 py-2 text-xs font-extrabold text-forest-950 cursor-pointer"
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-forest-500 hover:bg-forest-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer"
                           >
                             {busyId === album.id ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -929,7 +929,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         return (
                           <div
                             key={trk.id}
-                            className="flex items-center justify-between rounded-xl bg-forest-950/80 border border-white/5 px-3 py-2 text-xs"
+                            className="flex items-center justify-between rounded-xl bg-zinc-950/80 border border-white/5 px-3 py-2 text-xs"
                           >
                             <span className="truncate text-zinc-200">
                               <strong className="text-gold-400 mr-1.5">
@@ -969,7 +969,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           value={rejectReason}
                           onChange={(e) => setRejectReason(e.target.value)}
                           placeholder="Reason / note for the Artiste..."
-                          className="flex-1 rounded-xl border border-white/15 bg-forest-950 px-3 py-2 text-xs text-white"
+                          className="flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white"
                         />
                         <button
                           onClick={() => handleReviewAlbum(album, false, rejectReason)}
@@ -991,7 +991,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 return (
                   <div
                     key={song.id}
-                    className="rounded-2xl border border-white/10 bg-forest-900/65 p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4"
+                    className="rounded-2xl border border-white/10 bg-zinc-900/65 p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4"
                   >
                     <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
                       <CoverArt
@@ -1067,7 +1067,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         }}
                         className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold border transition cursor-pointer ${
                           isPrelisteningThis && isPlaying
-                            ? 'bg-gold-500 text-forest-950 border-gold-400'
+                            ? 'bg-gold-500 text-zinc-950 border-gold-400'
                             : 'bg-white/10 text-white border-white/15 hover:bg-white/15'
                         }`}
                       >
@@ -1086,7 +1086,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         <button
                           disabled={busyId === song.id}
                           onClick={() => handleReviewSong(song, true)}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-forest-500 hover:bg-forest-400 px-4 py-2 text-xs font-extrabold text-forest-950 cursor-pointer"
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-forest-500 hover:bg-forest-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           {song.is_premiere ? 'Approve & Start Countdown' : 'Approve & Publish'}
@@ -1114,7 +1114,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           value={rejectReason}
                           onChange={(e) => setRejectReason(e.target.value)}
                           placeholder="Reason / note for the Artiste..."
-                          className="flex-1 rounded-xl border border-white/15 bg-forest-950 px-3 py-2 text-xs text-white"
+                          className="flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white"
                         />
                         <button
                           onClick={() => handleReviewSong(song, false, rejectReason)}
@@ -1199,7 +1199,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   onClick={() => setUserTypeFilter(t.id)}
                   className={`rounded-full border px-3 py-1 text-xs font-bold transition cursor-pointer ${
                     userTypeFilter === t.id
-                      ? 'bg-gold-500 border-gold-500 text-forest-950'
+                      ? 'bg-gold-500 border-gold-500 text-zinc-950'
                       : 'border-white/10 text-zinc-400 hover:text-zinc-200 hover:border-white/20'
                   }`}
                 >
@@ -1216,7 +1216,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
                   placeholder="Search artistes, SACSU campuses, SCG zones, emails..."
-                  className="w-full rounded-full border border-white/10 bg-forest-900 pl-10 pr-4 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                  className="w-full rounded-full border border-white/10 bg-zinc-900 pl-10 pr-4 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
                 />
               </div>
 
@@ -1238,7 +1238,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 return (
                   <div
                     key={p.id}
-                    className="rounded-2xl border border-white/10 bg-forest-900/60 p-4 min-w-0 flex flex-col h-full gap-3"
+                    className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4 min-w-0 flex flex-col h-full gap-3"
                   >
                     <div className="flex items-start gap-4 min-w-0">
                       {p.avatar_url ? (
@@ -1350,7 +1350,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         disabled={busyId === p.id}
                         value={p.role}
                         onChange={(e) => handleRoleChange(p, e.target.value as UserRole)}
-                        className="min-w-[100px] rounded-lg border border-white/15 bg-forest-950 px-2.5 py-1 text-xs font-semibold text-white"
+                        className="min-w-[100px] rounded-lg border border-white/15 bg-zinc-950 px-2.5 py-1 text-xs font-semibold text-white"
                       >
                         <option value="listener">Listener</option>
                         <option value="artiste">Artiste</option>
@@ -1441,11 +1441,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               value={catalogSearch}
               onChange={(e) => setCatalogSearch(e.target.value)}
               placeholder="Filter catalog tracks..."
-              className="w-full rounded-full border border-white/10 bg-forest-900 pl-10 pr-4 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+              className="w-full rounded-full border border-white/10 bg-zinc-900 pl-10 pr-4 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
             />
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-forest-900/50 divide-y divide-white/5">
+          <div className="rounded-2xl border border-white/10 bg-zinc-900/50 divide-y divide-white/5">
             {adminSongs
               .filter((s) => {
                 const q = catalogSearch.trim().toLowerCase();

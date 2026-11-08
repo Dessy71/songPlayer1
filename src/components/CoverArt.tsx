@@ -89,7 +89,7 @@ export const CoverArt: React.FC<CoverArtProps> = ({
 
   if (coverUrl) {
     return (
-      <div className={`relative overflow-hidden bg-forest-900 select-none ${className}`}>
+      <div className={`relative overflow-hidden bg-zinc-900 select-none ${className}`}>
         <img
           src={coverUrl}
           alt={title}

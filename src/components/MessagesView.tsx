@@ -284,7 +284,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
   return (
     <div className="max-w-[1380px] mx-auto space-y-5">
       {/* Header & Mode Switcher */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-gold-500/15 via-pink-500/10 to-forest-900 p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-gold-500/15 via-pink-500/10 to-zinc-900 p-5 sm:p-6">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2.5">
             <MessageSquare className="w-6 h-6 text-gold-400" />
@@ -297,12 +297,12 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2 rounded-2xl bg-forest-950/90 border border-white/10 p-1.5">
+        <div className="flex items-center gap-2 rounded-2xl bg-zinc-950/90 border border-white/10 p-1.5">
           <button
             onClick={() => setChannelTab('direct')}
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               channelTab === 'direct'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -319,7 +319,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             onClick={() => setChannelTab('broadcasts')}
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               channelTab === 'broadcasts'
-                ? 'bg-gold-500 text-forest-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -341,7 +341,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
       )}
 
       {loading ? (
-        <div className="rounded-2xl border border-white/10 bg-forest-900/40 p-12 text-center text-xs text-zinc-400">
+        <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-12 text-center text-xs text-zinc-400">
           Loading messages...
         </div>
       ) : channelTab === 'broadcasts' ? (
@@ -350,7 +350,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           {isAdmin && (
             <form
               onSubmit={handleSendBroadcast}
-              className="lg:col-span-5 rounded-2xl border border-gold-500/30 bg-forest-900/70 p-5 space-y-3.5 h-fit"
+              className="lg:col-span-5 rounded-2xl border border-gold-500/30 bg-zinc-900/70 p-5 space-y-3.5 h-fit"
             >
               <div className="flex items-center gap-2 text-gold-300 text-xs font-extrabold uppercase tracking-wider">
                 <Megaphone className="w-4 h-4" />
@@ -370,7 +370,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   value={broadcastSubject}
                   onChange={(e) => setBroadcastSubject(e.target.value)}
                   placeholder="e.g. Easter Convention Song Submissions Open!"
-                  className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
                 />
               </div>
 
@@ -384,7 +384,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   value={broadcastBody}
                   onChange={(e) => setBroadcastBody(e.target.value)}
                   placeholder="Write your announcement to all Artistes..."
-                  className="w-full rounded-xl border border-white/10 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
                 />
               </div>
 
@@ -405,7 +405,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
 
           <div className={`${isAdmin ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-3`}>
             {broadcasts.length === 0 ? (
-              <div className="rounded-2xl border border-white/10 bg-forest-900/50 p-12 text-center">
+              <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
                 <Megaphone className="w-9 h-9 text-gold-400 mx-auto mb-2" />
                 <p className="text-sm font-bold text-white">No broadcast announcements yet</p>
                 <p className="text-xs text-zinc-400 mt-1">
@@ -418,7 +418,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 return (
                   <div
                     key={b.id}
-                    className="rounded-2xl border border-gold-500/25 bg-forest-900/70 p-5 space-y-2.5"
+                    className="rounded-2xl border border-gold-500/25 bg-zinc-900/70 p-5 space-y-2.5"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
@@ -465,7 +465,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
         /* 1-ON-1 DIRECT MESSAGES VIEW (Artiste <-> Artiste & Admin <-> Artiste, WITH REPLIES!) */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 min-h-[480px]">
           {/* Left Pane: Start New Chat + Thread List */}
-          <div className="lg:col-span-4 rounded-2xl border border-white/10 bg-forest-900/65 p-4 flex flex-col gap-3">
+          <div className="lg:col-span-4 rounded-2xl border border-white/10 bg-zinc-900/65 p-4 flex flex-col gap-3">
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-wider text-gold-400 mb-1.5">
                 <Plus className="w-3.5 h-3.5 inline mr-1" />
@@ -476,7 +476,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 onChange={(e) => {
                   if (e.target.value) setSelectedPartnerId(e.target.value);
                 }}
-                className="w-full rounded-xl border border-white/15 bg-forest-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               >
                 <option value="">Select Artiste to message 1-on-1...</option>
                 {availableRecipients.map((p) => (
@@ -511,7 +511,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                       className={`w-full flex items-center justify-between gap-2.5 rounded-xl p-2.5 text-left transition cursor-pointer ${
                         active
                           ? 'bg-gold-500/20 border border-gold-400/40 text-white'
-                          : 'bg-forest-950/50 border border-white/5 text-zinc-300 hover:bg-forest-950'
+                          : 'bg-zinc-950/50 border border-white/5 text-zinc-300 hover:bg-zinc-950'
                       }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -555,7 +555,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           </div>
 
           {/* Right Pane: Active 1-on-1 Conversation + Reply Input */}
-          <div className="lg:col-span-8 rounded-2xl border border-white/10 bg-forest-900/65 flex flex-col overflow-hidden">
+          <div className="lg:col-span-8 rounded-2xl border border-white/10 bg-zinc-900/65 flex flex-col overflow-hidden">
             {!selectedPartnerId ? (
               <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
                 <MessageSquare className="w-10 h-10 text-gold-400/70 mb-2" />
@@ -567,7 +567,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
               </div>
             ) : (
               <>
-                <div className="border-b border-white/10 bg-forest-950/70 px-4 py-3 flex items-center justify-between">
+                <div className="border-b border-white/10 bg-zinc-950/70 px-4 py-3 flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <span className="text-sm font-extrabold text-white">
                       {selectedPartner?.stage_name ||
@@ -608,7 +608,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                             className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${
                               mine
                                 ? 'bg-gradient-to-r from-gold-500 to-pink-600 text-white font-medium'
-                                : 'bg-forest-950 border border-white/10 text-zinc-200'
+                                : 'bg-zinc-950 border border-white/10 text-zinc-200'
                             }`}
                           >
                             {msg.body}
@@ -624,7 +624,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
 
                 <form
                   onSubmit={handleSendDirect}
-                  className="border-t border-white/10 bg-forest-950/90 p-3 flex items-center gap-2"
+                  className="border-t border-white/10 bg-zinc-950/90 p-3 flex items-center gap-2"
                 >
                   <input
                     type="text"
@@ -633,12 +633,12 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     placeholder={`Write a 1-on-1 message or reply to ${
                       selectedPartner?.stage_name || 'Artiste'
                     }...`}
-                    className="flex-1 rounded-xl border border-white/10 bg-forest-900 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+                    className="flex-1 rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                   <button
                     type="submit"
                     disabled={sendingDirect || !replyText.trim()}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-gold-500 hover:bg-gold-400 px-4 py-2.5 text-xs font-extrabold text-forest-950 transition cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-gold-500 hover:bg-gold-400 px-4 py-2.5 text-xs font-extrabold text-zinc-950 transition cursor-pointer disabled:opacity-50"
                   >
                     {sendingDirect ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

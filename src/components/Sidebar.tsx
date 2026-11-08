@@ -238,7 +238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const sidebarContent = (
-    <div className="flex h-full flex-col bg-forest-950 border-r border-white/10 w-64 px-4 py-4 select-none">
+    <div className="flex h-full flex-col bg-zinc-950 border-r border-white/10 w-64 px-4 py-4 select-none">
       {/* Custom Generated Gyidi Nnwom Logo + Mobile Close Button */}
       <div className="flex items-center justify-between gap-2 px-1.5 mb-4">
         <div
@@ -276,7 +276,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         onClick={() => handleSelect('premium')}
         className={`mb-3 w-full flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-extrabold transition cursor-pointer ${
           activeTab === 'premium'
-            ? 'bg-gradient-to-r from-gold-400 to-pink-500 text-forest-950 shadow-lg'
+            ? 'bg-gradient-to-r from-gold-400 to-pink-500 text-zinc-950 shadow-lg'
             : 'bg-gradient-to-r from-gold-500/20 via-pink-500/15 to-gold-500/10 text-gold-200 border border-gold-400/35 hover:border-gold-400/60'
         }`}
       >
@@ -287,8 +287,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <span
           className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
             activeTab === 'premium'
-              ? 'bg-forest-950 text-gold-300'
-              : 'bg-gold-400 text-forest-950'
+              ? 'bg-zinc-950 text-gold-300'
+              : 'bg-gold-400 text-zinc-950'
           }`}
         >
           {isPremium ? 'Active ✓' : `GHS ${monthlyPrice}`}
@@ -307,7 +307,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => handleSelect('admin')}
                 className={`w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition cursor-pointer ${
                   activeTab === 'admin'
-                    ? 'bg-gold-500 text-forest-950'
+                    ? 'bg-gold-500 text-zinc-950'
                     : 'bg-gold-500/15 text-gold-300 border border-gold-500/30 hover:bg-gold-500/25'
                 }`}
               >
@@ -452,7 +452,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Account Footer */}
       <div className="pt-3 mt-2 border-t border-white/10 pb-20 lg:pb-16">
         {userEmail ? (
-          <div className="rounded-xl bg-forest-900/90 border border-white/10 p-2.5">
+          <div className="rounded-xl bg-zinc-900/90 border border-white/10 p-2.5">
             <div className="flex items-center gap-2">
               {profile?.avatar_url && (
                 <img
@@ -473,7 +473,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {profile && profile.role === 'listener' && (
               <div className="mt-3 space-y-1.5">
                 <label
-                  className="flex w-full items-center gap-2 rounded-xl border border-white/15 bg-forest-950 px-3 py-2 text-xs text-zinc-300 hover:border-gold-400 cursor-pointer transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="flex w-full items-center gap-2 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-zinc-300 hover:border-gold-400 cursor-pointer transition disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <Camera className="w-3.5 h-3.5 flex-shrink-0" />
                   {photoBusy ? 'Updating…' : 'Change Profile Photo'}
@@ -504,7 +504,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onCloseMobile();
                 onOpenAuth(false);
               }}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gold-500 hover:bg-gold-400 py-2 text-xs font-extrabold text-forest-950 transition cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-gold-500 hover:bg-gold-400 py-2 text-xs font-extrabold text-zinc-950 transition cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5" />
               Create Account / Sign In

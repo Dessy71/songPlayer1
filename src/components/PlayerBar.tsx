@@ -132,7 +132,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
     <>
       {/* Fullscreen Now Playing Modal */}
       {expanded && (
-        <div className="safe-overlay fixed inset-0 z-50 flex flex-col justify-between bg-gradient-to-b from-forest-900 via-forest-950 to-black p-4 sm:p-8 stable-scroll">
+        <div className="safe-overlay fixed inset-0 z-50 flex flex-col justify-between bg-gradient-to-b from-zinc-900 via-zinc-950 to-black p-4 sm:p-8 stable-scroll">
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"
@@ -401,7 +401,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
       )}
 
       {/* Persistent Bottom Bar — ALL Controls Visible on Mobile & Desktop */}
-      <div className="safe-player fixed bottom-0 inset-x-0 z-30 w-full max-w-full overflow-hidden border-t border-white/15 bg-forest-950/98 backdrop-blur-xl px-3 sm:px-5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="safe-player fixed bottom-0 inset-x-0 z-30 w-full max-w-full overflow-hidden border-t border-white/15 bg-zinc-950/98 backdrop-blur-xl px-3 sm:px-5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <div className="mx-auto max-w-[1600px] space-y-1.5">
           {/* Top Row: Track Info + Seek Bar (Visible on Mobile & Desktop) */}
           <div className="flex items-center justify-between gap-2.5 min-w-0">
@@ -508,14 +508,14 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 type="button"
                 onClick={togglePlay}
                 title={isPlaying ? 'Pause' : 'Play'}
-                className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white text-forest-950 shadow-md transition cursor-pointer flex-shrink-0"
+                className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white text-zinc-950 shadow-md transition cursor-pointer flex-shrink-0"
               >
                 {isBuffering ? (
-                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-forest-900" />
+                  <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin text-zinc-900" />
                 ) : isPlaying ? (
-                  <Pause className="w-4 h-4 sm:w-5 sm:h-5 fill-forest-950" />
+                  <Pause className="w-4 h-4 sm:w-5 sm:h-5 fill-zinc-950" />
                 ) : (
-                  <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-forest-950 ml-0.5" />
+                  <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-zinc-950 ml-0.5" />
                 )}
               </button>
 
@@ -686,7 +686,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               >
                 <ListMusic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {isAuthenticated && queue.length > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 rounded-full bg-gold-500 px-1 text-[8px] font-bold text-forest-950">
+                  <span className="absolute -top-0.5 -right-0.5 rounded-full bg-gold-500 px-1 text-[8px] font-bold text-zinc-950">
                     {queue.length}
                   </span>
                 )}

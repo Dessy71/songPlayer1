@@ -37,11 +37,11 @@ export function SupportCheckout({ target, name }: {target:string;name:string}) {
  const verify=async(reference:string)=>{
   setBusy(true);try{const result=await call({action:'verify',reference});setMessage(result.verified?'Payment verified. Thank you for your support!':result.message);await load();}catch(e){setMessage(e instanceof Error?e.message:'Unable to check.');}finally{setBusy(false);}
  };
- return <div className="mt-3 space-y-3 rounded-xl border border-white/10 bg-forest-900 p-4">
+ return <div className="mt-3 space-y-3 rounded-xl border border-white/10 bg-zinc-900 p-4">
   <p className="text-xs text-zinc-300">Support {name} securely through Paystack. Payout details stay private. You authorize each payment on Paystack.</p>
-  <label className="block text-xs text-zinc-300">Amount (GHS)<input aria-label="Support amount in GHS" inputMode="decimal" value={amount} onChange={e=>setAmount(e.target.value)} className="mt-1 block w-full rounded-lg bg-forest-950 border border-white/10 p-2 text-white" /></label>
+  <label className="block text-xs text-zinc-300">Amount (GHS)<input aria-label="Support amount in GHS" inputMode="decimal" value={amount} onChange={e=>setAmount(e.target.value)} className="mt-1 block w-full rounded-lg bg-zinc-950 border border-white/10 p-2 text-white" /></label>
   <label className="flex items-start gap-2 text-xs text-zinc-300"><input type="checkbox" checked={visible} onChange={e=>setVisible(e.target.checked)} />Show my profile name and photo on the artiste page. Uncheck to remain anonymous.</label>
-  <button disabled={busy} onClick={checkout} className="min-h-11 w-full rounded-xl bg-gold-400 px-4 py-2 font-bold text-forest-950 disabled:opacity-50">{busy?'Please wait…':'Continue to Paystack'}</button>
+  <button disabled={busy} onClick={checkout} className="min-h-11 w-full rounded-xl bg-gold-400 px-4 py-2 font-bold text-zinc-950 disabled:opacity-50">{busy?'Please wait…':'Continue to Paystack'}</button>
   {message&&<p role="status" className="text-xs text-zinc-300">{message}</p>}
   {orders.length>0&&<div className="space-y-2"><p className="text-xs text-zinc-400">Your recent support payments</p>{orders.map(o=><div key={o.reference} className="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-300"><span>GHS {(o.amount_subunits/100).toFixed(2)} · {o.status==='verified'?'Verified supporter':'Not yet verified'}</span>{o.status!=='verified'&&<button disabled={busy} onClick={()=>void verify(o.reference)} className="min-h-11 text-gold-300 font-bold">Check payment</button>}</div>)}</div>}
  </div>;

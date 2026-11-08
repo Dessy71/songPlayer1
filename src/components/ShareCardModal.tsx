@@ -248,7 +248,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-forest-950 p-5 sm:p-6 shadow-2xl max-h-[92dvh] overflow-y-auto stable-scroll">
+      <div className="relative w-full max-w-2xl rounded-3xl border border-white/15 bg-zinc-950 p-5 sm:p-6 shadow-2xl max-h-[92dvh] overflow-y-auto stable-scroll">
         <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-white/10">
           <button
             type="button"
@@ -291,7 +291,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
                 className="max-h-80 rounded-2xl border border-white/15 shadow-2xl object-contain"
               />
             ) : (
-              <div className="h-72 w-44 rounded-2xl bg-forest-900 animate-pulse" />
+              <div className="h-72 w-44 rounded-2xl bg-zinc-900 animate-pulse" />
             )}
           </div>
 
@@ -306,13 +306,13 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
                 value={quote}
                 onChange={(e) => setQuote(e.target.value)}
                 placeholder="Type a favorite Twi/English lyric line or Sabbath blessing..."
-                className="w-full rounded-xl border border-white/15 bg-forest-900 px-3 py-2 text-xs text-white focus:border-gold-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/15 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-gold-400 focus:outline-none"
               />
             </div>
 
             <button
               onClick={handleNativeOrWhatsAppShare}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-3 text-xs font-extrabold text-forest-950 shadow-lg cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-3 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" />
               Share to WhatsApp / Status

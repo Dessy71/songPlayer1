@@ -499,7 +499,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-2xl rounded-2xl border border-white/10 bg-forest-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div className="relative w-full max-w-2xl rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition cursor-pointer"
@@ -535,7 +535,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               className={`rounded-xl border p-3 text-left transition cursor-pointer ${
                 uploadFormat === 'single'
                   ? 'border-pink-400 bg-pink-500/15 text-white'
-                  : 'border-white/10 bg-forest-950 text-zinc-400 hover:text-white'
+                  : 'border-white/10 bg-zinc-950 text-zinc-400 hover:text-white'
               }`}
             >
               <div className="flex items-center gap-1.5 text-xs font-bold">
@@ -553,7 +553,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               className={`rounded-xl border p-3 text-left transition cursor-pointer ${
                 uploadFormat === 'album'
                   ? 'border-gold-400 bg-gold-500/15 text-white'
-                  : 'border-white/10 bg-forest-950 text-zinc-400 hover:text-white'
+                  : 'border-white/10 bg-zinc-950 text-zinc-400 hover:text-white'
               }`}
             >
               <div className="flex items-center gap-1.5 text-xs font-bold">
@@ -574,7 +574,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               className={`rounded-xl border p-3 text-left transition cursor-pointer ${
                 releaseMode === 'instant'
                   ? 'border-forest-400 bg-forest-500/15 text-white'
-                  : 'border-white/10 bg-forest-950 text-zinc-400 hover:text-white'
+                  : 'border-white/10 bg-zinc-950 text-zinc-400 hover:text-white'
               }`}
             >
               <div className="flex items-center gap-1.5 text-xs font-bold">
@@ -595,7 +595,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               className={`rounded-xl border p-3 text-left transition cursor-pointer ${
                 releaseMode === 'premiere'
                   ? 'border-gold-400 bg-gold-500/15 text-white'
-                  : 'border-white/10 bg-forest-950 text-zinc-400 hover:text-white'
+                  : 'border-white/10 bg-zinc-950 text-zinc-400 hover:text-white'
               }`}
             >
               <div className="flex items-center gap-1.5 text-xs font-bold">
@@ -624,7 +624,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                     ? 'e.g. Osoro Asomdwoe (Vol. 1)'
                     : 'e.g. Onyame Wo Tumi'
                 }
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
               />
             </div>
 
@@ -638,7 +638,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                 value={artist}
                 onChange={(e) => setArtist(e.target.value)}
                 placeholder="e.g. Obogu Seth / KNUST SACSU"
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -653,7 +653,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                 value={albumDescription}
                 onChange={(e) => setAlbumDescription(e.target.value)}
                 placeholder="e.g. 8-track Sabbath worship album recorded live..."
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
               />
             </div>
           )}
@@ -665,7 +665,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as 'Songs' | 'Sermons' | 'Recordings')}
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-sm text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white focus:border-gold-500 focus:outline-none"
               >
                 <option value="Songs">Songs</option>
                 <option value="Sermons">Sermons / Preachings</option>
@@ -680,7 +680,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               <select
                 value={choirGroup}
                 onChange={(e) => setChoirGroup(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-forest-950 px-3.5 py-2 text-sm text-white focus:border-gold-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white focus:border-gold-500 focus:outline-none"
               >
                 {CHOIR_GROUPS.map((g) => (
                   <option key={g} value={g}>
@@ -704,28 +704,28 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                   value={preacherName}
                   onChange={(e) => setPreacherName(e.target.value)}
                   placeholder="Preacher (e.g. Op. Abraham)"
-                  className="rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
+                  className="rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
                 />
                 <input
                   type="text"
                   value={sermonTopic}
                   onChange={(e) => setSermonTopic(e.target.value)}
                   placeholder="Topic (e.g. Sabbath Teaching)"
-                  className="rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
+                  className="rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
                 />
                 <input
                   type="text"
                   value={bibleBook}
                   onChange={(e) => setBibleBook(e.target.value)}
                   placeholder="Bible Book (e.g. Romans)"
-                  className="rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
+                  className="rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
                 />
                 <input
                   type="number"
                   value={conventionYear}
                   onChange={(e) => setConventionYear(e.target.value)}
                   placeholder="Year (e.g. 2026)"
-                  className="rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
+                  className="rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
                 />
               </div>
             </div>
@@ -736,8 +736,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             <label
               className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-xs cursor-pointer transition ${
                 uploadFormat === 'album' || releaseMode === 'premiere'
-                  ? 'border-gold-400/60 bg-forest-950 text-gold-200 hover:border-gold-400'
-                  : 'border-white/10 bg-forest-950 text-zinc-300 hover:border-white/25'
+                  ? 'border-gold-400/60 bg-zinc-950 text-gold-200 hover:border-gold-400'
+                  : 'border-white/10 bg-zinc-950 text-zinc-300 hover:border-white/25'
               }`}
             >
               <ImageIcon className="w-4 h-4 text-gold-400 flex-shrink-0" />
@@ -771,7 +771,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                 min={minPremiereDate}
                 value={premiereLocalDt}
                 onChange={(e) => setPremiereLocalDt(e.target.value)}
-                className="w-full rounded-xl border border-white/15 bg-forest-950 px-3.5 py-2 text-sm text-white focus:border-gold-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2 text-sm text-white focus:border-gold-400 focus:outline-none"
               />
             </div>
           )}
@@ -779,7 +779,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           {/* SINGLE AUDIO + LYRICS vs ALBUM TRACKLIST + PER-TRACK LYRICS */}
           {uploadFormat === 'single' ? (
             <div className="space-y-3">
-              <label className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/15 bg-forest-950/70 px-4 py-4 text-center hover:border-gold-500/50 transition cursor-pointer">
+              <label className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/15 bg-zinc-950/70 px-4 py-4 text-center hover:border-gold-500/50 transition cursor-pointer">
                 <Music className="w-6 h-6 text-gold-400 mb-1" />
                 <span className="text-sm font-medium text-zinc-200">
                   {audioFile ? audioFile.name : 'Select Audio File (.mp3, .m4a, .wav) *'}
@@ -800,7 +800,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               </label>
 
               {/* Song Lyrics Upload (Text OR Any Lyrics File Format!) */}
-              <div className="rounded-xl border border-gold-400/25 bg-forest-950/80 p-3.5 space-y-2.5">
+              <div className="rounded-xl border border-gold-400/25 bg-zinc-950/80 p-3.5 space-y-2.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-gold-400" />
@@ -813,7 +813,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                     <select
                       value={lyricsLanguage}
                       onChange={(e) => setLyricsLanguage(e.target.value)}
-                      className="rounded-lg border border-white/10 bg-forest-900 px-2.5 py-1 text-[11px] text-white"
+                      className="rounded-lg border border-white/10 bg-zinc-900 px-2.5 py-1 text-[11px] text-white"
                     >
                       <option value="Twi">Twi</option>
                       <option value="Twi & English">Twi &amp; English</option>
@@ -848,12 +848,12 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                     setLyricsTimed(null);
                   }}
                   placeholder="Paste Twi / English lyrics here OR click 'Upload Lyrics File' above (.lrc, .srt, .vtt, .txt, .docx, .rtf, .ttml, .json)..."
-                  className="w-full rounded-xl border border-white/10 bg-forest-900 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-gold-400 focus:outline-none"
                 />
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border border-gold-500/30 bg-forest-950/80 p-4 space-y-3">
+            <div className="rounded-xl border border-gold-500/30 bg-zinc-950/80 p-4 space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <p className="text-xs font-extrabold text-white">
@@ -887,7 +887,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                   {albumTracks.map((trk, idx) => (
                     <div
                       key={trk.id}
-                      className="rounded-xl border border-white/10 bg-forest-900 p-2.5 space-y-2"
+                      className="rounded-xl border border-white/10 bg-zinc-900 p-2.5 space-y-2"
                     >
                       <div className="flex items-center gap-2">
                         <span className="w-5 text-xs font-extrabold text-gold-400 tabular-nums">
@@ -904,7 +904,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                             );
                           }}
                           placeholder={`Track ${idx + 1} Title`}
-                          className="flex-1 rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white focus:border-gold-400 focus:outline-none"
+                          className="flex-1 rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white focus:border-gold-400 focus:outline-none"
                         />
                         <button
                           type="button"
@@ -1000,7 +1000,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                               );
                             }}
                             placeholder="Type or paste lyrics for this track..."
-                            className="w-full rounded-lg border border-white/10 bg-forest-950 px-2.5 py-1.5 text-xs text-white"
+                            className="w-full rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-xs text-white"
                           />
                         </div>
                       )}
