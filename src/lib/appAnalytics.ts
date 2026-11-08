@@ -120,11 +120,11 @@ export async function probeAnalytics(): Promise<AnalyticsProbe> {
     }
 
     if (data && typeof data === 'object' && 'error' in data) {
+      const body = data as { error: unknown; detail?: unknown };
+      const detail = typeof body.detail === 'string' ? ` — ${body.detail}` : '';
       return {
         ok: false,
-        detail: `The app-analytics function is deployed but not working: ${String(
-          (data as { error: unknown }).error
-        )}`,
+        detail: `The app-analytics function is deployed but failing: ${String(body.error)}${detail}`,
       };
     }
 

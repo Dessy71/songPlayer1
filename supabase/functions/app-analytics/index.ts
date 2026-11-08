@@ -76,7 +76,17 @@ export function createAppAnalyticsHandler(env: (key: string) => string | undefin
     try {
       const url = env('SUPABASE_URL');
       const serviceKey = env('SUPABASE_SERVICE_ROLE_KEY');
-      if (!url || !serviceKey) return json({ error: 'Analytics is not configured.' }, 503);
+      if (!url || !serviceKey) {
+        return json(
+          {
+            error: 'Analytics is not configured.',
+            detail: `SUPABASE_URL=${url ? 'set' : 'missing'} SUPABASE_SERVICE_ROLE_KEY=${
+              serviceKey ? 'set' : 'missing'
+            }`,
+          },
+          503
+        );
+      }
       const admin = clientFactory(url, serviceKey);
 
       const body = await req.json().catch(() => ({}));
@@ -127,9 +137,11 @@ export function createAppAnalyticsHandler(env: (key: string) => string | undefin
 
       return json({ ok: true });
     } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
       console.error('app-analytics failed:', error instanceof Error ? (error.stack || error.message) : error);
-      // Analytics must never break playback.
-      return json({ error: 'Analytics unavailable.' }, 503);
+      // Analytics must never break playback, but a bare 503 hides why. The
+      // admin probe reads `detail` and shows it rather than reporting zeros.
+      return json({ error: 'Analytics unavailable.', detail }, 503);
     }
   };
 }
