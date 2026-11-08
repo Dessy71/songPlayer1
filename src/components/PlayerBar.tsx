@@ -401,7 +401,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
       )}
 
       {/* Persistent Bottom Bar — ALL Controls Visible on Mobile & Desktop */}
-      <div className="safe-player fixed bottom-0 inset-x-0 z-30 w-full max-w-full overflow-hidden border-t border-white/15 bg-zinc-950/98 backdrop-blur-xl px-3 sm:px-5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="safe-player fixed bottom-0 inset-x-0 z-30 w-full max-w-full overflow-hidden border-t border-white/15 bg-zinc-950/98 backdrop-blur-xl px-3 sm:px-5 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:left-64 lg:w-auto">
         <div className="mx-auto max-w-[1600px] space-y-1.5">
           {/* Top Row: Track Info + Seek Bar (Visible on Mobile & Desktop) */}
           <div className="flex items-center justify-between gap-2.5 min-w-0">

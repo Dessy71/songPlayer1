@@ -2509,7 +2509,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           link looks like. Offer the single tap it is waiting for rather than
           silently landing on Discover with a paused track. */}
       {autoplayBlocked && currentSong && (
-        <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4">
+        <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 lg:left-64">
           <button
             type="button"
             onClick={resumePlayback}
