@@ -26,20 +26,21 @@ for(const [width,height,iphone] of [[393,852,true],[375,667,true],[1280,800,fals
  assert.equal(await page.locator('main').evaluate(el=>el.scrollTop),0);
  const second=await page.getByTestId('home-trending').getByRole('button',{name:'Play Test hymn 2',exact:true}).boundingBox();assert.ok(second.y+second.height<height-34,'Second song play button must be above fold');
  const firstHeight=(await card.boundingBox()).height;assert.equal(firstHeight,96);
- await page.getByRole('button',{name:'Next spotlight',exact:true}).click();assert.equal((await card.boundingBox()).height,firstHeight);assert.match(await card.textContent(),/Bible Verse/);
- await page.getByRole('button',{name:'Next spotlight',exact:true}).click();assert.equal((await card.boundingBox()).height,firstHeight);assert.match(await card.textContent(),/Coming soon/);
- await page.getByRole('button',{name:'Next spotlight',exact:true}).click();assert.match(await card.textContent(),/Upcoming Premieres/);assert.match(await card.textContent(),/Future choir album/);assert.equal((await card.boundingBox()).height,96);
- await page.clock.fastForward(6100);assert.match(await card.textContent(),/Upcoming Premieres/,'Manual navigation pauses rotation');
- await page.getByRole('button',{name:'Play spotlight rotation'}).click();await page.mouse.move(0,0);await page.clock.fastForward(6100);assert.match(await card.textContent(),/Digital Sanctuary/,'Explicit play resumes rotation');
- await page.emulateMedia({reducedMotion:'reduce'});await page.getByRole('button',{name:'Play spotlight rotation'}).waitFor();await page.clock.fastForward(6100);assert.match(await card.textContent(),/Digital Sanctuary/,'Reduced motion disables automatic rotation');
+ const activeText=()=>card.locator('[data-active="true"]').textContent();
+ await page.getByRole('button',{name:'Next spotlight',exact:true}).click();assert.equal((await card.boundingBox()).height,firstHeight);assert.match(await activeText(),/Bible Verse/);
+ await page.getByRole('button',{name:'Next spotlight',exact:true}).click();assert.equal((await card.boundingBox()).height,firstHeight);assert.match(await activeText(),/Coming soon/);
+ await page.getByRole('button',{name:'Next spotlight',exact:true}).click();assert.match(await activeText(),/Upcoming Premieres/);assert.match(await activeText(),/Future choir album/);assert.equal((await card.boundingBox()).height,96);
+ await page.clock.fastForward(6100);assert.match(await activeText(),/Upcoming Premieres/,'Manual navigation pauses rotation');
+ await page.getByRole('button',{name:'Play spotlight rotation'}).click();await page.mouse.move(0,0);await page.clock.fastForward(6100);assert.match(await activeText(),/Digital Sanctuary/,'Explicit play resumes rotation');
+ await page.emulateMedia({reducedMotion:'reduce'});await page.getByRole('button',{name:'Play spotlight rotation'}).waitFor();await page.clock.fastForward(6100);assert.match(await activeText(),/Digital Sanctuary/,'Reduced motion disables automatic rotation');
  await firstPlay.click();
  if(iphone){await page.getByRole('button',{name:'iPhone volume instructions'}).click();assert.match(await page.getByRole('status').textContent(),/side volume buttons/);assert.equal(await page.getByRole('slider',{name:'Playback volume',exact:true}).count(),0);}
  else{assert.equal(await page.getByRole('slider',{name:'Playback volume',exact:true}).count(),1);}
  await page.getByTitle('Mute',{exact:true}).click();assert.equal(await page.evaluate(()=>window.__playingAudio.muted),true);
  await page.getByTitle('Unmute',{exact:true}).click();assert.equal(await page.evaluate(()=>window.__playingAudio.muted),false);
  for(let slide=0;slide<3;slide++) await page.getByRole('button',{name:'Next spotlight',exact:true}).click();
- assert.match(await card.textContent(),/Future choir album/);
- await card.locator('button').first().click();
+ assert.match(await activeText(),/Future choir album/);
+ await card.locator('[data-active="true"]').click();
  await page.getByRole('heading',{name:'Upcoming Song & Album Premieres',exact:true}).waitFor();
  await page.getByRole('button',{name:'Go Back',exact:true}).click();
  await page.getByTestId('home-trending').waitFor();
