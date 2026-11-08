@@ -66,7 +66,9 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
 
     setMessages(typedMsgs);
     setReadBroadcastIds(readSet);
-    if (profData) setDirectoryProfiles(profData as UserProfile[]);
+    // Suspended accounts cannot be messaged.
+    if (profData)
+      setDirectoryProfiles((profData as UserProfile[]).filter((p) => !p.is_banned));
     setLoading(false);
 
     // Compute total unread

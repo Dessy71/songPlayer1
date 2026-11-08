@@ -30,6 +30,7 @@ import {
   KeyRound,
   Crown,
   Wallet, // NEW: Wallet icon for Support Details
+  Ban,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
@@ -78,13 +79,18 @@ interface ArtisteApplication {
 }
 import { usePlayer } from '../context/PlayerContext';
 import { AdminArtisteApprovals } from './AdminArtisteApprovals';
+import BanUserModal from './BanUserModal';
 
-const USER_TYPE_FILTERS: Array<{ id: 'all' | 'artiste' | 'listener' | 'sacsu' | 'admin'; label: string }> = [
+const USER_TYPE_FILTERS: Array<{
+  id: 'all' | 'artiste' | 'listener' | 'sacsu' | 'admin' | 'banned';
+  label: string;
+}> = [
   { id: 'all', label: 'All Users' },
   { id: 'artiste', label: 'Artistes' },
   { id: 'listener', label: 'Listeners' },
   { id: 'sacsu', label: 'SACSU' },
   { id: 'admin', label: 'Admins' },
+  { id: 'banned', label: 'Suspended' },
 ];
 
 export type AdminSubTab =
@@ -144,7 +150,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [userSearch, setUserSearch] = useState('');
   const [userTypeFilter, setUserTypeFilter] = useState<
-    'all' | 'artiste' | 'listener' | 'sacsu' | 'admin'
+    'all' | 'artiste' | 'listener' | 'sacsu' | 'admin' | 'banned'
   >('all');
   const [catalogSearch, setCatalogSearch] = useState('');
 
@@ -182,6 +188,8 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
   const [provisioningArtiste, setProvisioningArtiste] = useState<UserProfile | null>(null);
 
+  const [banTarget, setBanTarget] = useState<UserProfile | null>(null);
+
   const [editingCatalogSong, setEditingCatalogSong] = useState<Song | null>(null);
   const [editReleaseOpen, setEditReleaseOpen] = useState(false);
 
@@ -218,6 +226,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     return adminProfiles.filter((p) => {
       const roleMatch =
         userTypeFilter === 'all' ||
+        (userTypeFilter === 'banned' && Boolean(p.is_banned)) ||
         p.role === userTypeFilter ||
         (userTypeFilter === 'sacsu' && Boolean(p.is_sacsu));
       if (!roleMatch) return false;
@@ -1505,6 +1514,21 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             </span>
                           )}
                         </div>
+                        {p.is_banned && (
+                          <div className="mt-1 flex items-center gap-1.5 min-w-0 overflow-hidden">
+                            <span className="rounded-full bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-300 shrink-0 whitespace-nowrap">
+                              Suspended
+                            </span>
+                            {p.ban_reason && (
+                              <span
+                                className="truncate text-[10px] text-zinc-500 min-w-0"
+                                title={p.ban_reason}
+                              >
+                                {p.ban_reason}
+                              </span>
+                            )}
+                          </div>
+                        )}
                         {/* Details row - single horizontal line, no vertical word wrap */}
                         <div className="flex flex-nowrap items-center gap-1 overflow-hidden min-w-0">
                           {p.real_name && (
@@ -1647,6 +1671,22 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             {p.is_verified_artiste ? 'Verified ✓' : 'Verify'}
                           </button>
                         )}
+
+                        {p.role !== 'admin' && (
+                          <button
+                            disabled={busyId === p.id}
+                            onClick={() => setBanTarget(p)}
+                            className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold cursor-pointer shrink-0 ${
+                              p.is_banned
+                                ? 'bg-forest-500/20 text-forest-300 hover:bg-forest-500/30'
+                                : 'bg-rose-500/15 border border-rose-500/30 text-rose-300 hover:bg-rose-500/25'
+                            }`}
+                            title={p.is_banned ? 'Reinstate this account' : 'Suspend this account'}
+                          >
+                            <Ban className="w-3 h-3 shrink-0" />
+                            {p.is_banned ? 'Reinstate' : 'Suspend'}
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1754,6 +1794,16 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             const exists = prev.some((x) => x.id === saved.id);
             return exists ? prev.map((x) => (x.id === saved.id ? saved : x)) : [saved, ...prev];
           });
+          await loadFullAdminData();
+          await onRefreshAll();
+        }}
+      />
+
+      <BanUserModal
+        isOpen={Boolean(banTarget)}
+        profile={banTarget}
+        onClose={() => setBanTarget(null)}
+        onDone={async () => {
           await loadFullAdminData();
           await onRefreshAll();
         }}

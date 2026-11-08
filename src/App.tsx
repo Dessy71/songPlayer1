@@ -73,6 +73,7 @@ import { AuthModal } from './components/AuthModal';
 import { UploadModal } from './components/UploadModal';
 import { ThemeToggle } from './components/ThemeToggle';
 import { SupportGyidiButton } from './components/SupportGyidiButton';
+import BannedScreen from './components/BannedScreen';
 import { SupportModal } from './components/SupportModal';
 import { DeveloperModal } from './components/DeveloperModal';
 import { PlaylistModal } from './components/PlaylistModal';
@@ -2707,7 +2708,8 @@ export default function App() {
       }
     }
     if (albumRows) setAlbums(albumRows as Album[]);
-    if (profileRows) setArtistes(profileRows as UserProfile[]);
+    // Suspended accounts drop out of the public directory.
+    if (profileRows) setArtistes((profileRows as UserProfile[]).filter((p) => !p.is_banned));
     if (eventRows) setPlayEvents(eventRows as PlayEventItem[]);
     if (settingsRow) setPlatformSettings(settingsRow as PlatformSettings);
     if (flyerRows) setVerseFlyers(flyerRows as DailyVerseFlyer[]);
@@ -2817,6 +2819,20 @@ export default function App() {
     const topFive = trendingSongs.slice(0, 5).map((s) => s.id);
     return new Set(topFive);
   }, [trendingSongs]);
+
+  // A banned account is met with an explanation rather than the app. The
+  // profile row is kept (only flagged), which is what makes this page — and
+  // reversing the decision — possible.
+  if (userProfile?.is_banned) {
+    return (
+      <BannedScreen
+        reason={userProfile.ban_reason}
+        bannedAt={userProfile.banned_at}
+        displayName={userProfile.stage_name || userProfile.display_name}
+        onSignOut={() => void supabase.auth.signOut()}
+      />
+    );
+  }
 
   return (
     <PlayerProvider

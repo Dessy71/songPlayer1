@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Clock,
   ExternalLink,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   Album,
@@ -233,6 +234,27 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           </button>
         )}
       </div>
+
+      {artiste.approval_status === 'rejected' && viewerProfile?.id === artiste.id && (
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-rose-300" />
+            <div className="min-w-0">
+              <p className="text-sm font-extrabold text-rose-200">
+                Your profile was not approved
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-rose-100/90">
+                {artiste.rejection_reason ||
+                  'An administrator rejected this profile without leaving a reason.'}
+              </p>
+              <p className="mt-2 text-[11px] text-rose-200/80">
+                Listeners cannot see this profile yet. Update your details in the studio and it
+                goes back into the approval queue.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Artiste Hero Header */}
       <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-gold-500/20 via-pink-600/15 to-zinc-900 p-6 sm:p-8">
