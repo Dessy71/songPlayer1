@@ -54,6 +54,28 @@ import { ProvisionArtisteLoginModal } from './ProvisionArtisteLoginModal';
 import { AdminAppAnalytics } from './AdminAppAnalytics';
 import { SupportModal } from './SupportModal'; // NEW: SupportModal import
 import { formatBytes, formatDuration } from '../lib/format';
+
+interface ArtisteApplication {
+  artiste_id: string;
+  stage_name: string | null;
+  display_name: string | null;
+  real_name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+  scg_zone: string | null;
+  scg_branch: string | null;
+  approval_status: string | null;
+  rejection_reason: string | null;
+  payment_method: 'bank' | 'momo' | null;
+  bank_name: string | null;
+  bank_account_number: string | null;
+  bank_account_name: string | null;
+  momo_operator: string | null;
+  momo_phone_number: string | null;
+  subaccount_code: string | null;
+  is_placeholder: boolean | null;
+  has_payout_details: boolean | null;
+}
 import { usePlayer } from '../context/PlayerContext';
 import { AdminArtisteApprovals } from './AdminArtisteApprovals';
 
@@ -130,6 +152,26 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [selectedArtisteForSupport, setSelectedArtisteForSupport] = useState<UserProfile | null>(null);
 
+  // Artiste applications carry the payout details an admin needs to create the
+  // Paystack subaccount and payment page. artiste_payout_details is
+  // service_role-only, so they arrive through an is_admin()-guarded RPC.
+  const [applications, setApplications] = useState<ArtisteApplication[]>([]);
+  const [applicationsNote, setApplicationsNote] = useState<string | null>(null);
+  const loadApplications = async () => {
+    const { data, error } = await supabase.rpc('admin_artiste_applications');
+    if (error) {
+      setApplications([]);
+      setApplicationsNote(
+        /could not find the function|schema cache|does not exist/i.test(error.message)
+          ? 'Artiste applications need migration 202611070014_artiste_approval_workflow.sql. Apply it in the Supabase SQL editor, then reload.'
+          : error.message
+      );
+      return;
+    }
+    setApplications((data as ArtisteApplication[]) ?? []);
+    setApplicationsNote(null);
+  };
+
   const [adminSongs, setAdminSongs] = useState<Song[]>(allSongs);
   const [adminAlbums, setAdminAlbums] = useState<Album[]>(allAlbums);
   const [adminProfiles, setAdminProfiles] = useState<UserProfile[]>(profiles);
@@ -154,6 +196,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     if (aData) setAdminAlbums(aData as Album[]);
     if (pData) setAdminProfiles(pData as UserProfile[]);
     if (cData) setClaimCodes(cData as ProfileClaimCode[]);
+    await loadApplications();
   };
 
   useEffect(() => {
@@ -311,6 +354,30 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       }
       setRejectingId(null);
       setRejectReason('');
+      await onRefreshAll();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Action failed.');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleArtisteApproval = async (
+    app: ArtisteApplication,
+    approve: boolean,
+    reason?: string
+  ) => {
+    setBusyId(app.artiste_id);
+    try {
+      const { error } = await supabase.rpc('admin_set_artiste_approval', {
+        p_artiste_id: app.artiste_id,
+        p_status: approve ? 'approved' : 'rejected',
+        p_reason: approve ? null : reason || null,
+      });
+      if (error) throw error;
+      setRejectingId(null);
+      setRejectReason('');
+      await loadFullAdminData();
       await onRefreshAll();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Action failed.');
@@ -765,6 +832,161 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               Pre-listen to every submitted single or album track before approving.
             </p>
           </div>
+
+          {/* ARTISTE APPLICATIONS: payout details + approve / reject */}
+          {(applications.length > 0 || applicationsNote) && (
+            <section className="space-y-3 rounded-2xl border border-gold-500/25 bg-gold-500/5 p-4">
+              <div className="flex items-center gap-2">
+                <BadgeCheck className="w-4 h-4 text-gold-400" />
+                <h3 className="text-sm font-extrabold text-white">
+                  Artiste Applications &amp; Payout Details
+                </h3>
+              </div>
+              <p className="text-xs text-zinc-400">
+                Use these bank or mobile-money details to create the artiste's Paystack subaccount
+                and payment page, then approve or reject the profile.
+              </p>
+
+              {applicationsNote && (
+                <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-[11px] text-amber-200">
+                  {applicationsNote}
+                </p>
+              )}
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {applications
+                  .filter((a) => (a.approval_status || 'pending') === approvalFilter)
+                  .map((app) => {
+                    const name = app.stage_name || app.display_name || app.email || 'Artiste';
+                    const busy = busyId === app.artiste_id;
+                    return (
+                      <div
+                        key={app.artiste_id}
+                        className="rounded-xl border border-white/10 bg-zinc-950/60 p-3 space-y-2.5"
+                      >
+                        <div className="flex items-start gap-2.5 min-w-0">
+                          {app.avatar_url ? (
+                            <img
+                              src={app.avatar_url}
+                              alt=""
+                              className="h-10 w-10 flex-shrink-0 rounded-xl object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-xs font-bold text-gold-300">
+                              {name[0]?.toUpperCase()}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="truncate text-xs font-bold text-white">{name}</p>
+                            {app.real_name && (
+                              <p className="truncate text-[11px] text-zinc-400">{app.real_name}</p>
+                            )}
+                            {(app.scg_zone || app.scg_branch) && (
+                              <p className="truncate text-[11px] text-gold-300">
+                                {[app.scg_zone, app.scg_branch].filter(Boolean).join(' • ')}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {app.has_payout_details ? (
+                          <div className="rounded-lg border border-gold-500/25 bg-gold-500/5 p-2.5">
+                            <p className="text-[10px] font-bold uppercase tracking-wide text-gold-300">
+                              {app.payment_method === 'momo'
+                                ? 'Mobile Money Payout'
+                                : 'Bank Payout'}
+                            </p>
+                            {app.payment_method === 'momo' ? (
+                              <p className="truncate text-[11px] text-zinc-200">
+                                {app.momo_operator || '—'} · {app.momo_phone_number || '—'}
+                              </p>
+                            ) : (
+                              <>
+                                <p className="truncate text-[11px] text-zinc-200">
+                                  {app.bank_name || '—'} · {app.bank_account_number || '—'}
+                                </p>
+                                <p className="truncate text-[11px] text-zinc-400">
+                                  {app.bank_account_name || '—'}
+                                </p>
+                              </>
+                            )}
+                            {app.subaccount_code && (
+                              <p className="mt-1 truncate font-mono text-[10px] text-zinc-500">
+                                {app.subaccount_code}
+                                {app.is_placeholder ? ' · sample' : ''}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-[11px] italic text-zinc-500">
+                            No payout details submitted yet.
+                          </p>
+                        )}
+
+                        {app.approval_status === 'rejected' && app.rejection_reason && (
+                          <p className="rounded-lg border border-rose-500/25 bg-rose-500/10 p-2 text-[11px] text-rose-300">
+                            Rejected: {app.rejection_reason}
+                          </p>
+                        )}
+
+                        {(app.approval_status || 'pending') !== 'approved' && (
+                          <div className="flex flex-wrap items-center gap-2">
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => void handleArtisteApproval(app, true)}
+                              className="inline-flex items-center gap-1 rounded-lg bg-forest-500/20 border border-forest-500/35 px-2.5 py-1 text-[11px] font-bold text-forest-300 hover:bg-forest-500/30 cursor-pointer disabled:opacity-50"
+                            >
+                              <CheckCircle2 className="w-3 h-3" /> Approve
+                            </button>
+
+                            {rejectingId === app.artiste_id ? (
+                              <div className="flex w-full flex-col gap-1.5">
+                                <input
+                                  value={rejectReason}
+                                  onChange={(e) => setRejectReason(e.target.value)}
+                                  placeholder="Reason shown to the artiste"
+                                  className="w-full rounded-lg border border-white/10 bg-zinc-950 px-2.5 py-1.5 text-[11px] text-white focus:border-gold-500 focus:outline-none"
+                                />
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    disabled={busy}
+                                    onClick={() => void handleArtisteApproval(app, false, rejectReason)}
+                                    className="rounded-lg bg-rose-500/20 border border-rose-500/35 px-2.5 py-1 text-[11px] font-bold text-rose-300 hover:bg-rose-500/30 cursor-pointer disabled:opacity-50"
+                                  >
+                                    Confirm Reject
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setRejectingId(null);
+                                      setRejectReason('');
+                                    }}
+                                    className="rounded-lg bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-zinc-300 hover:bg-white/10 cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => setRejectingId(app.artiste_id)}
+                                className="inline-flex items-center gap-1 rounded-lg bg-rose-500/15 border border-rose-500/30 px-2.5 py-1 text-[11px] font-bold text-rose-300 hover:bg-rose-500/25 cursor-pointer disabled:opacity-50"
+                              >
+                                <XCircle className="w-3 h-3" /> Reject
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            </section>
+          )}
 
           {/* ARTISTE PROFILE APPROVAL QUEUE (Paystack support pages) */}
           {profileApprovalQueue.length > 0 && (
