@@ -88,3 +88,53 @@ export function startAnalytics({ getUserId, isListening }: TrackerOptions): () =
 export function recordPlay(getUserId: () => string | null) {
   send({ action: 'play', user_id: getUserId(), is_listening: true, authenticated: Boolean(getUserId()) });
 }
+
+export interface AnalyticsProbe {
+  ok: boolean;
+  detail: string;
+}
+
+/**
+ * Checks that the analytics function is deployed and working.
+ *
+ * The beacon swallows every failure on purpose, so an undeployed function
+ * looks exactly like an app nobody is using. The admin dashboard calls this
+ * to tell those two cases apart instead of quietly reporting zeros.
+ */
+export async function probeAnalytics(): Promise<AnalyticsProbe> {
+  try {
+    const { data, error } = await supabase.functions.invoke(FUNCTION_NAME, {
+      body: { session_id: sessionId(), action: 'ping' },
+    });
+
+    if (error) {
+      const status = (error as { context?: { status?: number } }).context?.status;
+      if (status === 404 || status === 502) {
+        return {
+          ok: false,
+          detail:
+            'The app-analytics function is not deployed. Run: npx supabase functions deploy app-analytics',
+        };
+      }
+      return { ok: false, detail: `The app-analytics function failed: ${error.message}` };
+    }
+
+    if (data && typeof data === 'object' && 'error' in data) {
+      return {
+        ok: false,
+        detail: `The app-analytics function is deployed but not working: ${String(
+          (data as { error: unknown }).error
+        )}`,
+      };
+    }
+
+    return { ok: true, detail: 'The app-analytics function is deployed and receiving events.' };
+  } catch (err) {
+    return {
+      ok: false,
+      detail: `Could not reach the app-analytics function: ${
+        err instanceof Error ? err.message : 'unknown error'
+      }`,
+    };
+  }
+}

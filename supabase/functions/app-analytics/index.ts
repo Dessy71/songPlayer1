@@ -83,6 +83,11 @@ export function createAppAnalyticsHandler(env: (key: string) => string | undefin
       const sessionId = typeof body?.session_id === 'string' ? body.session_id.slice(0, 64) : '';
       if (!/^[A-Za-z0-9_-]{8,64}$/.test(sessionId)) return json({ error: 'Invalid session id.' }, 400);
 
+      // Health check from the admin dashboard. Confirms the function is
+      // deployed, configured, and able to reach the database without
+      // recording anything.
+      if (body?.action === 'ping') return json({ ok: true, deployed: true });
+
       const userAgent = req.headers.get('user-agent') || '';
       const device = classifyDevice(userAgent);
 
