@@ -25,9 +25,23 @@ export function extractAdSenseClientId(raw?: string | null): string | null {
   return trimmed;
 }
 
-export function useGoogleAdSenseScript(settings: PlatformSettings | null) {
+/**
+ * Loads the AdSense script, but only for viewers who are not Premium.
+ *
+ * Gating the script matters as much as gating the banner: Auto Ads inject
+ * units on their own once this is on the page, so a Premium account would
+ * still see ads if only the banners were hidden.
+ */
+export function useGoogleAdSenseScript(settings: PlatformSettings | null, enabled: boolean) {
   useEffect(() => {
-    if (!settings?.adsense_enabled) return;
+    if (!enabled || !settings?.adsense_enabled) {
+      // Someone who just upgraded should stop being served ads in this tab
+      // without needing a reload.
+      document
+        .querySelectorAll('script[data-gyidi-adsense]')
+        .forEach((el) => el.parentElement?.removeChild(el));
+      return;
+    }
     const clientId = extractAdSenseClientId(settings.adsense_publisher_id);
     if (!clientId || !clientId.startsWith('ca-pub-')) return;
 
@@ -49,12 +63,17 @@ export function useGoogleAdSenseScript(settings: PlatformSettings | null) {
     script.crossOrigin = 'anonymous';
     script.setAttribute('data-gyidi-adsense', clientId);
     document.head.appendChild(script);
-  }, [settings?.adsense_enabled, settings?.adsense_publisher_id]);
+  }, [enabled, settings?.adsense_enabled, settings?.adsense_publisher_id]);
 }
 
 interface GoogleAdBannerProps {
   settings: PlatformSettings | null;
   slotType: 'home' | 'sidebar';
+  /**
+   * False for Premium (and admin) accounts. The admin configuration card is
+   * still shown to admins — that is setup tooling, not advertising.
+   */
+  adsEnabled: boolean;
   isAdmin?: boolean;
   onConfigureClick?: () => void;
 }
@@ -62,6 +81,7 @@ interface GoogleAdBannerProps {
 export const GoogleAdBanner: React.FC<GoogleAdBannerProps> = ({
   settings,
   slotType,
+  adsEnabled,
   isAdmin = false,
   onConfigureClick,
 }) => {
@@ -73,7 +93,11 @@ export const GoogleAdBanner: React.FC<GoogleAdBannerProps> = ({
       : settings?.adsense_sidebar_slot_id?.trim();
 
   const canRenderLiveUnit = Boolean(
-    settings?.adsense_enabled && clientId && clientId.startsWith('ca-pub-') && slotId
+    adsEnabled &&
+      settings?.adsense_enabled &&
+      clientId &&
+      clientId.startsWith('ca-pub-') &&
+      slotId
   );
 
   useEffect(() => {
@@ -133,6 +157,15 @@ export const GoogleAdBanner: React.FC<GoogleAdBannerProps> = ({
                 <strong className="text-forest-300">Google AdSense Active ({clientId})</strong> —
                 Auto Ads script is live. Optional: add a Home Banner Slot ID for a fixed placement
                 here.
+                {!adsEnabled && (
+                  <>
+                    {' '}
+                    <span className="text-zinc-400">
+                      Ad units are hidden from your account because Premium and admin accounts
+                      are exempt — sign in as a listener to check them.
+                    </span>
+                  </>
+                )}
               </>
             ) : (
               <>

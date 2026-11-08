@@ -445,7 +445,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          <GoogleAdBanner settings={platformSettings || null} slotType="sidebar" />
+          <GoogleAdBanner
+            settings={platformSettings || null}
+            slotType="sidebar"
+            adsEnabled={!isPremium}
+          />
         </div>
       </nav>
 
