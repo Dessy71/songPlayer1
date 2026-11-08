@@ -587,10 +587,13 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     const params = new URLSearchParams(window.location.search);
     const slug = params.get('track');
     if (slug) {
-      const found = playableSongs.find((s) => s.slug === slug);
+      // The share link falls back to the id when a song has no slug, so match
+      // either. Playback is marked shared so signed-out visitors can hear the
+      // track they were sent instead of hitting the guest limit.
+      const found = playableSongs.find((s) => s.slug === slug || s.id === slug);
       if (found) {
         handledDeepLinkRef.current = true;
-        playSong(found, playableSongs);
+        playSong(found, playableSongs, { shared: true });
       }
     } else {
       handledDeepLinkRef.current = true;
@@ -1261,31 +1264,6 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 </button>
               </div>
             )}
-
-          {/* Guest Preview Notice Banner */}
-          {!isAuthenticated && (
-            <div className="max-w-[1400px] mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold-400/35 bg-gold-500/10 px-4 py-3">
-              <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gold-200">
-                <Lock className="w-4 h-4 text-gold-400 flex-shrink-0" />
-                <span>
-                  <span className="sm:hidden">5 free preview tracks. Sign in for the full library.</span>
-                  <span className="hidden sm:inline">                  <strong>Guest Preview:</strong> 5 preview songs are unlocked with Play, Next &amp;
-                  Previous. Create a free account to unlock all {playableSongs.length} songs &amp;
-                  upgrade to Premium for Offline Vault, Likes, Playlists &amp; Daily Verses!</span>
-                </span>
-              </div>
-              <button
-                onClick={() =>
-                  openAccountPrompt(
-                    'Create your free Gyidi Nnwom account to unlock all 295+ tracks!'
-                  )
-                }
-                className="rounded-full bg-gold-400 px-4 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-300 cursor-pointer"
-              >
-                Create Free Account
-              </button>
-            </div>
-          )}
 
           {loadingCatalog && songs.length === 0 ? (
             <div className="space-y-6 animate-pulse">

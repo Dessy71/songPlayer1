@@ -81,6 +81,18 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
     profile.tertiary_institution || ''
   );
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || '');
+  // Payout details for fan support. Stored in the private artiste_payout_details
+  // table, so the saved values are loaded through a guarded RPC rather than the
+  // public profile row.
+  const [paymentMethod, setPaymentMethod] = useState<'bank' | 'momo'>(
+    profile.payment_method === 'momo' ? 'momo' : 'bank'
+  );
+  const [bankName, setBankName] = useState('');
+  const [bankAccountNumber, setBankAccountNumber] = useState('');
+  const [bankAccountName, setBankAccountName] = useState('');
+  const [momoOperator, setMomoOperator] = useState('');
+  const [momoPhoneNumber, setMomoPhoneNumber] = useState('');
+  const [payoutLoaded, setPayoutLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedToast, setSavedToast] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -99,6 +111,31 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
   const [editingSong, setEditingSong] = useState<Song | null>(null);
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
+
+  // Payout details live in a table with no client access, so read them back
+  // through the guarded RPC. A listener upgrading to an artiste has no row yet
+  // and simply starts with an empty form.
+  useEffect(() => {
+    let active = true;
+    void supabase
+      .rpc('artiste_get_payout_details')
+      .then(({ data, error }) => {
+        if (!active || error || !data) return;
+        const row = data as Record<string, unknown>;
+        if (row.payment_method === 'bank' || row.payment_method === 'momo') {
+          setPaymentMethod(row.payment_method);
+        }
+        setBankName(String(row.bank_name ?? ''));
+        setBankAccountNumber(String(row.bank_account_number ?? ''));
+        setBankAccountName(String(row.bank_account_name ?? ''));
+        setMomoOperator(String(row.momo_operator ?? ''));
+        setMomoPhoneNumber(String(row.momo_phone_number ?? ''));
+        setPayoutLoaded(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const loadMyCatalogAndAnalytics = useCallback(async () => {
     const [{ data: sData }, { data: aData }] = await Promise.all([
@@ -262,6 +299,18 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
       return;
     }
 
+    // Payout details are required: an administrator needs them to create the
+    // Paystack subaccount and payment page that pays the artiste out.
+    if (paymentMethod === 'bank') {
+      if (!bankName.trim() || !bankAccountNumber.trim() || !bankAccountName.trim()) {
+        setError('Enter your bank name, account number and account name so payouts can reach you.');
+        return;
+      }
+    } else if (!momoOperator.trim() || !momoPhoneNumber.trim()) {
+      setError('Select your mobile money network and enter the number so payouts can reach you.');
+      return;
+    }
+
     setSaving(true);
     try {
       const nextRole = profile.role === 'admin' ? 'admin' : 'artiste';
@@ -285,6 +334,20 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
 
       if (updErr) throw updErr;
       onProfileUpdated(data as UserProfile);
+
+      // Save payout details after the role has been set to artiste: the RPC
+      // rejects anyone whose profile is not an artiste yet.
+      const { error: payoutErr } = await supabase.rpc('artiste_set_payout_details', {
+        p_payment_method: paymentMethod,
+        p_bank_name: paymentMethod === 'bank' ? bankName.trim() : '',
+        p_bank_account_number: paymentMethod === 'bank' ? bankAccountNumber.trim() : '',
+        p_bank_account_name: paymentMethod === 'bank' ? bankAccountName.trim() : '',
+        p_momo_operator: paymentMethod === 'momo' ? momoOperator.trim() : '',
+        p_momo_phone_number: paymentMethod === 'momo' ? momoPhoneNumber.trim() : '',
+      });
+      if (payoutErr) throw payoutErr;
+      setPayoutLoaded(true);
+
       setSavedToast(true);
       setTimeout(() => setSavedToast(false), 2500);
     } catch (err: unknown) {
@@ -1001,17 +1064,132 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             />
           </div>
 
-          <div className="pt-2 border-t border-white/10">
-            <div className="rounded-xl border border-forest-500/25 bg-forest-500/10 p-3">
-              <p className="text-xs font-bold text-forest-300 flex items-center gap-1.5">
+          <div className="pt-2 border-t border-white/10 space-y-3">
+            <div className="rounded-xl border border-gold-500/25 bg-gold-500/10 p-3.5">
+              <p className="text-xs font-bold text-gold-300 flex items-center gap-1.5">
                 <Wallet className="w-4 h-4" />
                 Fan Support &amp; Payouts
               </p>
-              <p className="mt-1 text-[11px] leading-relaxed text-zinc-300">
-                Payout details are configured by an administrator, not collected here. Once
-                your profile is approved with a Paystack payment page, listeners can support
-                you securely and your payout details are never exposed publicly.
+              <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-300">
+                When listeners support you, Paystack pays the money out to you — we never
+                hold it. To set that up, an administrator creates your Paystack subaccount
+                and payment page using the account details below. They are the only details
+                we ask for, they are stored privately, and they are never shown on your
+                public profile. Your profile stays hidden from listeners until an
+                administrator approves it.
               </p>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-zinc-950 p-3.5 space-y-3">
+              <div>
+                <p className="text-xs font-bold text-white">How should we pay you?</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(['bank', 'momo'] as const).map((option) => (
+                    <label
+                      key={option}
+                      className={`inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                        paymentMethod === option
+                          ? 'border-gold-400/50 bg-gold-500/15 text-gold-200'
+                          : 'border-white/15 bg-zinc-900 text-zinc-300 hover:border-white/25'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="payment-method"
+                        checked={paymentMethod === option}
+                        onChange={() => setPaymentMethod(option)}
+                        className="accent-gold-400"
+                      />
+                      {option === 'bank' ? 'Bank Account' : 'Mobile Money'}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {paymentMethod === 'bank' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      Bank Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                      placeholder="e.g. GCB Bank"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      Account Number *
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={bankAccountNumber}
+                      onChange={(e) => setBankAccountNumber(e.target.value)}
+                      placeholder="e.g. 0123456789"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      Account Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={bankAccountName}
+                      onChange={(e) => setBankAccountName(e.target.value)}
+                      placeholder="Name exactly as it appears on the account"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      Mobile Money Network *
+                    </label>
+                    <select
+                      value={momoOperator}
+                      onChange={(e) => setMomoOperator(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                    >
+                      <option value="">Select network</option>
+                      <option value="MTN">MTN Mobile Money</option>
+                      <option value="Vodafone">Vodafone Cash</option>
+                      <option value="AirtelTigo">AirtelTigo Money</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-300 mb-1">
+                      Mobile Money Number *
+                    </label>
+                    <input
+                      type="tel"
+                      inputMode="tel"
+                      value={momoPhoneNumber}
+                      onChange={(e) => setMomoPhoneNumber(e.target.value)}
+                      placeholder="e.g. 0244123456"
+                      className="w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {profile.approval_status === 'rejected' && profile.rejection_reason && (
+                <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-2.5 text-[11px] text-rose-300">
+                  <strong>Not approved:</strong> {profile.rejection_reason}
+                </p>
+              )}
+              {profile.approval_status === 'pending' && payoutLoaded && (
+                <p className="rounded-lg border border-gold-500/30 bg-gold-500/10 p-2.5 text-[11px] text-gold-200">
+                  Details received. An administrator will create your Paystack payment page
+                  and approve your profile.
+                </p>
+              )}
             </div>
           </div>
 
