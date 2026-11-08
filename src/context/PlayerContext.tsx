@@ -48,6 +48,14 @@ interface PlayerContextValue {
   playbackRate: number;
   startupLatencyMs: number | null;
   recentlyPlayedIds: string[];
+  /**
+   * The browser refused to start audio without a user gesture. A shared link
+   * lands on a fresh page load, which has none, so the first play is blocked.
+   * The UI uses this to offer a single tap that starts the track.
+   */
+  autoplayBlocked: boolean;
+  /** Retry playback after autoplay was blocked. Must come from a user gesture. */
+  resumePlayback: () => void;
   isSongLockedForGuest: (songId: string) => boolean;
   requireAccount: (reason?: string) => void;
   playSong: (song: Song, contextQueue?: Song[], options?: PlayOptions) => void;
@@ -88,6 +96,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [queue, setQueue] = useState<Song[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const [isPrelistenMode, setIsPrelistenMode] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -323,11 +332,19 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
           playPromise
             .then(() => {
               setIsPlaying(true);
+              setAutoplayBlocked(false);
             })
             .catch((err) => {
               console.warn('Playback prevented or interrupted:', err);
               setIsBuffering(false);
               setIsPlaying(false);
+              // NotAllowedError means the browser blocked audio because the
+              // page has had no user gesture yet — exactly the case for
+              // someone arriving from a shared link. Surface it so the app
+              // can ask for one tap instead of failing silently.
+              if (err && (err as DOMException).name === 'NotAllowedError') {
+                setAutoplayBlocked(true);
+              }
             });
         }
       };
@@ -364,13 +381,30 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
       clickStartRef.current = performance.now();
       audio
         .play()
-        .then(() => setIsPlaying(true))
+        .then(() => {
+          setIsPlaying(true);
+          setAutoplayBlocked(false);
+        })
         .catch(() => setIsPlaying(false));
     } else {
       audio.pause();
       setIsPlaying(false);
     }
   }, [currentSong]);
+
+  // Called from a click or tap, which is the gesture the browser was waiting
+  // for. Once it succeeds the block flag clears itself.
+  const resumePlayback = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+        setAutoplayBlocked(false);
+      })
+      .catch(() => setAutoplayBlocked(true));
+  }, []);
 
   const getNextSong = useCallback(
     (direction: 1 | -1): Song | null => {
@@ -709,6 +743,8 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
         playbackRate,
         startupLatencyMs,
         recentlyPlayedIds,
+        autoplayBlocked,
+        resumePlayback,
         isSongLockedForGuest,
         requireAccount,
         playSong,

@@ -151,6 +151,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     playSong,
     warmTrack,
     isPlaying,
+    autoplayBlocked,
+    resumePlayback,
   } = usePlayer();
 
   // Read through refs so the analytics session is registered once on mount
@@ -484,6 +486,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const handledDeepLinkRef = useRef(false);
+  const [sharedTrackTitle, setSharedTrackTitle] = useState<string | null>(null);
 
   useEffect(() => {
     const id = window.setInterval(() => setNowTick(Date.now()), 10000);
@@ -592,8 +595,11 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
       // either. Playback is marked shared so signed-out visitors can hear the
       // track they were sent instead of hitting the guest limit.
       const found = playableSongs.find((s) => s.slug === slug || s.id === slug);
+      // No match yet: the catalogue may still be filling, so leave the ref
+      // unset and try again when playableSongs changes.
       if (found) {
         handledDeepLinkRef.current = true;
+        setSharedTrackTitle(found.title);
         playSong(found, playableSongs, { shared: true });
       }
     } else {
@@ -2497,6 +2503,34 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           )}
         </main>
       </div>
+
+      {/* The browser blocks audio on a fresh page load because there has been
+          no user gesture yet, which is exactly what arriving from a shared
+          link looks like. Offer the single tap it is waiting for rather than
+          silently landing on Discover with a paused track. */}
+      {autoplayBlocked && currentSong && (
+        <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4">
+          <button
+            type="button"
+            onClick={resumePlayback}
+            className="flex w-full max-w-md items-center gap-3 rounded-2xl border border-gold-400/30 bg-zinc-900/95 p-3 text-left shadow-2xl backdrop-blur cursor-pointer hover:bg-zinc-900"
+          >
+            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gold-500 text-zinc-950">
+              <Play className="h-5 w-5 fill-zinc-950" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-xs font-extrabold text-white">
+                Tap to play{sharedTrackTitle ? ` ${sharedTrackTitle}` : ' this track'}
+              </span>
+              <span className="block truncate text-[11px] text-zinc-400">
+                {sharedTrackTitle
+                  ? 'You were sent this track. Your browser needs one tap before audio can start.'
+                  : 'Your browser needs one tap before audio can start.'}
+              </span>
+            </span>
+          </button>
+        </div>
+      )}
 
       <PlayerBar
         isFavorite={currentSong ? favoriteIds.has(currentSong.id) : false}
