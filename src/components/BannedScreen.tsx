@@ -1,5 +1,6 @@
 import React from 'react';
 import { Ban, LogOut, Mail } from 'lucide-react';
+import { PLATFORM_SUPPORT_EMAIL } from '../lib/constants';
 
 /**
  * Shown instead of the app when a signed-in account has been banned.
@@ -81,8 +82,14 @@ const BannedScreen: React.FC<BannedScreenProps> = ({
           <p className="mt-6 flex items-start gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 p-4 text-left text-[11px] leading-relaxed text-zinc-400">
             <Mail className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-gold-400" />
             <span>
-              If you believe this is a mistake, contact the SCG &amp; SACSU streaming team and
-              they can review the decision.
+              If you believe this is a mistake, email{' '}
+              <a
+                href={`mailto:${PLATFORM_SUPPORT_EMAIL}`}
+                className="font-bold text-gold-300 underline hover:no-underline"
+              >
+                {PLATFORM_SUPPORT_EMAIL}
+              </a>{' '}
+              to appeal for a review of your account.
             </span>
           </p>
 
