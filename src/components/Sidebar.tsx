@@ -450,7 +450,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* Account Footer */}
-      <div className="pt-3 mt-2 border-t border-white/10 pb-20 lg:pb-16">
+      <div className="pt-3 mt-2 border-t border-white/10 pb-20 lg:pb-3">
         {userEmail ? (
           <div className="rounded-xl bg-zinc-900/90 border border-white/10 p-2.5">
             <div className="flex items-center gap-2">
