@@ -14,6 +14,12 @@ import { clearSermonProgress, saveSermonProgress } from '../lib/sermonProgress';
 interface PlayOptions {
   isPrelisten?: boolean;
   startAtSeconds?: number;
+  /**
+   * Opened from a shared link. Someone was sent this specific track, so it
+   * plays even for a signed-out visitor — the guest limit is about browsing
+   * the catalogue, not about refusing an invitation to hear one song.
+   */
+  shared?: boolean;
 }
 
 interface PlayerProviderProps {
@@ -252,8 +258,10 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
         return;
       }
 
-      // Guest 5-song lock check
-      if (!prelisten && !isAuthenticated && !guestUnlockedIds.has(song.id)) {
+      // Guest 5-song lock check. A shared track is exempt: the guest limit
+      // governs browsing, not a direct link someone was sent.
+      const bypassGuestLock = prelisten || options?.shared === true;
+      if (!bypassGuestLock && !isAuthenticated && !guestUnlockedIds.has(song.id)) {
         onRequireAccount(
           'Guests can preview 5 songs. Create a free account to unlock the entire Gyidi Nnwom catalog!'
         );
@@ -263,10 +271,10 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
       if (contextQueue && contextQueue.length > 0) {
         const playableQueue = prelisten
           ? contextQueue
-          : contextQueue.filter(
+            : contextQueue.filter(
               (s) =>
                 isSongPubliclyPlayable(s) &&
-                (isAuthenticated || guestUnlockedIds.has(s.id))
+                (isAuthenticated || bypassGuestLock || guestUnlockedIds.has(s.id))
             );
         setQueue(playableQueue.length > 0 ? playableQueue : [song]);
       } else {

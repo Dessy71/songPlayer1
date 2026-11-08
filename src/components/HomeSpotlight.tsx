@@ -28,7 +28,7 @@ export function HomeSpotlight({ slides }: { slides: SpotlightSlide[] }) {
     if (paused || hovered || reducedMotion || slides.length < 2) return;
     const timer = window.setInterval(() => {
       if (document.visibilityState === 'visible') setIndex((value) => (value + 1) % slides.length);
-    }, 6000);
+    }, 3000);
     return () => window.clearInterval(timer);
   }, [paused, hovered, reducedMotion, slides.length]);
   const current = slides[index % slides.length];
