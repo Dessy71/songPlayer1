@@ -64,7 +64,7 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
         </button>
 
         <div className="flex items-center gap-2.5 mb-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-400">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold-500/15 border border-gold-500/30 text-gold-400">
             <ListPlus className="w-5 h-5" />
           </div>
           <div className="min-w-0">
@@ -97,7 +97,7 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
                     </p>
                   </div>
                   {alreadyIn ? (
-                    <span className="flex items-center gap-1 text-xs font-medium text-emerald-400">
+                    <span className="flex items-center gap-1 text-xs font-medium text-forest-400">
                       <Check className="w-4 h-4" /> Added
                     </span>
                   ) : (
@@ -119,19 +119,19 @@ export const PlaylistModal: React.FC<PlaylistModalProps> = ({
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="e.g. Sabbath Morning Hymns"
-            className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
           />
           <input
             type="text"
             value={newDesc}
             onChange={(e) => setNewDesc(e.target.value)}
             placeholder="Optional description..."
-            className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
           />
           <button
             type="submit"
             disabled={creating || !newName.trim()}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-600 py-2.5 text-sm font-semibold text-white hover:opacity-95 disabled:opacity-50 transition cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-pink-600 py-2.5 text-sm font-semibold text-white hover:opacity-95 disabled:opacity-50 transition cursor-pointer"
           >
             {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             {song ? 'Create & Add Song' : 'Create Playlist'}

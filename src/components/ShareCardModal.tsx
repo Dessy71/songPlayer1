@@ -111,7 +111,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
       ctx.fillStyle = '#fcd34d';
       ctx.font = 'bold 28px Inter, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('✨ GYIDI NWOM STREAMING', W / 2, 164);
+      ctx.fillText('✨ GYIDI NNWOM STREAMING', W / 2, 164);
 
       // 3. Cover Art Box (640x640)
       const artSize = 620;
@@ -218,7 +218,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
   const deepLink = `${window.location.origin}/?track=${encodeURIComponent(song.slug || song.id)}`;
   const waText = `🎵 *${song.title}* — _${song.artist}_${
     quote.trim() ? `\n\n"${quote.trim()}"` : ''
-  }\n\nListen now on *Gyidi Nwom*:\n${deepLink}`;
+  }\n\nListen now on *Gyidi Nnwom*:\n${deepLink}`;
 
   const handleNativeOrWhatsAppShare = async () => {
     try {
@@ -232,7 +232,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
           });
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
-              title: `${song.title} — Gyidi Nwom`,
+              title: `${song.title} — Gyidi Nnwom`,
               text: waText,
               files: [file],
             });
@@ -269,7 +269,7 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
         </div>
 
         <div className="flex items-center gap-2.5 mb-4">
-          <Sparkles className="w-5 h-5 text-emerald-400" />
+          <Sparkles className="w-5 h-5 text-forest-400" />
           <div>
             <h3 className="text-base sm:text-lg font-extrabold text-white">
               1-Tap WhatsApp Status Card Generator
@@ -306,13 +306,13 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
                 value={quote}
                 onChange={(e) => setQuote(e.target.value)}
                 placeholder="Type a favorite Twi/English lyric line or Sabbath blessing..."
-                className="w-full rounded-xl border border-white/15 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
+                className="w-full rounded-xl border border-white/15 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-gold-400 focus:outline-none"
               />
             </div>
 
             <button
               onClick={handleNativeOrWhatsAppShare}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 py-3 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-3 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" />
               Share to WhatsApp / Status
@@ -328,12 +328,12 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
             >
               {copiedLink ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <Check className="w-3.5 h-3.5 text-forest-400" />
                   Link Copied!
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5 text-amber-400" />
+                  <Copy className="w-3.5 h-3.5 text-gold-400" />
                   Copy Song Link
                 </>
               )}

@@ -77,7 +77,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
       timedLines.map((l) => l.text).join('\n');
     if (!body) return;
     await navigator.clipboard.writeText(
-      `${targetSong.title} — ${targetSong.artist}\n\n${body}\n\nStream on Gyidi Nwom`
+      `${targetSong.title} — ${targetSong.artist}\n\n${body}\n\nStream on Gyidi Nnwom`
     );
     setCopied(true);
     setTimeout(() => setCopied(false), 2200);
@@ -123,7 +123,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
                   {targetSong.title}
                 </h3>
                 {targetSong.lyrics_language && (
-                  <span className="rounded-full bg-amber-500/20 border border-amber-400/30 px-2 py-0.5 text-[10px] font-bold text-amber-300 flex-shrink-0">
+                  <span className="rounded-full bg-gold-500/20 border border-gold-400/30 px-2 py-0.5 text-[10px] font-bold text-gold-300 flex-shrink-0">
                     {targetSong.lyrics_language}
                   </span>
                 )}
@@ -142,7 +142,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
                   onClick={() => setLargeText((v) => !v)}
                   className={`rounded-lg p-2 text-xs font-bold transition cursor-pointer ${
                     largeText
-                      ? 'bg-amber-500/20 text-amber-300'
+                      ? 'bg-gold-500/20 text-gold-300'
                       : 'bg-white/5 text-zinc-400 hover:text-white'
                   }`}
                   title="Toggle font size"
@@ -155,7 +155,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
                   title="Copy lyrics"
                 >
                   {copied ? (
-                    <Check className="w-4 h-4 text-emerald-400" />
+                    <Check className="w-4 h-4 text-forest-400" />
                   ) : (
                     <Copy className="w-4 h-4" />
                   )}
@@ -169,7 +169,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
                           : targetSong.lyrics_text?.split('\n').find((l) => l.trim().length > 8);
                       onOpenShareCard(targetSong, activeQuote);
                     }}
-                    className="rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30 px-2.5 py-1.5 text-[11px] font-bold text-emerald-300 inline-flex items-center gap-1 cursor-pointer"
+                    className="rounded-lg bg-forest-500/20 border border-forest-400/30 hover:bg-forest-500/30 px-2.5 py-1.5 text-[11px] font-bold text-forest-300 inline-flex items-center gap-1 cursor-pointer"
                     title="Share Lyric Card to WhatsApp Status"
                   >
                     <Share2 className="w-3.5 h-3.5" />
@@ -185,7 +185,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
                   onClose();
                   onEditLyrics(targetSong);
                 }}
-                className="rounded-lg bg-amber-500/20 border border-amber-400/30 px-2.5 py-1.5 text-[11px] font-bold text-amber-300 inline-flex items-center gap-1 cursor-pointer"
+                className="rounded-lg bg-gold-500/20 border border-gold-400/30 px-2.5 py-1.5 text-[11px] font-bold text-gold-300 inline-flex items-center gap-1 cursor-pointer"
               >
                 <Pencil className="w-3 h-3" />
                 {hasLyrics ? 'Edit' : 'Add Lyrics'}
@@ -205,7 +205,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {!hasLyrics ? (
             <div className="py-20 text-center space-y-3">
-              <Mic2 className="w-10 h-10 text-amber-400/60 mx-auto" />
+              <Mic2 className="w-10 h-10 text-gold-400/60 mx-auto" />
               <p className="text-base font-extrabold text-white">
                 Lyrics haven&apos;t been added to this track yet
               </p>
@@ -220,7 +220,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
                     onClose();
                     onEditLyrics(targetSong);
                   }}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-amber-500 hover:bg-amber-400 px-5 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer"
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-gold-500 hover:bg-gold-400 px-5 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   Upload Lyrics Now
@@ -229,7 +229,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
             </div>
           ) : timedLines.length > 0 ? (
             <div className="space-y-3">
-              <p className="text-[11px] font-semibold text-amber-300/80 uppercase tracking-wider mb-2">
+              <p className="text-[11px] font-semibold text-gold-300/80 uppercase tracking-wider mb-2">
                 Tap any line to jump directly to that moment
               </p>
               {timedLines.map((line, idx) => {
@@ -250,7 +250,7 @@ export const LyricsDrawer: React.FC<LyricsDrawerProps> = ({
                     }}
                     className={`w-full text-left rounded-2xl px-4 py-2.5 transition cursor-pointer flex items-baseline justify-between gap-3 ${
                       isActive
-                        ? 'bg-amber-500/20 border border-amber-400/40 text-amber-200 scale-[1.01] shadow-lg'
+                        ? 'bg-gold-500/20 border border-gold-400/40 text-gold-200 scale-[1.01] shadow-lg'
                         : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100'
                     }`}
                   >

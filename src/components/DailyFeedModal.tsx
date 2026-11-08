@@ -103,13 +103,13 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
     unlockedFlyers.find((f) => f.id === selectedFlyerId) || todaysFlyer || null;
 
   const handleShareFlyer = async (flyer: DailyVerseFlyer) => {
-    const shareText = `${flyer.scripture_ref ? `📖 ${flyer.scripture_ref} — ` : ''}Daily Bible Verse on Gyidi Nwom${
+    const shareText = `${flyer.scripture_ref ? `📖 ${flyer.scripture_ref} — ` : ''}Daily Bible Verse on Gyidi Nnwom${
       flyer.caption ? `\n"${flyer.caption}"` : ''
     }\n${window.location.origin}`;
     try {
       if (navigator.share) {
         await navigator.share({
-          title: flyer.scripture_ref || 'Daily Bible Verse — Gyidi Nwom',
+          title: flyer.scripture_ref || 'Daily Bible Verse — Gyidi Nnwom',
           text: shareText,
           url: window.location.origin,
         });
@@ -125,19 +125,19 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
 
   return (
     <div className="safe-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-5">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-amber-400/25 bg-zinc-950 shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div className="relative w-full max-w-2xl rounded-3xl border border-gold-400/25 bg-zinc-950 shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
         {/* Top Header */}
-        <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-gradient-to-r from-amber-500/15 via-violet-500/10 to-zinc-950 px-5 py-4">
+        <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-gradient-to-r from-gold-500/15 via-gold-500/10 to-zinc-950 px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-amber-300" />
+            <div className="h-10 w-10 rounded-2xl bg-gold-500/20 border border-gold-400/30 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-gold-300" />
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-extrabold text-white">
                 Daily Word & Church Announcements
               </h2>
               <p className="text-xs text-zinc-400">
-                Spiritual nourishment & official updates on Gyidi Nwom
+                Spiritual nourishment & official updates on Gyidi Nnwom
               </p>
             </div>
           </div>
@@ -156,7 +156,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
             onClick={() => setActiveTab('verse')}
             className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-extrabold transition cursor-pointer ${
               activeTab === 'verse'
-                ? 'bg-amber-500 text-zinc-950 shadow'
+                ? 'bg-gold-500 text-zinc-950 shadow'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -166,8 +166,8 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
               <span
                 className={`rounded-full px-1.5 py-0.5 text-[10px] font-black ${
                   activeTab === 'verse'
-                    ? 'bg-zinc-950 text-amber-300'
-                    : 'bg-amber-500/20 text-amber-300'
+                    ? 'bg-zinc-950 text-gold-300'
+                    : 'bg-gold-500/20 text-gold-300'
                 }`}
               >
                 Today
@@ -179,7 +179,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
             onClick={() => setActiveTab('announcements')}
             className={`flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-extrabold transition cursor-pointer ${
               activeTab === 'announcements'
-                ? 'bg-amber-500 text-zinc-950 shadow'
+                ? 'bg-gold-500 text-zinc-950 shadow'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -189,7 +189,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
               <span
                 className={`rounded-full px-1.5 py-0.5 text-[10px] font-black ${
                   activeTab === 'announcements'
-                    ? 'bg-zinc-950 text-amber-300'
+                    ? 'bg-zinc-950 text-gold-300'
                     : 'bg-rose-500 text-white'
                 }`}
               >
@@ -203,16 +203,16 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {activeTab === 'verse' ? (
             !isPremium ? (
-              <div className="py-10 px-4 text-center space-y-4 rounded-2xl border border-amber-400/35 bg-gradient-to-br from-amber-500/15 via-zinc-900 to-pink-500/10">
-                <div className="h-12 w-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center mx-auto">
-                  <Crown className="w-6 h-6 text-amber-300" />
+              <div className="py-10 px-4 text-center space-y-4 rounded-2xl border border-gold-400/35 bg-gradient-to-br from-gold-500/15 via-zinc-900 to-pink-500/10">
+                <div className="h-12 w-12 rounded-2xl bg-gold-500/20 border border-gold-400/40 flex items-center justify-center mx-auto">
+                  <Crown className="w-6 h-6 text-gold-300" />
                 </div>
                 <div className="space-y-1.5 max-w-md mx-auto">
                   <h4 className="text-base font-extrabold text-white">
                     Daily Bible Verse Flyers are a Premium Feature
                   </h4>
                   <p className="text-xs text-zinc-300 leading-relaxed">
-                    Upgrade to Gyidi Nwom Premium to unlock daily scheduled Scripture flyers,
+                    Upgrade to Gyidi Nnwom Premium to unlock daily scheduled Scripture flyers,
                     Offline Saved songs, Playlists, Liked Songs, Artiste Support, and Live Streams.
                   </p>
                 </div>
@@ -223,7 +223,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                       onClose();
                       onUpgradeToPremium();
                     }}
-                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer shadow-lg"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-400 to-pink-500 px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer shadow-lg"
                   >
                     <Crown className="w-4 h-4" />
                     View Premium Plans &amp; Upgrade
@@ -232,7 +232,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
               </div>
             ) : !activeFlyer ? (
               <div className="py-12 text-center space-y-2">
-                <BookOpen className="w-10 h-10 text-amber-400/70 mx-auto" />
+                <BookOpen className="w-10 h-10 text-gold-400/70 mx-auto" />
                 <p className="text-sm font-bold text-white">No Daily Bible Verse posted yet</p>
                 <p className="text-xs text-zinc-400">
                   Check back soon for today&apos;s scripture flyer!
@@ -242,7 +242,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
               <div className="space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-400/30 px-3 py-1 text-xs font-bold text-amber-300">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-500/15 border border-gold-400/30 px-3 py-1 text-xs font-bold text-gold-300">
                       <Calendar className="w-3.5 h-3.5" />
                       {activeFlyer.scheduled_date === todayStr
                         ? "Today's Verse"
@@ -261,7 +261,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleShareFlyer(activeFlyer)}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-400/30 hover:bg-amber-500/30 px-3 py-1.5 text-xs font-bold text-amber-300 cursor-pointer transition"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-gold-500/20 border border-gold-400/30 hover:bg-gold-500/30 px-3 py-1.5 text-xs font-bold text-gold-300 cursor-pointer transition"
                     >
                       <Share2 className="w-3.5 h-3.5" />
                       {shareCopied ? 'Copied!' : 'Share'}
@@ -297,7 +297,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                           onClick={() => setSelectedFlyerId(f.id)}
                           className={`flex-shrink-0 rounded-xl border p-1.5 text-left transition cursor-pointer ${
                             f.id === activeFlyer.id
-                              ? 'border-amber-400 bg-amber-500/15'
+                              ? 'border-gold-400 bg-gold-500/15'
                               : 'border-white/10 bg-zinc-900 hover:border-white/25'
                           }`}
                         >
@@ -318,7 +318,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
             )
           ) : visibleAnnouncements.length === 0 ? (
             <div className="py-12 text-center space-y-2">
-              <Megaphone className="w-10 h-10 text-amber-400/70 mx-auto" />
+              <Megaphone className="w-10 h-10 text-gold-400/70 mx-auto" />
               <p className="text-sm font-bold text-white">No active announcements right now</p>
               <p className="text-xs text-zinc-400">
                 Convention dates, church notices, and platform updates appear here.
@@ -333,7 +333,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                     ann.priority === 'urgent'
                       ? 'border-rose-500/40 bg-rose-500/10'
                       : ann.priority === 'important'
-                      ? 'border-amber-400/40 bg-amber-500/10'
+                      ? 'border-gold-400/40 bg-gold-500/10'
                       : 'border-white/10 bg-zinc-900/70'
                   }`}
                 >
@@ -347,7 +347,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                           </span>
                         )}
                         {ann.priority === 'important' && (
-                          <span className="rounded-full bg-amber-400 px-2.5 py-0.5 text-[10px] font-extrabold uppercase text-zinc-950">
+                          <span className="rounded-full bg-gold-400 px-2.5 py-0.5 text-[10px] font-extrabold uppercase text-zinc-950">
                             Important
                           </span>
                         )}
@@ -383,7 +383,7 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
                         href={ann.cta_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 hover:bg-amber-400 px-4 py-2 text-xs font-extrabold text-zinc-950 transition"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-gold-500 hover:bg-gold-400 px-4 py-2 text-xs font-extrabold text-zinc-950 transition"
                       >
                         {ann.cta_label || 'Learn More'}
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -399,12 +399,12 @@ export const DailyFeedModal: React.FC<DailyFeedModalProps> = ({
         {/* Footer Dismiss Button */}
         <div className="border-t border-white/10 bg-zinc-900/80 px-5 py-3.5 flex items-center justify-between gap-3">
           <p className="text-[11px] text-zinc-400">
-            Re-open anytime from the <strong className="text-amber-300">Daily Word</strong> button
+            Re-open anytime from the <strong className="text-gold-300">Daily Word</strong> button
             at the top.
           </p>
           <button
             onClick={onClose}
-            className="rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-5 py-2 text-xs font-extrabold text-white shadow-lg hover:opacity-95 cursor-pointer"
+            className="rounded-full bg-gradient-to-r from-gold-500 to-pink-600 px-5 py-2 text-xs font-extrabold text-white shadow-lg hover:opacity-95 cursor-pointer"
           >
             Amen • Continue Listening
           </button>

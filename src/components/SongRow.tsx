@@ -74,7 +74,7 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
     const handleRowClick = () => {
       if (lockedForGuest) {
         requireAccount(
-          'Guests can preview 5 songs. Create a free account to unlock all 295+ Gyidi Nwom songs!'
+          'Guests can preview 5 songs. Create a free account to unlock all 295+ Gyidi Nnwom songs!'
         );
         return;
       }
@@ -109,7 +109,7 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
         onClick={handleRowClick}
         className={`group flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3.5 rounded-xl px-2.5 sm:px-3.5 py-2.5 transition cursor-pointer min-w-0 max-w-full overflow-hidden ${
           isActive
-            ? 'bg-amber-500/12 border border-amber-500/30'
+            ? 'bg-gold-500/12 border border-gold-500/30'
             : lockedForGuest
             ? 'opacity-80 hover:opacity-95 hover:bg-white/[0.03] border border-transparent'
             : 'hover:bg-white/[0.05] border border-transparent'
@@ -120,20 +120,20 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
           {/* Index / Play / Lock indicator (GPU-only equalizer so mobile never reflows) */}
           <button type="button" onClick={(event) => { event.stopPropagation(); handleRowClick(); }}
             aria-label={`${isActive && isPlaying ? 'Pause' : 'Play'} ${song.title}`}
-            className="h-11 w-8 flex-shrink-0 flex items-center justify-center rounded-lg text-xs font-medium text-amber-300 hover:bg-white/10 overflow-hidden">
+            className="h-11 w-8 flex-shrink-0 flex items-center justify-center rounded-lg text-xs font-medium text-gold-300 hover:bg-white/10 overflow-hidden">
             {lockedForGuest ? (
-              <Lock className="w-3.5 h-3.5 text-amber-400/80" />
+              <Lock className="w-3.5 h-3.5 text-gold-400/80" />
             ) : isActive ? (
               isBuffering ? (
-                <Loader2 className="w-4 h-4 text-amber-400 animate-spin" />
+                <Loader2 className="w-4 h-4 text-gold-400 animate-spin" />
               ) : isPlaying ? (
                 <span className="flex items-end gap-0.5 h-3.5 w-3.5 justify-center overflow-hidden">
-                  <span className="w-0.5 h-3.5 bg-amber-400 rounded-full eq-bar-1" />
-                  <span className="w-0.5 h-3.5 bg-amber-400 rounded-full eq-bar-2" />
-                  <span className="w-0.5 h-3.5 bg-amber-400 rounded-full eq-bar-3" />
+                  <span className="w-0.5 h-3.5 bg-gold-400 rounded-full eq-bar-1" />
+                  <span className="w-0.5 h-3.5 bg-gold-400 rounded-full eq-bar-2" />
+                  <span className="w-0.5 h-3.5 bg-gold-400 rounded-full eq-bar-3" />
                 </span>
               ) : (
-                <Play className="w-4 h-4 text-amber-400 fill-amber-400" />
+                <Play className="w-4 h-4 text-gold-400 fill-gold-400" />
               )
             ) : (
               <Play className="w-4 h-4 fill-current" />
@@ -169,18 +169,18 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
             <div className="flex items-center gap-1.5 min-w-0">
               <p
                 className={`truncate text-sm font-semibold ${
-                  isActive ? 'text-amber-300' : 'text-zinc-100'
+                  isActive ? 'text-gold-300' : 'text-zinc-100'
                 }`}
               >
                 {song.title}
               </p>
               {isAuthenticated && isOfflineSaved && (
-                <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-400/30 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300 flex-shrink-0">
+                <span className="inline-flex items-center rounded-full bg-forest-500/15 border border-forest-400/30 px-1.5 py-0.5 text-[9px] font-bold text-forest-300 flex-shrink-0">
                   Offline ✓
                 </span>
               )}
               {lockedForGuest && (
-                <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-500/15 border border-amber-400/30 px-1.5 py-0.5 text-[9px] font-bold text-amber-300 flex-shrink-0">
+                <span className="inline-flex items-center gap-0.5 rounded-full bg-gold-500/15 border border-gold-400/30 px-1.5 py-0.5 text-[9px] font-bold text-gold-300 flex-shrink-0">
                   <Lock className="w-2.5 h-2.5" />
                   Locked
                 </span>
@@ -194,7 +194,7 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
                     e.stopPropagation();
                     onOpenArtiste(song.artiste_id!);
                   }}
-                  className="text-amber-300/90 hover:text-amber-200 hover:underline font-medium cursor-pointer"
+                  className="text-gold-300/90 hover:text-gold-200 hover:underline font-medium cursor-pointer"
                 >
                   {song.artist}
                 </button>
@@ -237,7 +237,7 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
                 type="button"
                 onClick={() => onEditSong(song)}
                 title="Edit song, cover art, or lyrics"
-                className="rounded-full p-1.5 text-amber-300 hover:bg-amber-500/15 transition cursor-pointer"
+                className="rounded-full p-1.5 text-gold-300 hover:bg-gold-500/15 transition cursor-pointer"
               >
                 <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
@@ -278,7 +278,7 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
                 onOpenPlaylistModal(song);
               }}
               title="Add to playlist (Premium)"
-              className="rounded-full p-1.5 text-zinc-400 hover:text-amber-300 hover:bg-white/10 transition cursor-pointer"
+              className="rounded-full p-1.5 text-zinc-400 hover:text-gold-300 hover:bg-white/10 transition cursor-pointer"
             >
               <ListPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
@@ -307,12 +307,12 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
                 }
                 className={`rounded-full p-1.5 transition cursor-pointer ${
                   isAuthenticated && isOfflineSaved
-                    ? 'text-emerald-400 bg-emerald-500/15'
-                    : 'text-zinc-400 hover:text-emerald-300 hover:bg-white/10'
+                    ? 'text-forest-400 bg-forest-500/15'
+                    : 'text-zinc-400 hover:text-forest-300 hover:bg-white/10'
                 }`}
               >
                 {savingOffline ? (
-                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-amber-400" />
+                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-gold-400" />
                 ) : isAuthenticated && isOfflineSaved ? (
                   <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 ) : (
@@ -335,7 +335,7 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
                 title="View song lyrics"
                 className={`rounded-full p-1.5 transition cursor-pointer ${
                   hasLyrics
-                    ? 'text-amber-300 bg-amber-500/15'
+                    ? 'text-gold-300 bg-gold-500/15'
                     : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/10'
                 }`}
               >
@@ -348,7 +348,7 @@ export const SongRow: React.FC<SongRowProps> = React.memo(
               type="button"
               onClick={handleShareAction}
               title="Share WhatsApp Status Card"
-              className="rounded-full p-1.5 text-zinc-400 hover:text-emerald-300 hover:bg-white/10 transition cursor-pointer"
+              className="rounded-full p-1.5 text-zinc-400 hover:text-forest-300 hover:bg-white/10 transition cursor-pointer"
             >
               <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>

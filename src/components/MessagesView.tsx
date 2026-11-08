@@ -245,7 +245,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           sender_profile_id: currentProfile.id,
           recipient_profile_id: null,
           is_broadcast: true,
-          subject: broadcastSubject.trim() || 'Official Gyidi Nwom Announcement',
+          subject: broadcastSubject.trim() || 'Official Gyidi Nnwom Announcement',
           body: broadcastBody.trim(),
         })
         .select('*')
@@ -284,10 +284,10 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
   return (
     <div className="max-w-[1380px] mx-auto space-y-5">
       {/* Header & Mode Switcher */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-amber-500/15 via-pink-500/10 to-zinc-900 p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-gold-500/15 via-pink-500/10 to-zinc-900 p-5 sm:p-6">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2.5">
-            <MessageSquare className="w-6 h-6 text-amber-400" />
+            <MessageSquare className="w-6 h-6 text-gold-400" />
             Artiste & Admin Messaging Hub
           </h2>
           <p className="text-xs text-zinc-300 mt-1">
@@ -302,7 +302,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             onClick={() => setChannelTab('direct')}
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               channelTab === 'direct'
-                ? 'bg-amber-500 text-zinc-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -319,7 +319,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
             onClick={() => setChannelTab('broadcasts')}
             className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               channelTab === 'broadcasts'
-                ? 'bg-amber-500 text-zinc-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -350,9 +350,9 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           {isAdmin && (
             <form
               onSubmit={handleSendBroadcast}
-              className="lg:col-span-5 rounded-2xl border border-amber-500/30 bg-zinc-900/70 p-5 space-y-3.5 h-fit"
+              className="lg:col-span-5 rounded-2xl border border-gold-500/30 bg-zinc-900/70 p-5 space-y-3.5 h-fit"
             >
-              <div className="flex items-center gap-2 text-amber-300 text-xs font-extrabold uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-gold-300 text-xs font-extrabold uppercase tracking-wider">
                 <Megaphone className="w-4 h-4" />
                 Broadcast to All Artistes
               </div>
@@ -370,7 +370,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   value={broadcastSubject}
                   onChange={(e) => setBroadcastSubject(e.target.value)}
                   placeholder="e.g. Easter Convention Song Submissions Open!"
-                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
                 />
               </div>
 
@@ -384,14 +384,14 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                   value={broadcastBody}
                   onChange={(e) => setBroadcastBody(e.target.value)}
                   placeholder="Write your announcement to all Artistes..."
-                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={sendingBroadcast || !broadcastBody.trim()}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-600 py-2.5 text-xs font-extrabold text-white shadow-lg cursor-pointer disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-pink-600 py-2.5 text-xs font-extrabold text-white shadow-lg cursor-pointer disabled:opacity-50"
               >
                 {sendingBroadcast ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -406,7 +406,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           <div className={`${isAdmin ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-3`}>
             {broadcasts.length === 0 ? (
               <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
-                <Megaphone className="w-9 h-9 text-amber-400 mx-auto mb-2" />
+                <Megaphone className="w-9 h-9 text-gold-400 mx-auto mb-2" />
                 <p className="text-sm font-bold text-white">No broadcast announcements yet</p>
                 <p className="text-xs text-zinc-400 mt-1">
                   Official platform-wide updates from Master Admin appear here.
@@ -418,16 +418,16 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 return (
                   <div
                     key={b.id}
-                    className="rounded-2xl border border-amber-500/25 bg-zinc-900/70 p-5 space-y-2.5"
+                    className="rounded-2xl border border-gold-500/25 bg-zinc-900/70 p-5 space-y-2.5"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/40 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-300">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/20 border border-gold-400/40 px-2.5 py-0.5 text-[10px] font-extrabold text-gold-300">
                           <ShieldCheck className="w-3 h-3" />
                           Master Admin Broadcast
                         </span>
                         <span className="text-[11px] text-zinc-400">
-                          {sender?.stage_name || sender?.display_name || 'Gyidi Nwom Admin'} •{' '}
+                          {sender?.stage_name || sender?.display_name || 'Gyidi Nnwom Admin'} •{' '}
                           {new Date(b.created_at).toLocaleString()}
                         </span>
                       </div>
@@ -452,7 +452,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     </p>
 
                     <div className="pt-2 border-t border-white/5 flex items-center gap-1.5 text-[11px] text-zinc-500">
-                      <Lock className="w-3 h-3 text-amber-400/80" />
+                      <Lock className="w-3 h-3 text-gold-400/80" />
                       Broadcast to all Artistes — replies are disabled on broadcasts.
                     </div>
                   </div>
@@ -467,7 +467,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           {/* Left Pane: Start New Chat + Thread List */}
           <div className="lg:col-span-4 rounded-2xl border border-white/10 bg-zinc-900/65 p-4 flex flex-col gap-3">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-amber-400 mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-gold-400 mb-1.5">
                 <Plus className="w-3.5 h-3.5 inline mr-1" />
                 Message an Individual Artiste {isAdmin ? '' : 'or Admin'}
               </label>
@@ -476,7 +476,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                 onChange={(e) => {
                   if (e.target.value) setSelectedPartnerId(e.target.value);
                 }}
-                className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               >
                 <option value="">Select Artiste to message 1-on-1...</option>
                 {availableRecipients.map((p) => (
@@ -510,7 +510,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                       onClick={() => setSelectedPartnerId(conv.partnerId)}
                       className={`w-full flex items-center justify-between gap-2.5 rounded-xl p-2.5 text-left transition cursor-pointer ${
                         active
-                          ? 'bg-amber-500/20 border border-amber-400/40 text-white'
+                          ? 'bg-gold-500/20 border border-gold-400/40 text-white'
                           : 'bg-zinc-950/50 border border-white/5 text-zinc-300 hover:bg-zinc-950'
                       }`}
                     >
@@ -522,7 +522,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                             className="h-9 w-9 rounded-xl object-cover flex-shrink-0"
                           />
                         ) : (
-                          <div className="h-9 w-9 rounded-xl bg-white/10 flex items-center justify-center text-xs font-bold text-amber-300 flex-shrink-0">
+                          <div className="h-9 w-9 rounded-xl bg-white/10 flex items-center justify-center text-xs font-bold text-gold-300 flex-shrink-0">
                             <User className="w-4 h-4" />
                           </div>
                         )}
@@ -530,10 +530,10 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                           <p className="text-xs font-bold text-white truncate flex items-center gap-1">
                             {partner?.stage_name || partner?.display_name || 'Artiste'}
                             {partner?.role === 'admin' && (
-                              <ShieldCheck className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                              <ShieldCheck className="w-3.5 h-3.5 text-gold-400 flex-shrink-0" />
                             )}
                             {partner?.is_verified_artiste && (
-                              <BadgeCheck className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
+                              <BadgeCheck className="w-3.5 h-3.5 text-gold-400 flex-shrink-0" />
                             )}
                           </p>
                           <p className="text-[11px] text-zinc-400 truncate">
@@ -558,7 +558,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
           <div className="lg:col-span-8 rounded-2xl border border-white/10 bg-zinc-900/65 flex flex-col overflow-hidden">
             {!selectedPartnerId ? (
               <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-                <MessageSquare className="w-10 h-10 text-amber-400/70 mb-2" />
+                <MessageSquare className="w-10 h-10 text-gold-400/70 mb-2" />
                 <p className="text-sm font-bold text-white">Select an Artiste to chat 1-on-1</p>
                 <p className="text-xs text-zinc-400 mt-1 max-w-sm">
                   Direct 1-on-1 messages support full two-way replies between Artistes and with
@@ -575,7 +575,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                         'Direct Conversation'}
                     </span>
                     {selectedPartner?.role === 'admin' && (
-                      <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                      <span className="rounded-full bg-gold-500/20 px-2 py-0.5 text-[10px] font-bold text-gold-300">
                         Master Admin
                       </span>
                     )}
@@ -585,7 +585,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                       </span>
                     )}
                   </div>
-                  <span className="text-[11px] text-emerald-400 font-semibold">
+                  <span className="text-[11px] text-forest-400 font-semibold">
                     1-on-1 • Replies Enabled
                   </span>
                 </div>
@@ -607,7 +607,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                           <div
                             className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${
                               mine
-                                ? 'bg-gradient-to-r from-amber-500 to-pink-600 text-white font-medium'
+                                ? 'bg-gradient-to-r from-gold-500 to-pink-600 text-white font-medium'
                                 : 'bg-zinc-950 border border-white/10 text-zinc-200'
                             }`}
                           >
@@ -633,12 +633,12 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                     placeholder={`Write a 1-on-1 message or reply to ${
                       selectedPartner?.stage_name || 'Artiste'
                     }...`}
-                    className="flex-1 rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                    className="flex-1 rounded-xl border border-white/10 bg-zinc-900 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
                   />
                   <button
                     type="submit"
                     disabled={sendingDirect || !replyText.trim()}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 px-4 py-2.5 text-xs font-extrabold text-zinc-950 transition cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-gold-500 hover:bg-gold-400 px-4 py-2.5 text-xs font-extrabold text-zinc-950 transition cursor-pointer disabled:opacity-50"
                   >
                     {sendingDirect ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

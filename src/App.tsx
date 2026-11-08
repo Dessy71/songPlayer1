@@ -91,6 +91,7 @@ import {
   syncProfileOfflineLibrary,
 } from './lib/offlineAudio';
 import { clearSermonProgress, getSermonProgressMap } from './lib/sermonProgress';
+import { recordPlay, startAnalytics } from './lib/appAnalytics';
 import { formatDuration } from './lib/format';
 
 const CATALOG_CACHE_KEY = 'gyidi_catalog_cache_v5';
@@ -148,7 +149,32 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
     recentlyPlayedIds,
     playSong,
     warmTrack,
+    isPlaying,
   } = usePlayer();
+
+  // Read through refs so the analytics session is registered once on mount
+  // rather than being torn down every time playback pauses or resumes.
+  const userIdRef = useRef(userId);
+  userIdRef.current = userId;
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
+
+  // First-party usage analytics. Fire-and-forget by design: a failed beacon
+  // must never interrupt playback or surface an error to the listener.
+  useEffect(
+    () =>
+      startAnalytics({
+        getUserId: () => userIdRef.current,
+        isListening: () => isPlayingRef.current,
+      }),
+    []
+  );
+
+  // One play per track start, not per second of playback.
+  useEffect(() => {
+    if (!currentSong?.id) return;
+    recordPlay(() => userIdRef.current);
+  }, [currentSong?.id]);
 
   const isAuthenticated = Boolean(userId);
   const [nowTick, setNowTick] = useState<number>(() => Date.now());
@@ -312,7 +338,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
       }
       if (!isPremium) {
         openPremiumPrompt(
-          'Saving songs & sermons to your profile for zero-data offline listening is a Gyidi Nwom Premium feature.'
+          'Saving songs & sermons to your profile for zero-data offline listening is a Gyidi Nnwom Premium feature.'
         );
         return;
       }
@@ -335,7 +361,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
       }
       if (!isPremium) {
         openPremiumPrompt(
-          'Adding songs to playlists and building custom worship sets is a Gyidi Nwom Premium feature.'
+          'Adding songs to playlists and building custom worship sets is a Gyidi Nnwom Premium feature.'
         );
         return;
       }
@@ -347,7 +373,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
   const handleOpenLyrics = (song: Song) => {
     if (!isPremium) {
-      openPremiumPrompt('Viewing song lyrics is a Gyidi Nwom Premium feature.');
+      openPremiumPrompt('Viewing song lyrics is a Gyidi Nnwom Premium feature.');
       return;
     }
     setLyricsDrawerSong(song);
@@ -355,7 +381,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
   const handleOpenShareCard = (song: Song, quote = '') => {
     if (!isPremium) {
-      openPremiumPrompt('Sharing songs and WhatsApp Status cards is a Gyidi Nwom Premium feature.');
+      openPremiumPrompt('Sharing songs and WhatsApp Status cards is a Gyidi Nnwom Premium feature.');
       return;
     }
     setShareCardInitialQuote(quote);
@@ -626,7 +652,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
       }
       if (!isPremium) {
         openPremiumPrompt(
-          'Liking songs and saving to your Liked Songs library is a Gyidi Nwom Premium feature.'
+          'Liking songs and saving to your Liked Songs library is a Gyidi Nnwom Premium feature.'
         );
         return;
       }
@@ -1051,12 +1077,12 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
           ) {
             openPremiumPrompt(
               t === 'favorites'
-                ? 'Liked Songs is a Gyidi Nwom Premium feature.'
+                ? 'Liked Songs is a Gyidi Nnwom Premium feature.'
                 : t === 'offline'
-                ? 'Offline Saved (in-app profile offline listening) is a Gyidi Nwom Premium feature.'
+                ? 'Offline Saved (in-app profile offline listening) is a Gyidi Nnwom Premium feature.'
                 : t === 'live'
-                ? 'Live Convention Video & Sabbath Radio access is a Gyidi Nwom Premium feature.'
-                : 'Custom Playlists are a Gyidi Nwom Premium feature.'
+                ? 'Live Convention Video & Sabbath Radio access is a Gyidi Nnwom Premium feature.'
+                : 'Custom Playlists are a Gyidi Nnwom Premium feature.'
             );
             return;
           }
@@ -1086,7 +1112,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             return;
           }
           if (!isPremium && activeRoleAnnouncements.length === 0) {
-            openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.');
+            openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nnwom Premium feature.');
             return;
           }
           setDailyFeedInitialTab(isPremium ? undefined : 'announcements');
@@ -1134,7 +1160,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   }
                 }}
                 placeholder="Search songs, Twi/English lyrics, artistes, campuses, sermons..."
-                className="w-full rounded-full border border-white/10 bg-zinc-900/90 pl-10 pr-9 py-2 text-sm text-white placeholder-zinc-500 focus:border-amber-500/70 focus:outline-none transition"
+                className="w-full rounded-full border border-white/10 bg-zinc-900/90 pl-10 pr-9 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500/70 focus:outline-none transition"
               />
               {searchQuery && (
                 <button
@@ -1153,10 +1179,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             {!isAppInstalled && (
               <button
                 onClick={() => setInstallAppOpen(true)}
-                className="hidden xl:inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/35 px-3 py-1.5 text-xs font-bold text-emerald-200 hover:bg-emerald-500/25 cursor-pointer"
-                title="Install Gyidi Nwom as a mobile app + offline listening"
+                className="hidden xl:inline-flex items-center gap-1.5 rounded-full bg-forest-500/15 border border-forest-400/35 px-3 py-1.5 text-xs font-bold text-forest-200 hover:bg-forest-500/25 cursor-pointer"
+                title="Install Gyidi Nnwom as a mobile app + offline listening"
               >
-                <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
+                <Smartphone className="w-3.5 h-3.5 text-forest-400" />
                 Install App
               </button>
             )}
@@ -1168,7 +1194,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     'Create a free account to unlock all 295+ tracks, likes, downloads, playlists & full controls!'
                   )
                 }
-                className="hidden md:inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-400/35 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/25 cursor-pointer"
+                className="hidden md:inline-flex items-center gap-1.5 rounded-full bg-gold-500/15 border border-gold-400/35 px-3 py-1.5 text-xs font-bold text-gold-300 hover:bg-gold-500/25 cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5" />
                 5 Free Songs • Unlock All
@@ -1176,8 +1202,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             )}
 
             {startupLatencyMs !== null && isAuthenticated && (
-              <div className="hidden md:flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 px-3 py-1 text-xs font-medium text-emerald-300">
-                <Zap className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="hidden md:flex items-center gap-1.5 rounded-full bg-forest-500/10 border border-forest-500/25 px-3 py-1 text-xs font-medium text-forest-300">
+                <Zap className="w-3.5 h-3.5 text-forest-400" />
                 <span>{(startupLatencyMs / 1000).toFixed(2)}s stream</span>
               </div>
             )}
@@ -1188,7 +1214,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   setAdminInitialSubTab(undefined);
                   navigateToTab('admin');
                 }}
-                className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-gold-500/20 border border-gold-400/40 px-3.5 py-1.5 text-xs font-bold text-gold-300 hover:bg-gold-500/30 cursor-pointer"
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Admin
@@ -1214,7 +1240,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 <button
                   type="button"
                   onClick={handleGoBack}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-white/15 transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-gold-300 hover:bg-white/15 transition cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Go Back
@@ -1238,9 +1264,9 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
           {/* Guest Preview Notice Banner */}
           {!isAuthenticated && (
-            <div className="max-w-[1400px] mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-400/35 bg-amber-500/10 px-4 py-3">
-              <div className="flex items-center gap-2.5 text-xs sm:text-sm text-amber-200">
-                <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
+            <div className="max-w-[1400px] mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold-400/35 bg-gold-500/10 px-4 py-3">
+              <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gold-200">
+                <Lock className="w-4 h-4 text-gold-400 flex-shrink-0" />
                 <span>
                   <span className="sm:hidden">5 free preview tracks. Sign in for the full library.</span>
                   <span className="hidden sm:inline">                  <strong>Guest Preview:</strong> 5 preview songs are unlocked with Play, Next &amp;
@@ -1251,10 +1277,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <button
                 onClick={() =>
                   openAccountPrompt(
-                    'Create your free Gyidi Nwom account to unlock all 295+ tracks!'
+                    'Create your free Gyidi Nnwom account to unlock all 295+ tracks!'
                   )
                 }
-                className="rounded-full bg-amber-400 px-4 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-amber-300 cursor-pointer"
+                className="rounded-full bg-gold-400 px-4 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-300 cursor-pointer"
               >
                 Create Free Account
               </button>
@@ -1366,7 +1392,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="text-2xl font-extrabold text-white flex items-center gap-2">
-                    <Disc3 className="w-6 h-6 text-violet-400" />
+                    <Disc3 className="w-6 h-6 text-gold-400" />
                     Albums, EPs & Sermon Series
                   </h2>
                   <p className="text-xs text-zinc-400 mt-1">
@@ -1375,7 +1401,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 </div>
                 <button
                   onClick={handleUploadTrigger}
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
                 >
                   <UploadCloud className="w-4 h-4" />
                   Upload or Premiere an Album
@@ -1384,7 +1410,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
               {upcomingAlbums.length === 0 && playableAlbums.length === 0 ? (
                 <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
-                  <Disc3 className="w-10 h-10 text-violet-400 mx-auto mb-3" />
+                  <Disc3 className="w-10 h-10 text-gold-400 mx-auto mb-3" />
                   <h3 className="text-base font-bold text-white">No full albums published yet</h3>
                   <p className="text-xs text-zinc-400 max-w-md mx-auto mt-1">
                     SCG & SACSU Artistes can upload full albums with general album cover art and
@@ -1392,7 +1418,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   </p>
                   <button
                     onClick={handleUploadTrigger}
-                    className="mt-4 rounded-full bg-white px-5 py-2 text-xs font-extrabold text-zinc-950 hover:bg-amber-100 cursor-pointer"
+                    className="mt-4 rounded-full bg-white px-5 py-2 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 cursor-pointer"
                   >
                     Upload First Album
                   </button>
@@ -1401,7 +1427,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 <div className="space-y-8">
                   {upcomingAlbums.length > 0 && (
                     <section className="space-y-3">
-                      <h3 className="text-base font-bold text-amber-300">
+                      <h3 className="text-base font-bold text-gold-300">
                         Upcoming Album Premieres ({upcomingAlbums.length})
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1432,7 +1458,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                             <div
                               key={alb.id}
                               onClick={() => handleOpenAlbumView(alb.id)}
-                              className="group rounded-2xl border border-white/10 bg-zinc-900/55 p-3 hover:bg-zinc-900 hover:border-amber-500/40 transition cursor-pointer"
+                              className="group rounded-2xl border border-white/10 bg-zinc-900/55 p-3 hover:bg-zinc-900 hover:border-gold-500/40 transition cursor-pointer"
                             >
                               <CoverArt
                                 title={alb.title}
@@ -1442,7 +1468,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                                 size="lg"
                                 className="w-full aspect-square rounded-xl"
                               />
-                              <h4 className="mt-2.5 text-sm font-bold text-white truncate group-hover:text-amber-300">
+                              <h4 className="mt-2.5 text-sm font-bold text-white truncate group-hover:text-gold-300">
                                 {alb.title}
                               </h4>
                               <p className="text-xs text-zinc-400 truncate">{alb.artist}</p>
@@ -1486,7 +1512,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="text-2xl font-extrabold text-white flex items-center gap-2">
-                    <BadgeCheck className="w-6 h-6 text-sky-400" />
+                    <BadgeCheck className="w-6 h-6 text-gold-400" />
                     SCG Artistes & SACSU Tertiary Catalogue
                   </h2>
                   <p className="text-xs text-zinc-400 mt-1">
@@ -1499,7 +1525,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   {userProfile?.role === 'admin' && (
                     <button
                       onClick={() => setCreateArtisteOpen(true)}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-white/15 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-xs font-bold text-gold-300 hover:bg-white/15 cursor-pointer"
                     >
                       <Plus className="w-4 h-4" />
                       New Pre-Created Profile
@@ -1507,7 +1533,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   )}
                   <button
                     onClick={handleUploadTrigger}
-                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
                   >
                     <UploadCloud className="w-4 h-4" />
                     Register Artiste / SACSU Profile
@@ -1532,8 +1558,8 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     onClick={() => setArtisteDirectoryFilter('curated')}
                     className={`rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
                       artisteDirectoryFilter === 'curated'
-                        ? 'bg-amber-500 text-zinc-950'
-                        : 'bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20'
+                        ? 'bg-gold-500 text-zinc-950'
+                        : 'bg-gold-500/10 border border-gold-500/30 text-gold-300 hover:bg-gold-500/20'
                     }`}
                   >
                     Curated SCG Collections (5+ Tracks)
@@ -1600,20 +1626,20 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     <div
                       key={art.id}
                       onClick={() => handleOpenArtisteProfile(art.id)}
-                      className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-4 hover:bg-zinc-900 hover:border-amber-500/40 transition cursor-pointer"
+                      className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-4 hover:bg-zinc-900 hover:border-gold-500/40 transition cursor-pointer"
                     >
                       {art.avatar_url ? (
                         <img
                           src={art.avatar_url}
                           alt={art.stage_name || 'Artiste'}
-                          className="h-16 w-16 rounded-2xl object-cover border border-amber-400/30 flex-shrink-0"
+                          className="h-16 w-16 rounded-2xl object-cover border border-gold-400/30 flex-shrink-0"
                         />
                       ) : (
                         <div
                           className={`h-16 w-16 rounded-2xl flex items-center justify-center text-lg font-extrabold text-white flex-shrink-0 ${
                             art.is_sacsu
                               ? 'bg-gradient-to-br from-cyan-500 to-blue-600'
-                              : 'bg-gradient-to-br from-amber-500 to-pink-600'
+                              : 'bg-gradient-to-br from-gold-500 to-pink-600'
                           }`}
                         >
                           {(art.stage_name || art.display_name || 'A')[0]?.toUpperCase()}
@@ -1622,11 +1648,11 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
-                          <h4 className="text-sm font-extrabold text-white truncate group-hover:text-amber-300">
+                          <h4 className="text-sm font-extrabold text-white truncate group-hover:text-gold-300">
                             {art.stage_name || art.display_name}
                           </h4>
                           {art.is_verified_artiste && (
-                            <BadgeCheck className="w-4 h-4 text-sky-400 flex-shrink-0" />
+                            <BadgeCheck className="w-4 h-4 text-gold-400 flex-shrink-0" />
                           )}
                         </div>
 
@@ -1641,7 +1667,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                           )
                         )}
 
-                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-amber-300/90">
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-gold-300/90">
                           {(art.scg_zone || art.scg_branch) && (
                             <span className="truncate">
                               <MapPin className="w-3 h-3 inline mr-0.5" />
@@ -1654,7 +1680,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         </div>
 
                         {artUpcoming > 0 && (
-                          <span className="mt-1.5 inline-block rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                          <span className="mt-1.5 inline-block rounded-full bg-gold-500/20 px-2 py-0.5 text-[10px] font-bold text-gold-300">
                             {artUpcoming} Upcoming Premiere{artUpcoming > 1 ? 's' : ''}
                           </span>
                         )}
@@ -1668,7 +1694,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             <div className="max-w-[1400px] mx-auto space-y-6">
               <div>
                 <h2 className="text-2xl font-extrabold text-white flex items-center gap-2.5">
-                  <CalendarClock className="w-6 h-6 text-amber-400" />
+                  <CalendarClock className="w-6 h-6 text-gold-400" />
                   Upcoming Song & Album Premieres
                 </h2>
                 <p className="text-xs text-zinc-400 mt-1">
@@ -1679,7 +1705,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
               {upcomingAlbums.length === 0 && upcomingSinglePremieres.length === 0 ? (
                 <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-12 text-center">
-                  <CalendarClock className="w-10 h-10 text-amber-400 mx-auto mb-3" />
+                  <CalendarClock className="w-10 h-10 text-gold-400 mx-auto mb-3" />
                   <p className="text-sm font-bold text-white">
                     No scheduled premieres counting down
                   </p>
@@ -1721,7 +1747,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
             <div className="space-y-4 sm:space-y-6 max-w-[1400px] mx-auto">
               <HomeSpotlight slides={[
                 {
-                  id: 'welcome', label: 'SCG & SACSU · Gyidi Nwom',
+                  id: 'welcome', label: 'SCG & SACSU · Gyidi Nnwom',
                   title: 'Savior Church of Ghana Digital Sanctuary',
                   description: `Stream ${playableSongs.length} hymns, choir recordings & convention sermons.`,
                   image: '/logo-mark.png', icon: <Music2 className="h-6 w-6" />,
@@ -1734,7 +1760,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   image: isPremium ? activePopupVerse?.flyer_url : undefined,
                   icon: <BookOpen className="h-6 w-6" />,
                   onOpen: () => {
-                    if (!isPremium) { openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.'); return; }
+                    if (!isPremium) { openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nnwom Premium feature.'); return; }
                     setDailyFeedInitialTab('verse'); setDailyFeedOpen(true);
                   },
                 },
@@ -1771,7 +1797,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <section aria-label="Trending and what everyone is listening to" data-testid="home-trending">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2.5">
-                    <Flame className="w-5 h-5 text-orange-400" />
+                    <Flame className="w-5 h-5 text-gold-400" />
                     <div>
                       <h3 aria-label="Trending & What Everyone Is Listening To" className="font-extrabold text-white">
                         <span className="block text-base sm:inline sm:text-lg">Trending</span>
@@ -1787,7 +1813,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   <button
                     onClick={() => navigateToTab('trending')}
                     aria-label="Full Trending Chart"
-                    className="shrink-0 min-h-11 text-[11px] sm:text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
+                    className="shrink-0 min-h-11 text-[11px] sm:text-xs font-semibold text-gold-400 hover:text-gold-300 cursor-pointer"
                   >
                     Full chart →
                   </button>
@@ -1795,7 +1821,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
                 {listeningNowFeed.length > 0 && (
                   <div className="mb-4 flex items-center gap-2.5 overflow-x-auto pb-1">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-[11px] font-bold text-emerald-300 flex-shrink-0">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-forest-500/15 border border-forest-400/30 px-3 py-1 text-[11px] font-bold text-forest-300 flex-shrink-0">
                       <Radio className="w-3.5 h-3.5 animate-pulse" />
                       Listening Now
                     </span>
@@ -1803,10 +1829,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <button
                         key={song.id}
                         onClick={() => playSong(song, trendingSongs)}
-                        className="flex items-center gap-2 rounded-full bg-zinc-900 border border-white/10 px-3 py-1 text-xs text-zinc-200 hover:border-amber-400/50 transition flex-shrink-0 cursor-pointer"
+                        className="flex items-center gap-2 rounded-full bg-zinc-900 border border-white/10 px-3 py-1 text-xs text-zinc-200 hover:border-gold-400/50 transition flex-shrink-0 cursor-pointer"
                       >
                         {!isAuthenticated && !guestUnlockedIds.has(song.id) && (
-                          <Lock className="w-3 h-3 text-amber-400" />
+                          <Lock className="w-3 h-3 text-gold-400" />
                         )}
                         <span className="font-semibold truncate max-w-[150px]">{song.title}</span>
                         <span className="text-zinc-500">• {song.artist}</span>
@@ -1852,7 +1878,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <section>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2.5">
-                    <BadgeCheck className="w-5 h-5 text-sky-400" />
+                    <BadgeCheck className="w-5 h-5 text-gold-400" />
                     <div>
                       <h3 className="text-lg font-extrabold text-white">
                         Featured SCG & SACSU Artistes
@@ -1865,7 +1891,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   </div>
                   <button
                     onClick={() => navigateToTab('artistes')}
-                    className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
+                    className="text-xs font-semibold text-gold-400 hover:text-gold-300 cursor-pointer"
                   >
                     View all ({artistes.length})
                   </button>
@@ -1884,20 +1910,20 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <div
                         key={art.id}
                         onClick={() => handleOpenArtisteProfile(art.id)}
-                        className="group rounded-2xl border border-white/10 bg-zinc-900/55 p-3.5 text-center hover:bg-zinc-900 hover:border-amber-500/40 transition cursor-pointer"
+                        className="group rounded-2xl border border-white/10 bg-zinc-900/55 p-3.5 text-center hover:bg-zinc-900 hover:border-gold-500/40 transition cursor-pointer"
                       >
                         {art.avatar_url ? (
                           <img
                             src={art.avatar_url}
                             alt=""
-                            className="h-16 w-16 rounded-full object-cover mx-auto border border-amber-400/30"
+                            className="h-16 w-16 rounded-full object-cover mx-auto border border-gold-400/30"
                           />
                         ) : (
-                          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-amber-500 to-pink-600 flex items-center justify-center text-lg font-extrabold text-white mx-auto shadow-lg">
+                          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-gold-500 to-pink-600 flex items-center justify-center text-lg font-extrabold text-white mx-auto shadow-lg">
                             {(art.stage_name || art.display_name || 'A')[0]?.toUpperCase()}
                           </div>
                         )}
-                        <p className="mt-2.5 text-xs font-extrabold text-white truncate group-hover:text-amber-300">
+                        <p className="mt-2.5 text-xs font-extrabold text-white truncate group-hover:text-gold-300">
                           {art.stage_name || art.display_name}
                         </p>
                         <p className="text-[11px] text-zinc-400 truncate">
@@ -1912,7 +1938,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <section>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2.5">
-                    <Sparkles className="w-5 h-5 text-amber-400" />
+                    <Sparkles className="w-5 h-5 text-gold-400" />
                     <div>
                       <h3 className="text-lg font-extrabold text-white">New Music</h3>
                       <p className="text-xs text-zinc-400">
@@ -1922,7 +1948,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   </div>
                   <button
                     onClick={() => navigateToTab('new-music')}
-                    className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
+                    className="text-xs font-semibold text-gold-400 hover:text-gold-300 cursor-pointer"
                   >
                     Explore New Releases
                   </button>
@@ -1936,7 +1962,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         key={song.id}
                         onMouseEnter={() => !locked && warmTrack(song)}
                         onClick={() => playSong(song, newMusicSongs)}
-                        className="group rounded-2xl border border-white/10 bg-zinc-900/50 p-3 hover:bg-zinc-900 hover:border-amber-500/35 transition cursor-pointer"
+                        className="group rounded-2xl border border-white/10 bg-zinc-900/50 p-3 hover:bg-zinc-900 hover:border-gold-500/35 transition cursor-pointer"
                       >
                         <div className="relative">
                           <CoverArt
@@ -1948,11 +1974,11 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                             className="w-full aspect-square rounded-xl"
                           />
                           {locked ? (
-                            <span className="absolute top-2 right-2 rounded-full bg-black/75 border border-amber-400/40 p-1.5 text-amber-300">
+                            <span className="absolute top-2 right-2 rounded-full bg-black/75 border border-gold-400/40 p-1.5 text-gold-300">
                               <Lock className="w-3.5 h-3.5" />
                             </span>
                           ) : (
-                            <span className="absolute bottom-2 right-2 h-9 w-9 rounded-full bg-amber-500 text-zinc-950 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition">
+                            <span className="absolute bottom-2 right-2 h-9 w-9 rounded-full bg-gold-500 text-zinc-950 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition">
                               <Play className="w-4 h-4 fill-zinc-950 ml-0.5" />
                             </span>
                           )}
@@ -1979,7 +2005,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       setArtisteDirectoryFilter('curated');
                       navigateToTab('artistes');
                     }}
-                    className="text-xs font-semibold text-amber-400 hover:text-amber-300 cursor-pointer"
+                    className="text-xs font-semibold text-gold-400 hover:text-gold-300 cursor-pointer"
                   >
                     View Curated Profiles
                   </button>
@@ -1994,7 +2020,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       <div
                         key={mix.title}
                         onClick={() => playableMixTrack && playSong(playableMixTrack, mix.tracks)}
-                        className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-3 hover:bg-zinc-900 hover:border-amber-500/35 transition cursor-pointer"
+                        className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-3 hover:bg-zinc-900 hover:border-gold-500/35 transition cursor-pointer"
                       >
                         <CoverArt
                           title={mix.title}
@@ -2004,7 +2030,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                           className="h-16 w-16 rounded-xl flex-shrink-0 shadow-lg"
                         />
                         <div className="min-w-0 flex-1">
-                          <h4 className="text-sm font-bold text-white truncate group-hover:text-amber-300 transition">
+                          <h4 className="text-sm font-bold text-white truncate group-hover:text-gold-300 transition">
                             {mix.title}
                           </h4>
                           <p className="text-xs text-zinc-400 truncate mt-0.5">{mix.subtitle}</p>
@@ -2019,14 +2045,14 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                                   e.stopPropagation();
                                   handleOpenArtisteProfile(mix.artisteId!);
                                 }}
-                                className="text-[11px] font-bold text-amber-400 hover:underline cursor-pointer"
+                                className="text-[11px] font-bold text-gold-400 hover:underline cursor-pointer"
                               >
                                 • Artiste Profile
                               </button>
                             )}
                           </div>
                         </div>
-                        <div className="h-10 w-10 rounded-full bg-amber-500 text-zinc-950 flex items-center justify-center opacity-90 group-hover:scale-105 shadow-md transition flex-shrink-0 mr-1">
+                        <div className="h-10 w-10 rounded-full bg-gold-500 text-zinc-950 flex items-center justify-center opacity-90 group-hover:scale-105 shadow-md transition flex-shrink-0 mr-1">
                           <Play className="w-4 h-4 fill-zinc-950 ml-0.5" />
                         </div>
                       </div>
@@ -2035,16 +2061,16 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 </div>
               </section>
 
-              {/* SUPPORT GYIDI NWOM */}
+              {/* SUPPORT GYIDI NNWOM */}
               <section className="rounded-3xl border border-pink-500/25 bg-gradient-to-r from-pink-500/10 via-zinc-900 to-zinc-900 p-6">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
                   <div className="space-y-1.5 max-w-xl">
                     <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-pink-400">
                       <HeartHandshake className="w-4 h-4" />
-                      Support Gyidi Nwom
+                      Support Gyidi Nnwom
                     </div>
                     <h3 className="text-xl font-extrabold text-white">
-                      Partner With the Gyidi Nwom Digital Ministry
+                      Partner With the Gyidi Nnwom Digital Ministry
                     </h3>
                     <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
                       Help us maintain high-speed cloud streaming and archive more SCG choirs,
@@ -2062,10 +2088,10 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               </section>
 
               {/* MEET THE DEVELOPER (Separate Standalone Section Below Support Gyidi) */}
-              <section className="rounded-3xl border border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-zinc-900 to-violet-950/30 p-6">
+              <section className="rounded-3xl border border-gold-500/25 bg-gradient-to-r from-gold-500/10 via-zinc-900 to-zinc-950 p-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-400">
+                    <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-400">
                       <Code2 className="w-4 h-4" />
                       Meet the Developer
                     </div>
@@ -2080,7 +2106,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     href="https://desmondantwi.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-amber-100 transition shadow-lg flex-shrink-0"
+                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 transition shadow-lg flex-shrink-0"
                   >
                     Visit Developer Website
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -2099,7 +2125,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                 </div>
                 <button
                   onClick={() => handleRequestPlaylistModal(null)}
-                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-gold-500 to-pink-600 px-4 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   New Playlist
@@ -2108,7 +2134,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
               {playlists.length === 0 ? (
                 <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-10 text-center">
-                  <Music2 className="w-10 h-10 text-amber-400 mx-auto mb-3" />
+                  <Music2 className="w-10 h-10 text-gold-400 mx-auto mb-3" />
                   <p className="text-sm text-zinc-300 font-medium">No playlists yet</p>
                   <p className="text-xs text-zinc-500 mt-1">
                     Click &ldquo;New Playlist&rdquo; or use the + icon on any song row.
@@ -2120,7 +2146,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     <div
                       key={pl.id}
                       onClick={() => setActivePlaylistId(pl.id)}
-                      className="group relative flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-4 hover:bg-zinc-900 hover:border-amber-500/35 transition cursor-pointer"
+                      className="group relative flex items-center gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-4 hover:bg-zinc-900 hover:border-gold-500/35 transition cursor-pointer"
                     >
                       <CoverArt
                         title={pl.name}
@@ -2160,7 +2186,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   {activeTab === 'playlists' && activePlaylistId && (
                     <button
                       onClick={() => setActivePlaylistId(null)}
-                      className="text-xs font-semibold text-amber-400 hover:underline mb-1 block cursor-pointer"
+                      className="text-xs font-semibold text-gold-400 hover:underline mb-1 block cursor-pointer"
                     >
                       ← Back to Playlists
                     </button>
@@ -2168,25 +2194,25 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   <h2 className="text-2xl font-extrabold text-white flex items-center gap-2.5">
                     {activeTab === 'trending' && (
                       <>
-                        <Flame className="w-6 h-6 text-orange-400" /> Trending & What Everybody Is
+                        <Flame className="w-6 h-6 text-gold-400" /> Trending & What Everybody Is
                         Listening To
                       </>
                     )}
                     {activeTab === 'new-music' && (
                       <>
-                        <Sparkles className="w-6 h-6 text-amber-400" /> New Music Releases
+                        <Sparkles className="w-6 h-6 text-gold-400" /> New Music Releases
                       </>
                     )}
-                    {activeTab === 'browse' && 'All Gyidi Nwom Tracks'}
+                    {activeTab === 'browse' && 'All Gyidi Nnwom Tracks'}
                     {activeTab === 'choirs' && 'Choirs & Singers'}
                     {activeTab === 'sermons' && (
                       <>
-                        <Mic2 className="w-6 h-6 text-amber-400" /> Sermons & Convention Teachings
+                        <Mic2 className="w-6 h-6 text-gold-400" /> Sermons & Convention Teachings
                       </>
                     )}
                     {activeTab === 'offline' && (
                       <>
-                        <CloudDownload className="w-6 h-6 text-emerald-400" /> Offline Saved Audio
+                        <CloudDownload className="w-6 h-6 text-forest-400" /> Offline Saved Audio
                       </>
                     )}
                     {activeTab === 'favorites' && (
@@ -2219,7 +2245,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                               filteredSongs[0];
                           playSong(target, filteredSongs);
                         }}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-4 py-2 text-xs font-bold text-zinc-950 hover:bg-amber-400 transition cursor-pointer"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-gold-500 px-4 py-2 text-xs font-bold text-zinc-950 hover:bg-gold-400 transition cursor-pointer"
                       >
                         <Play className="w-3.5 h-3.5 fill-zinc-950" />
                         Play
@@ -2228,7 +2254,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                         onClick={() => handleShuffleAll(filteredSongs)}
                         className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-2 text-xs font-semibold text-white hover:bg-white/15 transition cursor-pointer"
                       >
-                        <Shuffle className="w-3.5 h-3.5 text-amber-400" />
+                        <Shuffle className="w-3.5 h-3.5 text-gold-400" />
                         Shuffle
                       </button>
                     </>
@@ -2242,7 +2268,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                           e.target.value as 'title' | 'popular' | 'duration' | 'newest'
                         )
                       }
-                      className="rounded-full border border-white/10 bg-zinc-900 px-3.5 py-2 text-xs font-medium text-zinc-200 focus:border-amber-500 focus:outline-none"
+                      className="rounded-full border border-white/10 bg-zinc-900 px-3.5 py-2 text-xs font-medium text-zinc-200 focus:border-gold-500 focus:outline-none"
                     >
                       <option value="title">Sort: A – Z</option>
                       <option value="popular">Sort: Most Played</option>
@@ -2311,7 +2337,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                               </p>
                               <div className="mt-2.5 h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
                                 <div
-                                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-amber-400"
+                                  className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-gold-400"
                                   style={{ width: `${pct}%` }}
                                 />
                               </div>
@@ -2333,13 +2359,13 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   {/* SERMON PREACHER, TOPIC & BIBLE BOOK FILTERS */}
                   <div className="rounded-2xl border border-white/10 bg-zinc-900/55 p-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-amber-300/90 mb-1">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-gold-300/90 mb-1">
                         Preacher / Speaker
                       </label>
                       <select
                         value={sermonPreacherFilter}
                         onChange={(e) => setSermonPreacherFilter(e.target.value)}
-                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-amber-500 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
                       >
                         <option value="All">All Preachers ({allSermons.length})</option>
                         {sermonFilterOptions.preachers.map((p) => (
@@ -2351,13 +2377,13 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-amber-300/90 mb-1">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-gold-300/90 mb-1">
                         Sermon Topic / Convention Theme
                       </label>
                       <select
                         value={sermonTopicFilter}
                         onChange={(e) => setSermonTopicFilter(e.target.value)}
-                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-amber-500 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
                       >
                         <option value="All">All Topics</option>
                         {sermonFilterOptions.topics.map((t) => (
@@ -2369,13 +2395,13 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-amber-300/90 mb-1">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-gold-300/90 mb-1">
                         Bible Book / Scripture
                       </label>
                       <select
                         value={sermonBookFilter}
                         onChange={(e) => setSermonBookFilter(e.target.value)}
-                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-amber-500 focus:outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs font-semibold text-white focus:border-gold-500 focus:outline-none"
                       >
                         <option value="All">All Bible Books</option>
                         {sermonFilterOptions.books.map((b) => (
@@ -2390,16 +2416,16 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               )}
 
               {activeTab === 'offline' && (
-                <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/8 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-xs text-emerald-200">
+                <div className="rounded-2xl border border-forest-500/25 bg-forest-500/8 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-xs text-forest-200">
                     <strong>Zero-Data Offline Vault:</strong> Any song or sermon you save with the{' '}
-                    <CloudDownload className="w-3.5 h-3.5 inline mx-0.5 text-emerald-300" /> cloud
+                    <CloudDownload className="w-3.5 h-3.5 inline mx-0.5 text-forest-300" /> cloud
                     button is stored inside your device&apos;s app cache so you can play it with zero
                     internet.
                   </p>
                   <button
                     onClick={() => setInstallAppOpen(true)}
-                    className="rounded-full bg-emerald-500/20 border border-emerald-400/35 px-3.5 py-1 text-xs font-bold text-emerald-200 hover:bg-emerald-500/30 cursor-pointer"
+                    className="rounded-full bg-forest-500/20 border border-forest-400/35 px-3.5 py-1 text-xs font-bold text-forest-200 hover:bg-forest-500/30 cursor-pointer"
                   >
                     Install App Mode
                   </button>
@@ -2430,7 +2456,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                     onClick={() => setSelectedChoir('All')}
                     className={`flex-shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold border transition cursor-pointer ${
                       selectedChoir === 'All'
-                        ? 'bg-amber-500/20 border-amber-400 text-amber-300'
+                        ? 'bg-gold-500/20 border-gold-400 text-gold-300'
                         : 'bg-zinc-900/70 border-white/10 text-zinc-400 hover:text-white'
                     }`}
                   >
@@ -2443,7 +2469,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                       onClick={() => setSelectedChoir(g.name)}
                       className={`flex-shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold border transition cursor-pointer ${
                         selectedChoir === g.name
-                          ? 'bg-amber-500/20 border-amber-400 text-amber-300'
+                          ? 'bg-gold-500/20 border-gold-400 text-gold-300'
                           : 'bg-zinc-900/70 border-white/10 text-zinc-400 hover:text-white'
                       }`}
                     >
@@ -2609,7 +2635,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         viewerRole={userProfile?.role || null}
         isPremium={isPremium}
         onUpgradeToPremium={() =>
-          openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nwom Premium feature.')
+          openPremiumPrompt('Daily Bible Verse flyers are a Gyidi Nnwom Premium feature.')
         }
         initialTab={dailyFeedInitialTab}
       />

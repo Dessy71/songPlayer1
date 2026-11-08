@@ -145,7 +145,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
   }, [loadMyCatalogAndAnalytics]);
 
   const handleQuickDeleteSong = async (song: Song) => {
-    if (!window.confirm(`Permanently delete "${song.title}" from Gyidi Nwom?`)) return;
+    if (!window.confirm(`Permanently delete "${song.title}" from Gyidi Nnwom?`)) return;
     const { error: delErr } = await supabase.from('songs').delete().eq('id', song.id);
     if (!delErr) {
       if (song.storage_path?.startsWith('uploads/')) {
@@ -300,13 +300,13 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
   return (
     <div className="max-w-[1380px] mx-auto space-y-6">
       {/* Studio Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-pink-600/20 via-amber-500/15 to-zinc-900 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-r from-pink-600/20 via-gold-500/15 to-zinc-900 p-6">
         <div className="flex items-center gap-4">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={stageName}
-              className="h-16 w-16 rounded-2xl object-cover border border-amber-400/40"
+              className="h-16 w-16 rounded-2xl object-cover border border-gold-400/40"
             />
           ) : (
             <div className="h-16 w-16 rounded-2xl bg-pink-500/20 border border-pink-400/30 flex items-center justify-center text-pink-300">
@@ -338,12 +338,12 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               onClick={() => onViewPublicProfile(profile.id)}
               className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15 cursor-pointer"
             >
-              <Eye className="w-3.5 h-3.5 text-amber-400" />
+              <Eye className="w-3.5 h-3.5 text-gold-400" />
               Public Profile
             </button>
             <button
               onClick={onOpenUpload}
-              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-pink-600 px-5 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-gold-500 to-pink-600 px-5 py-2 text-xs font-bold text-white shadow-lg cursor-pointer"
             >
               <UploadCloud className="w-4 h-4" />
               Upload Song / Album / Premiere
@@ -359,7 +359,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             onClick={() => setSubTab('analytics')}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'analytics'
-                ? 'bg-amber-500 text-zinc-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -371,7 +371,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             onClick={() => setSubTab('releases')}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'releases'
-                ? 'bg-amber-500 text-zinc-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -383,7 +383,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             onClick={() => setSubTab('messages')}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'messages'
-                ? 'bg-amber-500 text-zinc-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -395,7 +395,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             onClick={() => setSubTab('profile')}
             className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer ${
               subTab === 'profile'
-                ? 'bg-amber-500 text-zinc-950'
+                ? 'bg-gold-500 text-zinc-950'
                 : 'text-zinc-300 hover:bg-white/5'
             }`}
           >
@@ -414,14 +414,14 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               <p className="text-2xl font-extrabold text-white mt-1 tabular-nums">
                 {analytics.totalPlays.toLocaleString()}
               </p>
-              <p className="text-[11px] text-emerald-400 mt-1">
+              <p className="text-[11px] text-forest-400 mt-1">
                 +{analytics.plays24h} in last 24h
               </p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium">7-Day Streams</p>
-              <p className="text-2xl font-extrabold text-amber-400 mt-1 tabular-nums">
+              <p className="text-2xl font-extrabold text-gold-400 mt-1 tabular-nums">
                 {analytics.plays7d.toLocaleString()}
               </p>
               <p className="text-[11px] text-zinc-400 mt-1">Recent listener velocity</p>
@@ -439,7 +439,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
 
             <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
               <p className="text-[11px] text-zinc-400 font-medium flex items-center gap-1">
-                <Bell className="w-3 h-3 text-amber-300" /> Premiere Reminders
+                <Bell className="w-3 h-3 text-gold-300" /> Premiere Reminders
               </p>
               <p className="text-2xl font-extrabold text-white mt-1 tabular-nums">
                 {remindersCount}
@@ -452,14 +452,14 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               <p className="text-2xl font-extrabold text-white mt-1 tabular-nums">
                 {mySongs.length}
               </p>
-              <p className="text-[11px] text-violet-300 mt-1">{myAlbums.length} Albums / EPs</p>
+              <p className="text-[11px] text-gold-300 mt-1">{myAlbums.length} Albums / EPs</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-zinc-900/60 p-5">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-amber-400" />
+                <TrendingUp className="w-4 h-4 text-gold-400" />
                 Your 7-Day Stream Trend
               </h3>
               <p className="text-xs text-zinc-400 mt-0.5">
@@ -476,7 +476,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                       </span>
                       <div className="w-full max-w-[34px] bg-white/5 rounded-t-xl h-28 flex items-end overflow-hidden">
                         <div
-                          className="w-full rounded-t-xl bg-gradient-to-t from-amber-500 via-pink-500 to-violet-500 transition-all"
+                          className="w-full rounded-t-xl bg-gradient-to-t from-gold-500 via-pink-500 to-gold-500 transition-all"
                           style={{ height: `${pct}%` }}
                         />
                       </div>
@@ -498,7 +498,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                       <span className="font-semibold text-white truncate">
                         {album.title} ({trackCount} tracks)
                       </span>
-                      <span className="text-amber-300 font-bold tabular-nums">
+                      <span className="text-gold-300 font-bold tabular-nums">
                         {plays} plays • {likes} ♥
                       </span>
                     </div>
@@ -541,7 +541,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                       >
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="text-xs font-extrabold text-amber-400 w-5">
+                            <span className="text-xs font-extrabold text-gold-400 w-5">
                               #{idx + 1}
                             </span>
                             <CoverArt
@@ -565,7 +565,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                           </div>
 
                           <div className="flex items-center gap-2.5 flex-shrink-0 text-xs">
-                            <span className="font-extrabold text-emerald-300 tabular-nums">
+                            <span className="font-extrabold text-forest-300 tabular-nums">
                               {song.plays_count.toLocaleString()} plays
                             </span>
                             <span className="font-semibold text-pink-300 tabular-nums">
@@ -577,7 +577,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                                 setEditingSong(song);
                                 setEditModalOpen(true);
                               }}
-                              className="rounded-lg bg-white/10 p-1.5 text-amber-300 hover:bg-white/15 cursor-pointer"
+                              className="rounded-lg bg-white/10 p-1.5 text-gold-300 hover:bg-white/15 cursor-pointer"
                               title="Edit cover art, title or delete"
                             >
                               <Edit3 className="w-3 h-3" />
@@ -594,7 +594,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
 
                         <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-amber-400 to-pink-500"
+                            className="h-full bg-gradient-to-r from-gold-400 to-pink-500"
                             style={{ width: `${Math.max(3, sharePct)}%` }}
                           />
                         </div>
@@ -615,7 +615,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Disc3 className="w-4 h-4 text-violet-400" />
+                  <Disc3 className="w-4 h-4 text-gold-400" />
                   Your Albums & Album Premieres ({myAlbums.length})
                 </h3>
                 <p className="text-xs text-zinc-400">
@@ -624,7 +624,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               </div>
               <button
                 onClick={onOpenUpload}
-                className="rounded-full bg-violet-500/20 border border-violet-400/40 px-3.5 py-1.5 text-xs font-bold text-violet-200 hover:bg-violet-500/30 cursor-pointer"
+                className="rounded-full bg-gold-500/20 border border-gold-400/40 px-3.5 py-1.5 text-xs font-bold text-gold-200 hover:bg-gold-500/30 cursor-pointer"
               >
                 + Upload / Premiere Album
               </button>
@@ -676,7 +676,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
 
                         <div className="flex flex-wrap items-center gap-2">
                           {alb.approval_status === 'pending' && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 border border-amber-400/30 px-2.5 py-1 text-[11px] font-bold text-amber-300">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/15 border border-gold-400/30 px-2.5 py-1 text-[11px] font-bold text-gold-300">
                               <Clock className="w-3 h-3" />
                               Pending Approval
                             </span>
@@ -685,7 +685,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                             <CountdownBadge targetIso={alb.premiere_at} size="sm" />
                           )}
                           {alb.approval_status === 'approved' && !upcoming && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-2.5 py-1 text-[11px] font-bold text-emerald-300">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-forest-500/15 border border-forest-400/30 px-2.5 py-1 text-[11px] font-bold text-forest-300">
                               <CheckCircle2 className="w-3 h-3" />
                               Album Live
                             </span>
@@ -703,7 +703,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                               setEditingAlbum(alb);
                               setEditModalOpen(true);
                             }}
-                            className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-amber-300 hover:bg-white/15 cursor-pointer"
+                            className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-gold-300 hover:bg-white/15 cursor-pointer"
                             title="Edit album cover art or track titles"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -729,7 +729,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                               className="flex items-center justify-between rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-xs"
                             >
                               <span className="truncate text-zinc-200">
-                                <strong className="text-amber-400 mr-1.5">
+                                <strong className="text-gold-400 mr-1.5">
                                   {t.track_number || i + 1}.
                                 </strong>
                                 {t.title}
@@ -741,14 +741,14 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                                     setEditingSong(t);
                                     setEditModalOpen(true);
                                   }}
-                                  className="text-zinc-400 hover:text-amber-300 cursor-pointer"
+                                  className="text-zinc-400 hover:text-gold-300 cursor-pointer"
                                   title="Edit or delete single track"
                                 >
                                   <Edit3 className="w-3 h-3" />
                                 </button>
                                 <button
                                   onClick={() => playSong(t, tracks, { isPrelisten: true })}
-                                  className="text-amber-300 hover:text-white cursor-pointer"
+                                  className="text-gold-300 hover:text-white cursor-pointer"
                                   title="Preview track"
                                 >
                                   <Play className="w-3 h-3 fill-current" />
@@ -812,7 +812,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
 
                       <div className="flex flex-wrap items-center gap-2">
                         {song.approval_status === 'pending' && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 border border-amber-400/30 px-2.5 py-1 text-[11px] font-bold text-amber-300">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/15 border border-gold-400/30 px-2.5 py-1 text-[11px] font-bold text-gold-300">
                             <Clock className="w-3 h-3" />
                             Pending
                           </span>
@@ -821,7 +821,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                           <CountdownBadge targetIso={song.premiere_at} size="sm" />
                         )}
                         {song.approval_status === 'approved' && !upcoming && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-2.5 py-1 text-[11px] font-bold text-emerald-300">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-forest-500/15 border border-forest-400/30 px-2.5 py-1 text-[11px] font-bold text-forest-300">
                             <CheckCircle2 className="w-3 h-3" />
                             Live
                           </span>
@@ -839,7 +839,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                             setEditingSong(song);
                             setEditModalOpen(true);
                           }}
-                          className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-amber-300 hover:bg-white/15 cursor-pointer"
+                          className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-gold-300 hover:bg-white/15 cursor-pointer"
                           title="Edit cover art or song name"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -892,7 +892,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
           </h3>
 
           <div className="flex items-center gap-3">
-            <label className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2 text-xs font-semibold text-amber-300 hover:border-amber-400 cursor-pointer transition">
+            <label className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2 text-xs font-semibold text-gold-300 hover:border-gold-400 cursor-pointer transition">
               <Camera className="w-4 h-4" />
               {avatarUrl ? 'Change Profile Photo' : 'Upload Profile Photo'}
               <input
@@ -942,7 +942,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={realName}
                 onChange={(e) => setRealName(e.target.value)}
                 placeholder="e.g. Seth Boateng"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
             <div>
@@ -955,7 +955,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={stageName}
                 onChange={(e) => setStageName(e.target.value)}
                 placeholder={isSacsu ? 'e.g. KNUST SACSU' : 'e.g. Obogu Seth'}
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -963,7 +963,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-zinc-300 mb-1">
-                <MapPin className="w-3 h-3 inline mr-1 text-amber-400" />
+                <MapPin className="w-3 h-3 inline mr-1 text-gold-400" />
                 SCG Zone {isSacsu ? '(Optional)' : '*'}
               </label>
               <input
@@ -972,7 +972,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={scgZone}
                 onChange={(e) => setScgZone(e.target.value)}
                 placeholder="e.g. Obogu Zone, Ashanti Zone"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
             <div>
@@ -985,7 +985,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                 value={scgBranch}
                 onChange={(e) => setScgBranch(e.target.value)}
                 placeholder="e.g. Obogu Branch"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
               />
             </div>
           </div>
@@ -997,13 +997,13 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Tell listeners about your choir, SACSU fellowship, or music ministry..."
-              className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+              className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white focus:border-gold-500 focus:outline-none"
             />
           </div>
 
           <div className="pt-2 border-t border-white/10">
-            <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-3">
-              <p className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+            <div className="rounded-xl border border-forest-500/25 bg-forest-500/10 p-3">
+              <p className="text-xs font-bold text-forest-300 flex items-center gap-1.5">
                 <Wallet className="w-4 h-4" />
                 Fan Support &amp; Payouts
               </p>
@@ -1022,7 +1022,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
           )}
 
           {savedToast && (
-            <div className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-xs text-emerald-300">
+            <div className="flex items-center gap-1.5 rounded-xl border border-forest-500/30 bg-forest-500/10 p-2.5 text-xs text-forest-300">
               <CheckCircle2 className="w-4 h-4" />
               Artiste profile saved!
             </div>
@@ -1031,7 +1031,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
           <button
             type="submit"
             disabled={saving}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-pink-600 py-2.5 text-xs font-bold text-white shadow-lg cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-gold-500 to-pink-600 py-2.5 text-xs font-bold text-white shadow-lg cursor-pointer disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {isArtisteOrAdmin ? 'Save Profile Changes' : 'Upgrade & Activate Artiste Account'}
@@ -1042,8 +1042,8 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
       {(subTab === 'profile' || !isArtisteOrAdmin) && (
         <div className="max-w-2xl grid grid-cols-1 md:grid-cols-2 gap-4">
           {!isArtisteOrAdmin && (
-            <div className="rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-5 space-y-3">
-              <h4 className="text-sm font-extrabold text-emerald-300">
+            <div className="rounded-3xl border border-forest-500/30 bg-forest-500/10 p-5 space-y-3">
+              <h4 className="text-sm font-extrabold text-forest-300">
                 Have a Pre-Created Profile Claim Code?
               </h4>
               <p className="text-xs text-zinc-300">
@@ -1056,7 +1056,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                   value={claimCodeInput}
                   onChange={(e) => setClaimCodeInput(e.target.value.toUpperCase())}
                   placeholder="GN-OBOGU-B15A"
-                  className="flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs font-mono font-bold text-emerald-300"
+                  className="flex-1 rounded-xl border border-white/15 bg-zinc-950 px-3 py-2 text-xs font-mono font-bold text-forest-300"
                 />
                 <button
                   type="button"
@@ -1083,7 +1083,7 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                       setSaving(false);
                     }
                   }}
-                  className="rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
+                  className="rounded-xl bg-forest-500 hover:bg-forest-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
                 >
                   Claim
                 </button>
@@ -1123,12 +1123,12 @@ export const ArtisteStudioView: React.FC<ArtisteStudioViewProps> = ({
                     setPwdMsg('✓ Password updated successfully!');
                   }
                 }}
-                className="rounded-xl bg-amber-500 hover:bg-amber-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
+                className="rounded-xl bg-gold-500 hover:bg-gold-400 px-4 py-2 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
               >
                 Update
               </button>
             </div>
-            {pwdMsg && <p className="text-xs text-amber-300">{pwdMsg}</p>}
+            {pwdMsg && <p className="text-xs text-gold-300">{pwdMsg}</p>}
           </div>
         </div>
       )}

@@ -76,7 +76,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
     }
     if (!isPremium) {
       onRequirePremium?.(
-        'Live Convention Video & Sabbath Radio access is included in Gyidi Nwom Premium!'
+        'Live Convention Video & Sabbath Radio access is included in Gyidi Nnwom Premium!'
       );
       return;
     }
@@ -105,16 +105,16 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
   return (
     <div className="max-w-[1350px] mx-auto space-y-8">
       {/* Hero Banner */}
-      <section className="relative overflow-hidden rounded-3xl border border-rose-500/30 bg-gradient-to-br from-rose-600/25 via-amber-500/15 to-zinc-950 p-6 sm:p-10">
+      <section className="relative overflow-hidden rounded-3xl border border-rose-500/30 bg-gradient-to-br from-rose-600/25 via-gold-500/15 to-zinc-950 p-6 sm:p-10">
         <div className="max-w-3xl space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-rose-500/20 border border-rose-400/40 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-rose-200">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <Sparkles className="w-3.5 h-3.5 text-gold-300" />
               Upcoming Feature • Coming Soon
             </div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/25 border border-amber-400/40 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-200">
-              <Crown className="w-3.5 h-3.5 text-amber-300" />
-              Gyidi Nwom Premium
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-gold-500/25 border border-gold-400/40 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-gold-200">
+              <Crown className="w-3.5 h-3.5 text-gold-300" />
+              Gyidi Nnwom Premium
             </div>
           </div>
 
@@ -125,7 +125,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
           <p className="text-sm sm:text-base text-zinc-200 leading-relaxed">
             Soon, SCG Headquarters, Zones, Branches, Choirs, and SACSU Tertiary Campuses will be
             able to broadcast <strong>Live HD Convention Video</strong> and{' '}
-            <strong>Low-Data Sabbath Audio Radio</strong> directly inside Gyidi Nwom — connecting
+            <strong>Low-Data Sabbath Audio Radio</strong> directly inside Gyidi Nnwom — connecting
             brethren across Ghana and the diaspora in real time!
           </p>
 
@@ -135,11 +135,11 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
               Live Convention Video Stream
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-black/40 border border-white/10 px-3 py-1.5 font-semibold">
-              <Radio className="w-3.5 h-3.5 text-amber-400" />
+              <Radio className="w-3.5 h-3.5 text-gold-400" />
               Low-Data Sabbath Audio Radio
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-black/40 border border-white/10 px-3 py-1.5 font-semibold">
-              <Globe2 className="w-3.5 h-3.5 text-emerald-400" />
+              <Globe2 className="w-3.5 h-3.5 text-forest-400" />
               Global Diaspora Access
             </span>
           </div>
@@ -156,7 +156,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
             <h3 className="text-lg font-extrabold text-white">
               1. Live Convention Video Streaming
             </h3>
-            <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+            <span className="rounded-full bg-gold-500/20 px-2.5 py-0.5 text-[10px] font-bold text-gold-300">
               Upcoming
             </span>
           </div>
@@ -173,14 +173,14 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-zinc-900/60 p-6 space-y-3">
-          <div className="h-12 w-12 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center">
-            <Radio className="w-6 h-6 text-amber-300" />
+          <div className="h-12 w-12 rounded-2xl bg-gold-500/20 border border-gold-400/30 flex items-center justify-center">
+            <Radio className="w-6 h-6 text-gold-300" />
           </div>
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-extrabold text-white">
               2. Sabbath &amp; Convention Live Radio
             </h3>
-            <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+            <span className="rounded-full bg-gold-500/20 px-2.5 py-0.5 text-[10px] font-bold text-gold-300">
               Upcoming
             </span>
           </div>
@@ -202,17 +202,17 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <form
           onSubmit={handleJoinWaitlist}
-          className="lg:col-span-7 rounded-3xl border border-amber-400/30 bg-zinc-900/75 p-6 space-y-4"
+          className="lg:col-span-7 rounded-3xl border border-gold-400/30 bg-zinc-900/75 p-6 space-y-4"
         >
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2">
-              <Bell className="w-5 h-5 text-amber-400" />
+              <Bell className="w-5 h-5 text-gold-400" />
               {myEntry
                 ? 'You’re Registered for Launch Alerts!'
                 : 'Get Notified When Live Streaming Launches'}
             </h3>
             {waitlist.length > 0 && (
-              <span className="rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-[11px] font-bold text-emerald-300">
+              <span className="rounded-full bg-forest-500/15 border border-forest-400/30 px-3 py-1 text-[11px] font-bold text-forest-300">
                 {waitlist.length} Interested
               </span>
             )}
@@ -224,11 +224,11 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
               onClick={() => setInterestType('viewer')}
               className={`rounded-xl border p-3 text-left transition cursor-pointer ${
                 interestType === 'viewer'
-                  ? 'border-amber-400 bg-amber-500/15 text-white'
+                  ? 'border-gold-400 bg-gold-500/15 text-white'
                   : 'border-white/10 bg-zinc-950 text-zinc-400'
               }`}
             >
-              <Wifi className="w-4 h-4 text-amber-400 mb-1" />
+              <Wifi className="w-4 h-4 text-gold-400 mb-1" />
               <p className="text-xs font-bold">Watch &amp; Listen</p>
               <p className="text-[10px] text-zinc-400">Tune into live conventions</p>
             </button>
@@ -252,11 +252,11 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
               onClick={() => setInterestType('both')}
               className={`rounded-xl border p-3 text-left transition cursor-pointer ${
                 interestType === 'both'
-                  ? 'border-emerald-400 bg-emerald-500/15 text-white'
+                  ? 'border-forest-400 bg-forest-500/15 text-white'
                   : 'border-white/10 bg-zinc-950 text-zinc-400'
               }`}
             >
-              <Users className="w-4 h-4 text-emerald-400 mb-1" />
+              <Users className="w-4 h-4 text-forest-400 mb-1" />
               <p className="text-xs font-bold">Both</p>
               <p className="text-[10px] text-zinc-400">Watch &amp; host live streams</p>
             </button>
@@ -271,13 +271,13 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
               value={branchOrCampus}
               onChange={(e) => setBranchOrCampus(e.target.value)}
               placeholder="e.g. Osiem HQ, Obogu Branch, Accra Zone, KNUST SACSU..."
-              className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2.5 text-xs text-white focus:border-amber-400 focus:outline-none"
+              className="w-full rounded-xl border border-white/15 bg-zinc-950 px-3.5 py-2.5 text-xs text-white focus:border-gold-400 focus:outline-none"
             />
           </div>
 
           {toast && (
-            <div className="rounded-xl border border-emerald-500/35 bg-emerald-500/15 px-3.5 py-2.5 text-xs font-semibold text-emerald-200 flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <div className="rounded-xl border border-forest-500/35 bg-forest-500/15 px-3.5 py-2.5 text-xs font-semibold text-forest-200 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-forest-400 flex-shrink-0" />
               {toast}
             </div>
           )}
@@ -285,7 +285,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
           <button
             type="submit"
             disabled={saving}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 via-amber-500 to-pink-600 py-3 text-xs font-extrabold text-white shadow-lg cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 via-gold-500 to-pink-600 py-3 text-xs font-extrabold text-white shadow-lg cursor-pointer disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
             {myEntry ? 'Update My Live Stream Preference' : 'Notify Me When Live Streaming Launches'}
@@ -294,7 +294,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
 
         <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-zinc-900/50 p-6 space-y-4">
           <h4 className="text-sm font-extrabold text-white flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-amber-400" />
+            <ShieldCheck className="w-4 h-4 text-gold-400" />
             Who Will Be Able to Stream Live?
           </h4>
           <p className="text-xs text-zinc-300 leading-relaxed">
@@ -303,7 +303,7 @@ export const LiveStreamUpcomingView: React.FC<LiveStreamUpcomingViewProps> = ({
           </p>
           <div className="space-y-2.5 text-xs text-zinc-300">
             <div className="rounded-xl border border-white/10 bg-zinc-950/70 p-3">
-              <strong className="text-amber-300">• National &amp; Zonal Conventions:</strong> Live
+              <strong className="text-gold-300">• National &amp; Zonal Conventions:</strong> Live
               multi-day video &amp; audio coverage of Friday, Sabbath, and Sunday gatherings.
             </div>
             <div className="rounded-xl border border-white/10 bg-zinc-950/70 p-3">

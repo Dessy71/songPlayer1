@@ -255,7 +255,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
       // Guest 5-song lock check
       if (!prelisten && !isAuthenticated && !guestUnlockedIds.has(song.id)) {
         onRequireAccount(
-          'Guests can preview 5 songs. Create a free account to unlock the entire Gyidi Nwom catalog!'
+          'Guests can preview 5 songs. Create a free account to unlock the entire Gyidi Nnwom catalog!'
         );
         return;
       }
@@ -621,7 +621,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentSong.title,
         artist: currentSong.artist,
-        album: `Gyidi Nwom • ${currentSong.choir_group}`,
+        album: `Gyidi Nnwom • ${currentSong.choir_group}`,
         artwork: currentSong.cover_url
           ? [{ src: currentSong.cover_url, sizes: '512x512', type: 'image/png' }]
           : [{ src: '/logo-mark.png', sizes: '256x256', type: 'image/png' }],

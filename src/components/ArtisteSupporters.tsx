@@ -86,7 +86,7 @@ export function ArtisteSupporters({ artisteId }: { artisteId: string }) {
                 />
               ) : (
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-zinc-950 bg-amber-500/20 text-amber-300 text-xs font-bold shadow-lg"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-zinc-950 bg-gold-500/20 text-gold-300 text-xs font-bold shadow-lg"
                   title={s.display_name}
                 >
                   {s.display_name.slice(0, 1).toUpperCase()}
@@ -101,7 +101,7 @@ export function ArtisteSupporters({ artisteId }: { artisteId: string }) {
             className="relative"
             style={{ transform: `translateX(${visible.length * offsetStep}px)` }}
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-zinc-950 bg-zinc-800 shadow-lg text-[10px] font-bold text-amber-300">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-zinc-950 bg-zinc-800 shadow-lg text-[10px] font-bold text-gold-300">
               +{hidden}
             </span>
           </div>

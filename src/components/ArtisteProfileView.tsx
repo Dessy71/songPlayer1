@@ -167,7 +167,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       return;
     }
     onRequirePremium?.(
-      `Upgrade to Gyidi Nwom Premium to view ${stageTitle}'s direct support details!`
+      `Upgrade to Gyidi Nnwom Premium to view ${stageTitle}'s direct support details!`
     );
   };
 
@@ -176,7 +176,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
     return (
       <div className="mx-auto max-w-xl space-y-4 py-10">
         <div className="rounded-3xl border border-white/10 bg-zinc-900/70 p-8 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-300">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-300">
             <Clock className="w-7 h-7" />
           </div>
           <h2 className="mt-4 text-xl font-extrabold text-white">Profile Not Available Yet</h2>
@@ -188,7 +188,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           <button
             type="button"
             onClick={onBack}
-            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-white/15 cursor-pointer"
+            className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-xs font-bold text-gold-300 hover:bg-white/15 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             Go Back
@@ -206,7 +206,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-white/15 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-gold-300 hover:bg-white/15 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             Go Back
@@ -226,7 +226,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
         {canEditThisArtiste && (
           <button
             onClick={() => setEditOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 px-4 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-gold-500/20 border border-gold-400/40 px-4 py-1.5 text-xs font-bold text-gold-300 hover:bg-gold-500/30 cursor-pointer"
           >
             <Edit3 className="w-3.5 h-3.5" />
             Edit Artiste Details
@@ -235,17 +235,17 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       </div>
 
       {/* Artiste Hero Header */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-amber-500/20 via-pink-600/15 to-zinc-900 p-6 sm:p-8">
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-gold-500/20 via-pink-600/15 to-zinc-900 p-6 sm:p-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             {artiste.avatar_url ? (
               <img
                 src={artiste.avatar_url}
                 alt=""
-                className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl object-cover border-2 border-amber-400/40 shadow-2xl"
+                className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl object-cover border-2 border-gold-400/40 shadow-2xl"
               />
             ) : (
-              <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl bg-gradient-to-br from-amber-500 to-pink-600 flex items-center justify-center text-white shadow-2xl">
+              <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl bg-gradient-to-br from-gold-500 to-pink-600 flex items-center justify-center text-white shadow-2xl">
                 <User className="w-12 h-12" />
               </div>
             )}
@@ -254,13 +254,13 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-2xl font-extrabold text-white">{stageTitle}</h2>
                 {artiste.is_verified_artiste && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/20 border border-sky-400/30 px-2.5 py-0.5 text-[10px] font-bold text-sky-300">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/20 border border-gold-400/30 px-2.5 py-0.5 text-[10px] font-bold text-gold-300">
                     <BadgeCheck className="w-3.5 h-3.5" />
                     Verified
                   </span>
                 )}
                 {isAdminViewer && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 border border-amber-400/30 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/20 border border-gold-400/30 px-2.5 py-0.5 text-[10px] font-bold text-gold-300">
                     <Wallet className="w-3.5 h-3.5" />
                     Admin View
                   </span>
@@ -280,7 +280,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 )}
                 {(artiste.scg_zone || artiste.scg_branch) && (
                   <span className="inline-flex items-center gap-1 rounded-lg bg-black/40 border border-white/10 px-2.5 py-1">
-                    <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                    <MapPin className="w-3.5 h-3.5 text-gold-400" />
                     {[artiste.scg_zone, artiste.scg_branch].filter(Boolean).join(' • ')}
                   </span>
                 )}
@@ -294,7 +294,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               {releasedSongs.length > 0 && (
                 <button
                   onClick={() => playSong(releasedSongs[0], releasedSongs)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-amber-100 transition cursor-pointer shadow-lg"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 transition cursor-pointer shadow-lg"
                 >
                   <Play className="w-4 h-4 fill-zinc-950" />
                   Play All ({releasedSongs.length})
@@ -303,10 +303,10 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             </div>
           </div>
 
-          {/* Fan Support Card (Approval + Gyidi Nwom Premium gated, admin always visible) */}
-          <div className="w-full md:w-80 rounded-2xl border border-emerald-500/30 bg-zinc-950/90 p-4 shadow-xl">
+          {/* Fan Support Card (Approval + Gyidi Nnwom Premium gated, admin always visible) */}
+          <div className="w-full md:w-80 rounded-2xl border border-forest-500/30 bg-zinc-950/90 p-4 shadow-xl">
             <div className="flex items-center justify-between gap-2 mb-3">
-              <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-forest-400 text-xs font-bold uppercase tracking-wider">
                 <Wallet className="w-4 h-4" />
                 Support {stageTitle}
               </div>
@@ -314,7 +314,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 <span
                   className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold ${
                     isApproved
-                      ? 'bg-emerald-500/20 border-emerald-400/35 text-emerald-300'
+                      ? 'bg-forest-500/20 border-forest-400/35 text-forest-300'
                       : 'bg-rose-500/20 border-rose-400/35 text-rose-300'
                   }`}
                 >
@@ -325,17 +325,17 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
 
             {/* Support Badge: profile pictures only, no names */}
             {showSupportBadge && (
-              <div className="mb-3 flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-2.5">
+              <div className="mb-3 flex items-center gap-2.5 rounded-xl border border-forest-500/30 bg-forest-500/10 p-2.5">
                 <span className="flex -space-x-2">
-                  <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-950 bg-emerald-500/20">
+                  <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-950 bg-forest-500/20">
                     {artiste.avatar_url ? (
                       <img src={artiste.avatar_url} alt="" className="h-full w-full object-cover" />
                     ) : (
-                      <User className="w-4 h-4 text-emerald-300" />
+                      <User className="w-4 h-4 text-forest-300" />
                     )}
                   </span>
                 </span>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-forest-300">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   Support Badge
                 </span>
@@ -343,7 +343,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
             )}
 
             {!isApproved ? (
-              <div className="rounded-xl bg-zinc-900 border border-amber-400/25 p-3.5 space-y-2.5">
+              <div className="rounded-xl bg-zinc-900 border border-gold-400/25 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   {isAdminViewer
                     ? 'Add the Paystack payment page URL and subaccount code, then approve this profile to open listener support.'
@@ -353,7 +353,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setSupportModalOpen(true)}
-                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-gold-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     Configure Paystack &amp; Approve
@@ -373,7 +373,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setSupportModalOpen(true)}
-                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-400/15 border border-amber-400/30 px-3.5 py-2 text-xs font-extrabold text-amber-300 hover:bg-amber-400/25 cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gold-400/15 border border-gold-400/30 px-3.5 py-2 text-xs font-extrabold text-gold-300 hover:bg-gold-400/25 cursor-pointer"
                   >
                     <Wallet className="w-3.5 h-3.5" />
                     Add Paystack Details
@@ -384,12 +384,12 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               <div className="rounded-xl bg-zinc-900 border border-white/10 p-3.5 space-y-2.5">
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   Direct Artiste Fan Support is part of{' '}
-                  <strong className="text-amber-300">Gyidi Nwom Premium</strong>.
+                  <strong className="text-gold-300">Gyidi Nnwom Premium</strong>.
                 </p>
                 <button
                   type="button"
                   onClick={requireSupportAccess}
-                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-gold-400 to-pink-500 px-3.5 py-2 text-xs font-extrabold text-zinc-950 hover:opacity-95 cursor-pointer"
                 >
                   <Crown className="w-3.5 h-3.5" />
                   Unlock Artiste Support
@@ -402,12 +402,12 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 <button
                   type="button"
                   onClick={openPaymentPage}
-                  className="flex w-full items-center justify-between gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-3 text-left hover:bg-emerald-500/20 transition cursor-pointer"
+                  className="flex w-full items-center justify-between gap-2 rounded-xl border border-forest-500/35 bg-forest-500/10 px-3.5 py-3 text-left hover:bg-forest-500/20 transition cursor-pointer"
                 >
                   <span className="flex items-center gap-2.5 min-w-0">
-                    <Wallet className="w-5 h-5 flex-shrink-0 text-emerald-400" />
+                    <Wallet className="w-5 h-5 flex-shrink-0 text-forest-400" />
                     <span className="min-w-0">
-                      <span className="block text-xs font-extrabold uppercase tracking-wider text-emerald-300">
+                      <span className="block text-xs font-extrabold uppercase tracking-wider text-forest-300">
                         Support {stageTitle}
                       </span>
                       <span className="block truncate text-[11px] text-zinc-400">
@@ -415,7 +415,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                       </span>
                     </span>
                   </span>
-                  <ExternalLink className="w-4 h-4 flex-shrink-0 text-emerald-400" />
+                  <ExternalLink className="w-4 h-4 flex-shrink-0 text-forest-400" />
                 </button>
 
                 {/* Once a profile is approved and badged the modal is otherwise
@@ -425,7 +425,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setSupportModalOpen(true)}
-                    className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3.5 py-2 text-xs font-extrabold text-amber-300 hover:bg-amber-400/20 transition cursor-pointer"
+                    className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-xl border border-gold-400/30 bg-gold-400/10 px-3.5 py-2 text-xs font-extrabold text-gold-300 hover:bg-gold-400/20 transition cursor-pointer"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     Support settings
@@ -444,7 +444,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       {(upcomingAlbums.length > 0 || upcomingSingles.length > 0) && (
         <section className="space-y-4">
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-amber-400" />
+            <Calendar className="w-5 h-5 text-gold-400" />
             <div>
               <h3 className="text-lg font-extrabold text-white">Upcoming Premieres</h3>
               <p className="text-xs text-zinc-400">
@@ -490,7 +490,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       {releasedAlbums.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <Disc3 className="w-5 h-5 text-violet-400" />
+            <Disc3 className="w-5 h-5 text-gold-400" />
             <h3 className="text-lg font-extrabold text-white">
               Albums &amp; EPs ({releasedAlbums.length})
             </h3>
@@ -503,7 +503,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                 <div
                   key={alb.id}
                   onClick={() => onOpenAlbum(alb.id)}
-                  className="group relative rounded-2xl border border-white/10 bg-zinc-900/55 p-3 hover:bg-zinc-900 hover:border-amber-500/40 transition cursor-pointer"
+                  className="group relative rounded-2xl border border-white/10 bg-zinc-900/55 p-3 hover:bg-zinc-900 hover:border-gold-500/40 transition cursor-pointer"
                 >
                   <CoverArt
                     title={alb.title}
@@ -522,13 +522,13 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
                         setEditingAlbum(alb);
                         setEditReleaseOpen(true);
                       }}
-                      className="absolute top-4 right-4 rounded-full bg-black/75 p-2 text-amber-300 hover:bg-black cursor-pointer"
+                      className="absolute top-4 right-4 rounded-full bg-black/75 p-2 text-gold-300 hover:bg-black cursor-pointer"
                       title="Edit or delete album"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
                   )}
-                  <h4 className="mt-2.5 text-sm font-bold text-white truncate group-hover:text-amber-300">
+                  <h4 className="mt-2.5 text-sm font-bold text-white truncate group-hover:text-gold-300">
                     {alb.title}
                   </h4>
                   <p className="text-[11px] text-zinc-400">{albTracks.length} tracks • Album</p>

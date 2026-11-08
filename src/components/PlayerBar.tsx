@@ -143,7 +143,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               Go Back
             </button>
 
-            <span className="text-[11px] font-bold uppercase tracking-widest text-amber-400 truncate">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-gold-400 truncate">
               Now Streaming • {currentSong.category}
             </span>
 
@@ -169,7 +169,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
             <h2 className="text-xl sm:text-2xl font-extrabold text-white line-clamp-2 px-2">
               {currentSong.title}
             </h2>
-            <p className="mt-1 text-xs sm:text-sm font-medium text-amber-300/90">
+            <p className="mt-1 text-xs sm:text-sm font-medium text-gold-300/90">
               {currentSong.artist} • {currentSong.choir_group}
             </p>
 
@@ -187,7 +187,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                   style={{ width: `${bufferedPercent}%` }}
                 />
                 <div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-pink-500"
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-gold-400 to-pink-500"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -204,7 +204,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 onClick={toggleShuffle}
                 className={`p-2 rounded-full transition cursor-pointer ${
                   isAuthenticated && shuffle
-                    ? 'text-amber-400 bg-amber-500/15'
+                    ? 'text-gold-400 bg-gold-500/15'
                     : 'text-zinc-300 hover:text-white'
                 }`}
                 title="Shuffle"
@@ -224,7 +224,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               <button
                 type="button"
                 onClick={playPrev}
-                className="p-2 text-white hover:text-amber-300 transition cursor-pointer"
+                className="p-2 text-white hover:text-gold-300 transition cursor-pointer"
                 title="Previous"
               >
                 <SkipBack className="w-7 h-7 fill-current" />
@@ -233,7 +233,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               <button
                 type="button"
                 onClick={togglePlay}
-                className="flex h-15 w-15 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-pink-600 text-white shadow-xl shadow-pink-500/25 transition cursor-pointer"
+                className="flex h-15 w-15 items-center justify-center rounded-full bg-gradient-to-br from-gold-400 to-pink-600 text-white shadow-xl shadow-pink-500/25 transition cursor-pointer"
                 title={isPlaying ? 'Pause' : 'Play'}
               >
                 {isBuffering ? (
@@ -248,7 +248,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               <button
                 type="button"
                 onClick={playNext}
-                className="p-2 text-white hover:text-amber-300 transition cursor-pointer"
+                className="p-2 text-white hover:text-gold-300 transition cursor-pointer"
                 title="Next"
               >
                 <SkipForward className="w-7 h-7 fill-current" />
@@ -268,7 +268,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 onClick={cycleRepeat}
                 className={`p-2 rounded-full transition cursor-pointer ${
                   isAuthenticated && repeat !== 'off'
-                    ? 'text-amber-400 bg-amber-500/15'
+                    ? 'text-gold-400 bg-gold-500/15'
                     : 'text-zinc-300 hover:text-white'
                 }`}
                 title={`Repeat: ${repeat}`}
@@ -289,7 +289,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                     'Create a free account to unlock forwarding/seeking and all 295+ tracks!'
                   )
                 }
-                className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-400/40 px-4 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 cursor-pointer"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-gold-500/20 border border-gold-400/40 px-4 py-1.5 text-xs font-bold text-gold-300 hover:bg-gold-500/30 cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5" />
                 Preview Mode (5 Songs) • Create Account
@@ -326,16 +326,16 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               onClick={handleOfflineClick}
               className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold border transition cursor-pointer ${
                 isAuthenticated && isOfflineSaved
-                  ? 'border-emerald-400/45 bg-emerald-500/15 text-emerald-300'
+                  ? 'border-forest-400/45 bg-forest-500/15 text-forest-300'
                   : 'border-white/10 bg-white/5 text-zinc-200'
               }`}
             >
               {savingOffline ? (
-                <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                <Loader2 className="w-4 h-4 animate-spin text-gold-400" />
               ) : isAuthenticated && isOfflineSaved ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <CheckCircle2 className="w-4 h-4 text-forest-400" />
               ) : (
-                <CloudDownload className="w-4 h-4 text-emerald-400" />
+                <CloudDownload className="w-4 h-4 text-forest-400" />
               )}
               {isAuthenticated && isOfflineSaved ? 'Saved Offline' : 'Save Offline'}
             </button>
@@ -352,7 +352,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               }}
               className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-semibold text-zinc-200 hover:bg-white/10 transition cursor-pointer"
             >
-              <ListPlus className="w-4 h-4 text-amber-400" />
+              <ListPlus className="w-4 h-4 text-gold-400" />
               Playlist
             </button>
 
@@ -369,7 +369,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-semibold text-zinc-200 hover:bg-white/10 transition cursor-pointer"
               >
-                <FileText className="w-4 h-4 text-amber-300" />
+                <FileText className="w-4 h-4 text-gold-300" />
                 Lyrics
               </button>
             )}
@@ -387,15 +387,15 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-semibold text-zinc-200 hover:bg-white/10 transition cursor-pointer"
               >
-                <Share2 className="w-4 h-4 text-emerald-300" />
+                <Share2 className="w-4 h-4 text-forest-300" />
                 Share
               </button>
             )}
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-zinc-300">
             <button type="button" onClick={toggleMute} className="min-h-11 rounded-full bg-white/10 px-4">{isMuted ? 'Unmute audio' : 'Mute audio'}</button>
-            {systemVolumeControlled ? <span>Adjust loudness with your iPhone volume buttons or Control Center.</span> :
-              <input aria-label="Expanded playback volume" type="range" min={0} max={1} step={0.02} value={isMuted ? 0 : volume} onChange={(event) => setVolume(Number(event.target.value))} className="w-28 accent-amber-400" />}
+            {systemVolumeControlled ? <span>Adjust loudness with your device&rsquo;s volume buttons.</span> :
+              <input aria-label="Expanded playback volume" type="range" min={0} max={1} step={0.02} value={isMuted ? 0 : volume} onChange={(event) => setVolume(Number(event.target.value))} className="w-28 accent-gold-400" />}
           </div>
         </div>
       )}
@@ -423,12 +423,12 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                     {currentSong.title}
                   </p>
                   {isPrelistenMode && (
-                    <span className="rounded-full bg-amber-500/20 border border-amber-400/40 px-1.5 py-0.5 text-[9px] font-extrabold uppercase text-amber-300 flex-shrink-0">
+                    <span className="rounded-full bg-gold-500/20 border border-gold-400/40 px-1.5 py-0.5 text-[9px] font-extrabold uppercase text-gold-300 flex-shrink-0">
                       Pre-Listen
                     </span>
                   )}
                   {startupLatencyMs !== null && isAuthenticated && (
-                    <span className="hidden lg:inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300 flex-shrink-0">
+                    <span className="hidden lg:inline-flex items-center gap-0.5 rounded-full bg-forest-500/15 border border-forest-500/30 px-1.5 py-0.5 text-[10px] font-semibold text-forest-300 flex-shrink-0">
                       <Zap className="w-2.5 h-2.5" />
                       {(startupLatencyMs / 1000).toFixed(2)}s
                     </span>
@@ -455,7 +455,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                   style={{ width: `${bufferedPercent}%` }}
                 />
                 <div
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-violet-500"
+                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-gold-400 via-pink-500 to-gold-500"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -475,7 +475,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 title="Shuffle"
                 className={`p-1.5 rounded-full transition cursor-pointer ${
                   isAuthenticated && shuffle
-                    ? 'text-amber-400 bg-amber-500/15'
+                    ? 'text-gold-400 bg-gold-500/15'
                     : isAuthenticated
                     ? 'text-zinc-300 hover:text-white'
                     : 'text-zinc-500'
@@ -545,7 +545,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 title={`Repeat: ${repeat}`}
                 className={`p-1.5 rounded-full transition cursor-pointer ${
                   isAuthenticated && repeat !== 'off'
-                    ? 'text-amber-400 bg-amber-500/15'
+                    ? 'text-gold-400 bg-gold-500/15'
                     : isAuthenticated
                     ? 'text-zinc-300 hover:text-white'
                     : 'text-zinc-500'
@@ -566,7 +566,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                   type="button"
                   onClick={nextSpeed}
                   title="Playback speed"
-                  className="rounded-lg bg-white/10 px-1.5 py-1 text-[10px] font-bold text-amber-300 cursor-pointer"
+                  className="rounded-lg bg-white/10 px-1.5 py-1 text-[10px] font-bold text-gold-300 cursor-pointer"
                 >
                   {playbackRate}x
                 </button>
@@ -608,12 +608,12 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 }
                 className={`rounded-full p-1.5 transition cursor-pointer ${
                   isAuthenticated && isOfflineSaved
-                    ? 'text-emerald-400 bg-emerald-500/15'
-                    : 'text-zinc-300 hover:bg-white/10 hover:text-emerald-300'
+                    ? 'text-forest-400 bg-forest-500/15'
+                    : 'text-zinc-300 hover:bg-white/10 hover:text-forest-300'
                 }`}
               >
                 {savingOffline ? (
-                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-amber-400" />
+                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin text-gold-400" />
                 ) : isAuthenticated && isOfflineSaved ? (
                   <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 ) : (
@@ -632,7 +632,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                   onOpenPlaylistModal(currentSong);
                 }}
                 title="Add to playlist (Premium)"
-                className="rounded-full p-1.5 text-zinc-300 hover:bg-white/10 hover:text-amber-300 transition cursor-pointer"
+                className="rounded-full p-1.5 text-zinc-300 hover:bg-white/10 hover:text-gold-300 transition cursor-pointer"
               >
                 <ListPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
@@ -651,7 +651,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                   title="Twi & English Song Lyrics"
                   className={`rounded-full p-1.5 transition cursor-pointer ${
                     hasLyrics
-                      ? 'text-amber-300 bg-amber-500/15'
+                      ? 'text-gold-300 bg-gold-500/15'
                       : 'text-zinc-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
@@ -671,7 +671,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                     onOpenShareCard(currentSong);
                   }}
                   title="Share WhatsApp Status Card"
-                  className="rounded-full p-1.5 text-zinc-300 hover:bg-emerald-500/15 hover:text-emerald-300 transition cursor-pointer"
+                  className="rounded-full p-1.5 text-zinc-300 hover:bg-forest-500/15 hover:text-forest-300 transition cursor-pointer"
                 >
                   <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
@@ -686,13 +686,13 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               >
                 <ListMusic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {isAuthenticated && queue.length > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 rounded-full bg-amber-500 px-1 text-[8px] font-bold text-zinc-950">
+                  <span className="absolute -top-0.5 -right-0.5 rounded-full bg-gold-500 px-1 text-[8px] font-bold text-zinc-950">
                     {queue.length}
                   </span>
                 )}
               </button>
 
-              {/* Native iPhone loudness is controlled by the device, not HTMLMediaElement.volume. */}
+              {/* Phones and tablets control loudness with the hardware buttons, not HTMLMediaElement.volume. */}
               <div className={`relative flex items-center gap-1.5 ${systemVolumeControlled ? 'w-28' : 'w-24'}`}>
                 <button
                   type="button"
@@ -709,14 +709,14 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
                 {systemVolumeControlled ? (
                   <>
                     <button type="button" onClick={() => setVolumeHelp((value) => !value)}
-                      aria-label="iPhone volume instructions" aria-expanded={volumeHelp}
-                      className="min-h-8 text-[10px] font-semibold leading-tight text-amber-200">Device volume</button>
+                      aria-label="Device volume instructions" aria-expanded={volumeHelp}
+                      className="min-h-8 text-[10px] font-semibold leading-tight text-gold-200">Device volume</button>
 
                   </>
                 ) : (
                   <input aria-label="Playback volume" type="range" min={0} max={1} step={0.02}
                     value={isMuted ? 0 : volume} onChange={(e) => setVolume(parseFloat(e.target.value))}
-                    className="w-full accent-amber-400 h-1 cursor-pointer" />
+                    className="w-full accent-gold-400 h-1 cursor-pointer" />
                 )}
               </div>
 
@@ -731,7 +731,7 @@ export const PlayerBar: React.FC<PlayerBarProps> = ({
               </button>
             </div>
           </div>
-          {systemVolumeControlled && volumeHelp && <p role="status" className="mt-1 rounded-lg bg-amber-400/10 px-2 py-1 text-[11px] text-amber-200">Use your iPhone’s side volume buttons or Control Center for loudness. The speaker button mutes or unmutes this app.</p>}
+          {systemVolumeControlled && volumeHelp && <p role="status" className="mt-1 rounded-lg bg-gold-400/10 px-2 py-1 text-[11px] text-gold-200">Use your device’s volume buttons for loudness. The speaker button mutes or unmutes this app.</p>}
         </div>
       </div>
     </>

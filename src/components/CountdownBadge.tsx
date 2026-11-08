@@ -34,7 +34,7 @@ export const CountdownBadge: React.FC<CountdownBadgeProps> = ({
 
   if (remainingMs <= 0) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-1 text-xs font-bold text-emerald-300">
+      <span className="inline-flex items-center gap-1 rounded-full bg-forest-500/20 border border-forest-400/40 px-2.5 py-1 text-xs font-bold text-forest-300">
         <Sparkles className="w-3.5 h-3.5" />
         Premiered — Live Now!
       </span>
@@ -60,9 +60,9 @@ export const CountdownBadge: React.FC<CountdownBadgeProps> = ({
         ].map((unit) => (
           <div
             key={unit.label}
-            className="rounded-xl bg-black/60 border border-amber-400/30 px-2 py-2 backdrop-blur-md"
+            className="rounded-xl bg-black/60 border border-gold-400/30 px-2 py-2 backdrop-blur-md"
           >
-            <p className="text-base sm:text-lg font-extrabold tabular-nums text-amber-300 leading-none">
+            <p className="text-base sm:text-lg font-extrabold tabular-nums text-gold-300 leading-none">
               {unit.val}
             </p>
             <p className="text-[9px] uppercase tracking-wider text-zinc-400 mt-1">{unit.label}</p>
@@ -74,7 +74,7 @@ export const CountdownBadge: React.FC<CountdownBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-400/35 font-bold tabular-nums text-amber-300 ${
+      className={`inline-flex items-center gap-1.5 rounded-full bg-gold-500/15 border border-gold-400/35 font-bold tabular-nums text-gold-300 ${
         size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-3 py-1 text-xs'
       }`}
     >

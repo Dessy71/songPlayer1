@@ -41,14 +41,14 @@ export const PREMIUM_BENEFITS = [
     icon: Sparkles,
     title: 'Song Lyrics & Sharing',
     description: 'Read song lyrics and share songs or branded WhatsApp Status cards with your community.',
-    accent: 'text-sky-400 bg-sky-500/15 border-sky-400/30',
+    accent: 'text-gold-400 bg-gold-500/15 border-gold-400/30',
   },
   {
     icon: CloudDownload,
     title: 'In-App Offline Profile Vault',
     description:
-      'Save unlimited songs & convention sermons directly to your Gyidi Nwom profile for zero-data offline listening inside the app — without downloading files to your phone storage.',
-    accent: 'text-emerald-400 bg-emerald-500/15 border-emerald-400/30',
+      'Save unlimited songs & convention sermons directly to your Gyidi Nnwom profile for zero-data offline listening inside the app — without downloading files to your phone storage.',
+    accent: 'text-forest-400 bg-forest-500/15 border-forest-400/30',
   },
   {
     icon: Heart,
@@ -62,7 +62,7 @@ export const PREMIUM_BENEFITS = [
     title: 'Create & Add to Custom Playlists',
     description:
       'Build unlimited Sabbath worship sets, branch choir collections, and convention sermon study playlists.',
-    accent: 'text-amber-400 bg-amber-500/15 border-amber-400/30',
+    accent: 'text-gold-400 bg-gold-500/15 border-gold-400/30',
   },
   {
     icon: Wallet,
@@ -76,7 +76,7 @@ export const PREMIUM_BENEFITS = [
     title: 'Daily Bible Verse Flyers & Devotionals',
     description:
       'Receive and browse scheduled daily church Scripture flyers, memory verses, and spiritual encouragement.',
-    accent: 'text-violet-400 bg-violet-500/15 border-violet-400/30',
+    accent: 'text-gold-400 bg-gold-500/15 border-gold-400/30',
   },
   {
     icon: Video,
@@ -217,7 +217,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
     setStatusMessage(null);
 
     if (!userId || !userEmail) {
-      onOpenAuth('Create or sign in to your free Gyidi Nwom account first to subscribe to Premium.');
+      onOpenAuth('Create or sign in to your free Gyidi Nnwom account first to subscribe to Premium.');
       return;
     }
 
@@ -245,37 +245,37 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
               <span key={i} className="premium-confetti" style={{ left: `${(i * 37) % 100}%`, backgroundColor: ['#fbbf24', '#f472b6', '#34d399', '#60a5fa'][i % 4], animationDelay: `${(i % 13) * 0.07}s`, transform: `rotate(${i * 29}deg)` }} />
             ))}
           </div>
-          <div className="relative max-w-md rounded-3xl border border-amber-400/50 bg-zinc-900 p-8 text-center shadow-2xl" role="status">
-            <Crown className="mx-auto mb-4 h-14 w-14 text-amber-400" />
+          <div className="relative max-w-md rounded-3xl border border-gold-400/50 bg-zinc-900 p-8 text-center shadow-2xl" role="status">
+            <Crown className="mx-auto mb-4 h-14 w-14 text-gold-400" />
             <h2 id="premium-success-title" className="text-2xl font-extrabold text-white">Welcome to Premium!</h2>
             <p className="mt-3 text-zinc-300">Medaase! Your payment is verified and your Premium membership is active.</p>
-            <p className="mt-3 text-sm text-amber-200">Refreshing to unlock your Premium experience…</p>
-            <button onClick={() => window.location.reload()} className="mt-5 rounded-full bg-amber-400 px-5 py-2 font-bold text-zinc-950">Continue now</button>
+            <p className="mt-3 text-sm text-gold-200">Refreshing to unlock your Premium experience…</p>
+            <button onClick={() => window.location.reload()} className="mt-5 rounded-full bg-gold-400 px-5 py-2 font-bold text-zinc-950">Continue now</button>
           </div>
         </div>
       )}
       {/* Contextual Gated Feature Banner */}
       {promptReason && !isPremium && (
-        <div className="rounded-2xl border border-amber-400/45 bg-gradient-to-r from-amber-500/20 via-pink-500/15 to-zinc-900 px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm text-amber-100">
-            <Crown className="w-5 h-5 text-amber-400 flex-shrink-0" />
+        <div className="rounded-2xl border border-gold-400/45 bg-gradient-to-r from-gold-500/20 via-pink-500/15 to-zinc-900 px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 text-xs sm:text-sm text-gold-100">
+            <Crown className="w-5 h-5 text-gold-400 flex-shrink-0" />
             <span>
-              <strong className="text-amber-300">Premium Feature:</strong> {promptReason}
+              <strong className="text-gold-300">Premium Feature:</strong> {promptReason}
             </span>
           </div>
-          <span className="rounded-full bg-amber-400/20 border border-amber-300/40 px-3 py-1 text-[11px] font-extrabold text-amber-200">
+          <span className="rounded-full bg-gold-400/20 border border-gold-300/40 px-3 py-1 text-[11px] font-extrabold text-gold-200">
             From {currency} {monthlyPrice.toFixed(2)} / month
           </span>
         </div>
       )}
 
       {/* Hero Header */}
-      <section className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/20 via-pink-600/15 to-zinc-950 p-5 sm:p-8">
+      <section className="relative overflow-hidden rounded-3xl border border-gold-500/30 bg-gradient-to-br from-gold-500/20 via-pink-600/15 to-zinc-950 p-5 sm:p-8">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div className="space-y-2.5 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-400/40 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-amber-300">
+            <div className="inline-flex items-center gap-2 rounded-full bg-gold-500/20 border border-gold-400/40 px-3.5 py-1 text-xs font-extrabold uppercase tracking-wider text-gold-300">
               <Crown className="w-3.5 h-3.5" />
-              Gyidi Nwom Premium • Pricing &amp; Billing
+              Gyidi Nnwom Premium • Pricing &amp; Billing
             </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
               Unlock Offline Listening, Playlists, Likes, Daily Verses &amp; Live Streams
@@ -297,8 +297,8 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             </p>
             {isPremium ? (
               <>
-                <div className="flex items-center gap-2 text-emerald-300 font-extrabold text-base">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                <div className="flex items-center gap-2 text-forest-300 font-extrabold text-base">
+                  <CheckCircle2 className="w-5 h-5 text-forest-400 flex-shrink-0" />
                   {isAdmin && !profile?.is_premium
                     ? 'Master Admin (Full Access)'
                     : `Premium (${(profile?.premium_plan || 'Active').toUpperCase()})`}
@@ -327,7 +327,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
               <button
                 type="button"
                 onClick={onOpenAdminPremiumSettings}
-                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500/20 border border-amber-400/40 px-3 py-2 text-xs font-bold text-amber-200 hover:bg-amber-500/30 cursor-pointer"
+                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-gold-500/20 border border-gold-400/40 px-3 py-2 text-xs font-bold text-gold-200 hover:bg-gold-500/30 cursor-pointer"
               >
                 <Settings className="w-3.5 h-3.5" />
                 Admin: Edit Prices &amp; Paystack Key
@@ -341,12 +341,12 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
         <div
           className={`rounded-2xl border p-4 text-xs sm:text-sm flex items-start gap-2.5 ${
             statusMessage.type === 'ok'
-              ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-100'
+              ? 'border-forest-500/40 bg-forest-500/15 text-forest-100'
               : 'border-rose-500/40 bg-rose-500/15 text-rose-100'
           }`}
         >
           {statusMessage.type === 'ok' ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-4 h-4 text-forest-400 flex-shrink-0 mt-0.5" />
           ) : (
             <AlertCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
           )}
@@ -367,7 +367,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             </div>
 
             <div className="flex items-baseline gap-1.5 pt-1">
-              <span className="text-sm font-bold text-amber-400">{currency}</span>
+              <span className="text-sm font-bold text-gold-400">{currency}</span>
               <span className="text-4xl sm:text-5xl font-extrabold text-white tabular-nums">
                 {Number.isInteger(monthlyPrice) ? monthlyPrice : monthlyPrice.toFixed(2)}
               </span>
@@ -381,15 +381,15 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
 
             <ul className="space-y-2 pt-2 text-xs text-zinc-200">
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-forest-400 flex-shrink-0" />
                 Save songs to your profile for in-app offline listening
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-forest-400 flex-shrink-0" />
                 Like songs, build playlists &amp; view Daily Bible Verse flyers
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-forest-400 flex-shrink-0" />
                 Support Artistes &amp; access Live Video / Sabbath Radio
               </li>
             </ul>
@@ -399,7 +399,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             type="button"
             disabled={payingPlan !== null || verifying || celebrating}
             onClick={() => handleSubscribe('monthly')}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-amber-100 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-white hover:bg-gold-100 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
           >
             {payingPlan === 'monthly' ? (
               <>
@@ -418,22 +418,22 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
         </div>
 
         {/* Yearly Plan */}
-        <div className="relative rounded-3xl border-2 border-amber-400/60 bg-gradient-to-br from-amber-500/15 via-zinc-900 to-pink-600/15 p-6 flex flex-col justify-between space-y-5 shadow-xl shadow-amber-500/10">
+        <div className="relative rounded-3xl border-2 border-gold-400/60 bg-gradient-to-br from-gold-500/15 via-zinc-900 to-pink-600/15 p-6 flex flex-col justify-between space-y-5 shadow-xl shadow-gold-500/10">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400 px-3 py-1 text-xs font-extrabold text-zinc-950">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-400 px-3 py-1 text-xs font-extrabold text-zinc-950">
                 <Sparkles className="w-3.5 h-3.5" />
                 Yearly Plan • Best Value
               </span>
               {yearlySavingsPercent > 0 && (
-                <span className="rounded-full bg-emerald-500/20 border border-emerald-400/40 px-2.5 py-0.5 text-[11px] font-extrabold text-emerald-300">
+                <span className="rounded-full bg-forest-500/20 border border-forest-400/40 px-2.5 py-0.5 text-[11px] font-extrabold text-forest-300">
                   Save {yearlySavingsPercent}% (2 Months Free)
                 </span>
               )}
             </div>
 
             <div className="flex items-baseline gap-1.5 pt-1">
-              <span className="text-sm font-bold text-amber-300">{currency}</span>
+              <span className="text-sm font-bold text-gold-300">{currency}</span>
               <span className="text-4xl sm:text-5xl font-extrabold text-white tabular-nums">
                 {Number.isInteger(yearlyPrice) ? yearlyPrice : yearlyPrice.toFixed(2)}
               </span>
@@ -441,9 +441,9 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             </div>
 
             <p className="text-xs text-zinc-200 leading-relaxed">
-              12 full months of uninterrupted Gyidi Nwom Premium across conventions, Sabbath study,
+              12 full months of uninterrupted Gyidi Nnwom Premium across conventions, Sabbath study,
               and offline listening — at just{' '}
-              <strong className="text-amber-300">
+              <strong className="text-gold-300">
                 {currency} {(yearlyPrice / 12).toFixed(2)}/month
               </strong>
               .
@@ -451,15 +451,15 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
 
             <ul className="space-y-2 pt-2 text-xs text-zinc-100">
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-gold-400 flex-shrink-0" />
                 Everything in Monthly Premium for 365 days
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-gold-400 flex-shrink-0" />
                 Unlimited Offline Profile Vault for hymns &amp; long sermons
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-gold-400 flex-shrink-0" />
                 Priority convention live video &amp; Sabbath radio access
               </li>
             </ul>
@@ -469,7 +469,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             type="button"
             disabled={payingPlan !== null || verifying || celebrating}
             onClick={() => handleSubscribe('yearly')}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-pink-500 hover:opacity-95 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-gold-400 via-gold-500 to-pink-500 hover:opacity-95 disabled:opacity-60 px-5 py-3.5 text-sm font-extrabold text-zinc-950 transition cursor-pointer shadow-lg"
           >
             {payingPlan === 'yearly' ? (
               <>
@@ -491,7 +491,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
       {/*Paystack Security Strip*/}
       <div className="rounded-2xl border border-white/10 bg-zinc-900/50 px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
         <span className="inline-flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <ShieldCheck className="w-4 h-4 text-forest-400 flex-shrink-0" />
           Secured by <strong className="text-zinc-200">Paystack</strong> • Pay with MTN MoMo,
           Telecel Cash, AT Money, Visa, or Mastercard
         </span>
@@ -504,7 +504,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
           <h3 className="font-bold text-white">Already paid? Check my payment</h3>
           <button type="button" disabled={verifying || payingPlan !== null || celebrating}
             onClick={() => void recoverAccount()}
-            className="rounded-xl bg-emerald-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
+            className="rounded-xl bg-forest-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">
             {verifying ? 'Checking your account…' : 'Restore my subscription — no reference needed'}
           </button>
           <p className="text-sm text-zinc-300">Sign in to the same account on any device. Payments are saved securely to your account, even if browser data was cleared or the app was reinstalled.</p>
@@ -514,17 +514,17 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
             <select aria-label="Paid plan" value={recoveryPlan} onChange={(event) => setRecoveryPlan(event.target.value as PremiumPlan)} className="rounded-xl border border-white/20 bg-zinc-950 p-3 text-white">
               <option value="monthly">Monthly</option><option value="yearly">Yearly</option>
             </select>
-            <button disabled={verifying || payingPlan !== null || celebrating} className="rounded-xl bg-amber-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">{verifying ? 'Verifying…' : 'Verify existing payment'}</button>
+            <button disabled={verifying || payingPlan !== null || celebrating} className="rounded-xl bg-gold-400 px-4 py-3 font-bold text-zinc-950 disabled:opacity-50">{verifying ? 'Verifying…' : 'Verify existing payment'}</button>
           </form>
         </section>
       )}
 
-      {/* ALL BENEFITS OF GYIDI NWOM PREMIUM */}
+      {/* ALL BENEFITS OF GYIDI NNWOM PREMIUM */}
       <section className="space-y-4">
         <div>
           <h3 className="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
-            <Crown className="w-5 h-5 text-amber-400" />
-            Everything Included in Gyidi Nwom Premium
+            <Crown className="w-5 h-5 text-gold-400" />
+            Everything Included in Gyidi Nnwom Premium
           </h3>
           <p className="text-xs text-zinc-400 mt-0.5">
             Every Monthly ({currency} {monthlyPrice}) and Yearly ({currency} {yearlyPrice}) plan
@@ -558,7 +558,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
         <section className="rounded-2xl border border-white/10 bg-zinc-900/50 p-5 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-              <Receipt className="w-4 h-4 text-amber-400" />
+              <Receipt className="w-4 h-4 text-gold-400" />
               Billing &amp; Payment History
             </h3>
             <span className="text-[11px] text-zinc-500">{userEmail}</span>
@@ -588,7 +588,7 @@ export const PremiumBillingView: React.FC<PremiumBillingViewProps> = ({
                       <td className="py-2.5 pr-3 whitespace-nowrap">
                         {new Date(sub.created_at).toLocaleDateString()}
                       </td>
-                      <td className="py-2.5 pr-3 capitalize font-semibold text-amber-300">
+                      <td className="py-2.5 pr-3 capitalize font-semibold text-gold-300">
                         {sub.plan_interval}
                       </td>
                       <td className="py-2.5 pr-3 font-bold whitespace-nowrap">

@@ -74,7 +74,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:bg-white/15 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3.5 py-1.5 text-xs font-bold text-gold-300 hover:bg-white/15 cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
             Go Back
@@ -94,7 +94,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
         {canManageAlbum && (
           <button
             onClick={() => setEditAlbumOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 hover:bg-white/15 px-4 py-1.5 text-xs font-bold text-amber-300 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 hover:bg-white/15 px-4 py-1.5 text-xs font-bold text-gold-300 cursor-pointer"
           >
             <Pencil className="w-3.5 h-3.5" />
             Edit / Delete Album
@@ -103,7 +103,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
       </div>
 
       {/* Streaming Platform Album Header */}
-      <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-amber-500/20 via-violet-600/15 to-zinc-950 p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-end gap-6">
+      <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-gold-500/20 via-gold-600/15 to-zinc-950 p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-end gap-6">
         <CoverArt
           title={album.title}
           category={album.category}
@@ -114,7 +114,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
         />
 
         <div className="space-y-3 flex-1 min-w-0">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-black/40 border border-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-black/40 border border-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-gold-300">
             <Disc3 className="w-3.5 h-3.5" />
             {upcoming ? 'Upcoming Album Premiere' : 'Full Album'} • {album.category}
           </div>
@@ -133,7 +133,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
             {album.artiste_id && onOpenArtiste ? (
               <button
                 onClick={() => onOpenArtiste(album.artiste_id!)}
-                className="font-bold text-amber-300 hover:underline cursor-pointer"
+                className="font-bold text-gold-300 hover:underline cursor-pointer"
               >
                 {artiste?.stage_name || album.artist}
               </button>
@@ -154,7 +154,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
                 onComplete={onUnlocked}
               />
               <p className="text-xs text-zinc-400 flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-amber-400" />
+                <Calendar className="w-3.5 h-3.5 text-gold-400" />
                 Unlocks automatically on {new Date(album.premiere_at).toLocaleString()}
               </p>
             </div>
@@ -164,7 +164,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <button
                 onClick={() => playSong(sortedTracks[0], sortedTracks)}
-                className="inline-flex items-center gap-2 rounded-full bg-amber-500 hover:bg-amber-400 px-6 py-2.5 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-full bg-gold-500 hover:bg-gold-400 px-6 py-2.5 text-xs font-extrabold text-zinc-950 shadow-lg cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-zinc-950" />
                 Play Album
@@ -183,7 +183,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
                 }}
                 className="inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/15 px-5 py-2.5 text-xs font-bold text-white cursor-pointer"
               >
-                <Shuffle className="w-4 h-4 text-amber-400" />
+                <Shuffle className="w-4 h-4 text-gold-400" />
                 Shuffle Album
               </button>
             </div>
@@ -219,7 +219,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
                 className="flex items-center justify-between gap-3 px-4 py-3 text-zinc-400"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className="w-6 text-xs font-bold text-amber-400/80 tabular-nums">
+                  <span className="w-6 text-xs font-bold text-gold-400/80 tabular-nums">
                     {song.track_number || idx + 1}
                   </span>
                   <div className="min-w-0">
@@ -232,7 +232,7 @@ export const AlbumView: React.FC<AlbumViewProps> = ({
                   <span className="text-xs tabular-nums">
                     {formatDuration(song.duration_seconds)}
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-[10px] font-semibold text-amber-300">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/5 border border-white/10 px-2.5 py-1 text-[10px] font-semibold text-gold-300">
                     <Lock className="w-3 h-3" />
                     Premiere Locked
                   </span>

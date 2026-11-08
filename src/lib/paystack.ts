@@ -80,7 +80,7 @@ export async function openPaystackCheckout(opts: PaystackCheckoutOptions): Promi
         {
           display_name: 'Platform',
           variable_name: 'platform',
-          value: 'Gyidi Nwom',
+          value: 'Gyidi Nnwom',
         },
         {
           display_name: 'Plan',

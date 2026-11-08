@@ -136,14 +136,14 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
 
   const inviteCodeMessage = `Hello ${
     artiste.stage_name || 'Artiste'
-  }! Your verified Artiste profile and songs are live on Gyidi Nwom (${
+  }! Your verified Artiste profile and songs are live on Gyidi Nnwom (${
     window.location.origin
   }).\n\nTo log in & manage your songs/analytics:\n1. Click "Create Account" → select "Claim Profile"\n2. Enter Claim Code: ${currentCode}\n3. Choose your Email & Password!`;
 
   const directCredsMessage = createdCreds
     ? `Hello ${
         artiste.stage_name || 'Artiste'
-      }! Your verified Artiste account on Gyidi Nwom (${
+      }! Your verified Artiste account on Gyidi Nnwom (${
         window.location.origin
       }) is ready.\n\nSign In Credentials:\nEmail: ${createdCreds.email}\nPassword: ${
         createdCreds.password
@@ -161,7 +161,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
         </button>
 
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 border border-amber-400/30 px-3 py-1 text-[11px] font-bold text-amber-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-500/15 border border-gold-400/30 px-3 py-1 text-[11px] font-bold text-gold-300">
             <KeyRound className="w-3.5 h-3.5" />
             Pre-Created Profile Access
           </span>
@@ -183,10 +183,10 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
         {/* Option 1: Direct Email + Password Creation */}
         <form
           onSubmit={handleCreateDirectCredentials}
-          className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3"
+          className="rounded-2xl border border-forest-500/30 bg-forest-500/5 p-4 space-y-3"
         >
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+            <h4 className="text-xs font-extrabold uppercase tracking-wider text-forest-300 flex items-center gap-1.5">
               <UserCheck className="w-4 h-4" />
               Option 1: Create Ready-Made Login (Email + Password)
             </h4>
@@ -210,7 +210,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. oboguseth@gmail.com"
-                  className="w-full rounded-xl border border-white/15 bg-zinc-900 pl-9 pr-3 py-2 text-xs text-white focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-zinc-900 pl-9 pr-3 py-2 text-xs text-white focus:border-forest-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -221,7 +221,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                 <button
                   type="button"
                   onClick={() => setPassword(makeSuggestedPassword(artiste.stage_name))}
-                  className="text-[10px] font-bold text-emerald-300 hover:underline cursor-pointer"
+                  className="text-[10px] font-bold text-forest-300 hover:underline cursor-pointer"
                 >
                   Generate
                 </button>
@@ -234,7 +234,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-zinc-900 pl-9 pr-3 py-2 text-xs font-mono text-white focus:border-emerald-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-zinc-900 pl-9 pr-3 py-2 text-xs font-mono text-white focus:border-forest-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -243,15 +243,15 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
           <button
             type="submit"
             disabled={busy}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 py-2.5 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-forest-500 hover:bg-forest-400 py-2.5 text-xs font-extrabold text-zinc-950 cursor-pointer disabled:opacity-50"
           >
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             Create & Link Login Credentials
           </button>
 
           {createdCreds && (
-            <div className="rounded-xl border border-emerald-400/50 bg-zinc-950 p-3.5 space-y-2">
-              <p className="text-xs font-extrabold text-emerald-300">
+            <div className="rounded-xl border border-forest-400/50 bg-zinc-950 p-3.5 space-y-2">
+              <p className="text-xs font-extrabold text-forest-300">
                 ✓ Login Ready! Send these credentials to {artiste.stage_name}:
               </p>
               <div className="text-xs font-mono text-zinc-200 space-y-0.5 bg-zinc-900 rounded-lg p-2.5">
@@ -259,13 +259,13 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                   Email: <strong className="text-white">{createdCreds.email}</strong>
                 </p>
                 <p>
-                  Password: <strong className="text-amber-300">{createdCreds.password}</strong>
+                  Password: <strong className="text-gold-300">{createdCreds.password}</strong>
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => copyText('creds', directCredsMessage)}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/20 border border-emerald-400/40 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-forest-500/20 border border-forest-400/40 px-3 py-1.5 text-xs font-bold text-forest-300 hover:bg-forest-500/30 cursor-pointer"
               >
                 {copiedKey === 'creds' ? (
                   <>
@@ -285,9 +285,9 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
 
         {/* Option 2: Self-Service Secret Claim Code */}
         {!artiste.claimed_user_id && (
-          <div className="rounded-2xl border border-amber-400/25 bg-amber-500/5 p-4 space-y-3">
+          <div className="rounded-2xl border border-gold-400/25 bg-gold-500/5 p-4 space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-gold-300 flex items-center gap-1.5">
                 <KeyRound className="w-4 h-4" />
                 Option 2: Secret Claim Code (Artiste Picks Own Email & Password)
               </h4>
@@ -303,7 +303,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-zinc-900 px-4 py-2.5">
-              <span className="text-sm font-mono font-extrabold tracking-widest text-amber-300">
+              <span className="text-sm font-mono font-extrabold tracking-widest text-gold-300">
                 {currentCode || 'Click "New Code" to generate'}
               </span>
               {currentCode && (
@@ -315,7 +315,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                   >
                     {copiedKey === 'code' ? (
                       <>
-                        <Check className="w-3 h-3 text-emerald-400" />
+                        <Check className="w-3 h-3 text-forest-400" />
                         Copied
                       </>
                     ) : (
@@ -329,7 +329,7 @@ export const ProvisionArtisteLoginModal: React.FC<ProvisionArtisteLoginModalProp
                   <button
                     type="button"
                     onClick={() => copyText('invite', inviteCodeMessage)}
-                    className="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 text-[11px] font-extrabold text-zinc-950 hover:bg-amber-400 cursor-pointer"
+                    className="inline-flex items-center gap-1 rounded-lg bg-gold-500 px-2.5 py-1 text-[11px] font-extrabold text-zinc-950 hover:bg-gold-400 cursor-pointer"
                   >
                     {copiedKey === 'invite' ? 'Invite Copied!' : 'Copy WhatsApp Invite'}
                   </button>
