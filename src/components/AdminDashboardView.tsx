@@ -55,6 +55,7 @@ import { AdminAppAnalytics } from './AdminAppAnalytics';
 import { SupportModal } from './SupportModal'; // NEW: SupportModal import
 import { formatBytes, formatDuration } from '../lib/format';
 import { usePlayer } from '../context/PlayerContext';
+import { AdminArtisteApprovals } from './AdminArtisteApprovals';
 
 const USER_TYPE_FILTERS: Array<{ id: 'all' | 'artiste' | 'listener' | 'sacsu' | 'admin'; label: string }> = [
   { id: 'all', label: 'All Users' },
@@ -742,6 +743,8 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       {/* SUBTAB 2: ALBUM & SINGLE APPROVALS */}
       {subTab === 'approvals' && (
         <div className="space-y-5">
+          <AdminArtisteApprovals />
+
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               {(['pending', 'approved', 'rejected'] as const).map((st) => (

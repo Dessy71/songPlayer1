@@ -94,6 +94,8 @@ export interface UserProfile {
   momo_phone_number?: string | null;
   /** Admin-controlled: a support page only goes live once approved with Paystack details. */
   approval_status?: ApprovalStatus;
+  /** Why an administrator rejected this profile, shown back to the artiste. */
+  rejection_reason?: string | null;
   is_verified_artiste?: boolean;
   is_premium?: boolean;
   premium_plan?: 'monthly' | 'yearly' | 'lifetime' | null;
