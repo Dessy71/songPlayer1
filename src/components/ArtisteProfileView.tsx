@@ -285,7 +285,12 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-2xl font-extrabold text-white">{stageTitle}</h2>
+                <div>
+                  <h2 className="text-2xl font-extrabold text-white">{stageTitle}</h2>
+                  {artiste.real_name && (
+                    <p className="text-sm text-zinc-400">{artiste.real_name}</p>
+                  )}
+                </div>
                 {artiste.is_verified_artiste && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/20 border border-gold-400/30 px-2.5 py-0.5 text-[10px] font-bold text-gold-300">
                     <BadgeCheck className="w-3.5 h-3.5" />

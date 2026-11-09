@@ -88,6 +88,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 }) => {
   const defaultStageName = profile.stage_name || profile.display_name || '';
   const isAdmin = profile.role === 'admin';
+  // Every release is credited to the profile it is uploaded from, so the
+  // artiste is never retyped. Renaming the profile renames the catalogue.
+  const artisteName = defaultStageName || 'SCG Artiste';
 
   const minPremiereDate = useMemo(() => {
     const d = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 15 * 60 * 1000);
@@ -100,7 +103,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   const [premiereLocalDt, setPremiereLocalDt] = useState(minPremiereDate);
 
   const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState(defaultStageName);
   const [albumDescription, setAlbumDescription] = useState('');
   const [category, setCategory] = useState<'Songs' | 'Sermons' | 'Recordings'>('Songs');
   const [choirGroup, setChoirGroup] = useState(
@@ -274,7 +276,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     setUploading(true);
     const randomTheme = THEMES[Math.floor(Math.random() * THEMES.length)];
     const desiredStatus = isAdmin && adminAutoApprove ? 'approved' : 'pending';
-    const cleanArtist = (artist.trim() || defaultStageName || 'SCG Artiste').trim();
+    const cleanArtist = artisteName;
 
     const parsedYear = conventionYear.trim() ? parseInt(conventionYear.trim(), 10) : null;
 
@@ -630,16 +632,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({
 
             <div>
               <label className="block text-xs font-medium text-zinc-300 mb-1">
-                Artiste / Choir / SACSU Name *
+                Artiste / Choir / SACSU Name
               </label>
-              <input
-                type="text"
-                required
-                value={artist}
-                onChange={(e) => setArtist(e.target.value)}
-                placeholder="e.g. Obogu Seth / KNUST SACSU"
-                className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3.5 py-2 text-sm text-white placeholder-zinc-500 focus:border-gold-500 focus:outline-none"
-              />
+              <div className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-zinc-950/60 px-3.5 py-2">
+                <span className="truncate text-sm text-white">{artisteName}</span>
+                <span className="flex-shrink-0 rounded-md bg-gold-500/15 px-1.5 py-0.5 text-[10px] font-bold text-gold-300">
+                  From profile
+                </span>
+              </div>
+              <p className="mt-1 text-[10px] text-zinc-500">
+                Taken from your profile. Update it in your studio to change it everywhere.
+              </p>
             </div>
           </div>
 
