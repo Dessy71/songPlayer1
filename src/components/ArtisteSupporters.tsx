@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { HeartHandshake } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { SectionHeading } from './SectionHeading';
 
 /**
  * Verified listeners who chose to share their support for an artiste.
@@ -51,15 +53,15 @@ export function ArtisteSupporters({ artisteId }: { artisteId: string }) {
   const offsetStep = -20;
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-zinc-900 p-3">
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <h3 className="font-bold text-white">Supporters</h3>
-        <p className="text-xs text-zinc-400">
-          {supporters.length} {supporters.length === 1 ? 'supporter' : 'supporters'}
-        </p>
-      </div>
+    <section className="space-y-4">
+      <SectionHeading
+        icon={<HeartHandshake className="w-4.5 h-4.5" />}
+        title="Supporters"
+        subtitle="Listeners backing this artiste"
+        count={supporters.length}
+      />
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-zinc-900/40 p-3">
         {visible.map((s, i) => {
           const rank = i + 1;
           const medal = medalByRank[rank as keyof typeof medalByRank];
