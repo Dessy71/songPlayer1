@@ -32,6 +32,7 @@ import {
   Wallet, // NEW: Wallet icon for Support Details
   Ban,
   DoorOpen,
+  Link2,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
@@ -54,6 +55,7 @@ import { MessagesView } from './MessagesView';
 import { AdminContentMonetizationPanel } from './AdminContentMonetizationPanel';
 import { ProvisionArtisteLoginModal } from './ProvisionArtisteLoginModal';
 import { AdminAppAnalytics } from './AdminAppAnalytics';
+import { AdminUnlinkedReleases } from './AdminUnlinkedReleases';
 import { SupportModal } from './SupportModal'; // NEW: SupportModal import
 import { formatBytes, formatDuration } from '../lib/format';
 
@@ -103,6 +105,7 @@ export type AdminSubTab =
   | 'messages'
   | 'users'
   | 'catalog'
+  | 'unlinked'
   | 'premium'
   | 'adsense';
 
@@ -654,6 +657,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           >
             <Music2 className="w-3.5 h-3.5" />
             Catalog ({adminSongs.length})
+          </button>
+
+          <button
+            onClick={() => setSubTab('unlinked')}
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition cursor-pointer ${
+              subTab === 'unlinked'
+                ? 'bg-gold-500 text-zinc-950'
+                : 'text-zinc-300 hover:bg-white/5'
+            }`}
+          >
+            <Link2 className="w-3.5 h-3.5" />
+            Unlinked
           </button>
 
           <button
@@ -1407,6 +1422,16 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       )}
 
       {/* SUBTAB: PREMIUM PRICING & PAYSTACK BILLING */}
+      {subTab === 'unlinked' && (
+        <AdminUnlinkedReleases
+          profiles={adminProfiles}
+          onChanged={() => {
+            void loadFullAdminData();
+            void onRefreshAll();
+          }}
+        />
+      )}
+
       {subTab === 'premium' && (
         <AdminContentMonetizationPanel
           mode="premium"
