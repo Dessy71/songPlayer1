@@ -37,6 +37,7 @@ import { PremiereCard } from './PremiereCard';
 import { AlbumPremiereCard } from './AlbumPremiereCard';
 import { CoverArt } from './CoverArt';
 import { ArtisteSupporters } from './ArtisteSupporters';
+import { SectionHeading } from './SectionHeading';
 import { EditArtisteModal } from './EditArtisteModal';
 import { EditReleaseModal } from './EditReleaseModal';
 import { usePlayer } from '../context/PlayerContext';
@@ -269,60 +270,63 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
 
       {/* Artiste Hero Header */}
       <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-gold-500/20 via-pink-600/15 to-zinc-900 p-6 sm:p-8">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col lg:flex-row items-start gap-6">
+          <div className="flex flex-col sm:flex-row items-start gap-5 min-w-0 flex-1">
             {artiste.avatar_url ? (
               <img
                 src={artiste.avatar_url}
                 alt=""
-                className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl object-cover border-2 border-gold-400/40 shadow-2xl"
+                className="h-28 w-28 sm:h-32 sm:w-32 shrink-0 rounded-3xl object-cover border-2 border-gold-400/40 shadow-2xl"
               />
             ) : (
-              <div className="h-28 w-28 sm:h-32 sm:w-32 rounded-3xl bg-gradient-to-br from-gold-500 to-pink-600 flex items-center justify-center text-white shadow-2xl">
+              <div className="h-28 w-28 sm:h-32 sm:w-32 shrink-0 rounded-3xl bg-gradient-to-br from-gold-500 to-pink-600 flex items-center justify-center text-white shadow-2xl">
                 <User className="w-12 h-12" />
               </div>
             )}
 
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <div>
-                  <h2 className="text-2xl font-extrabold text-white">{stageTitle}</h2>
-                  {artiste.real_name && (
-                    <p className="text-sm text-zinc-400">{artiste.real_name}</p>
+            <div className="min-w-0 flex-1 space-y-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                    {stageTitle}
+                  </h2>
+                  {artiste.is_verified_artiste && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-verified/15 border border-verified/40 px-2.5 py-0.5 text-[10px] font-bold text-verified">
+                      <BadgeCheck className="w-3.5 h-3.5" />
+                      Verified
+                    </span>
+                  )}
+                  {isAdminViewer && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/10 border border-white/20 px-2.5 py-0.5 text-[10px] font-bold text-zinc-300">
+                      <Wallet className="w-3.5 h-3.5" />
+                      Admin View
+                    </span>
                   )}
                 </div>
-                {artiste.is_verified_artiste && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/20 border border-gold-400/30 px-2.5 py-0.5 text-[10px] font-bold text-gold-300">
-                    <BadgeCheck className="w-3.5 h-3.5" />
-                    Verified
-                  </span>
-                )}
-                {isAdminViewer && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/20 border border-gold-400/30 px-2.5 py-0.5 text-[10px] font-bold text-gold-300">
-                    <Wallet className="w-3.5 h-3.5" />
-                    Admin View
-                  </span>
+                {artiste.real_name && (
+                  <p className="text-sm text-zinc-400">{artiste.real_name}</p>
                 )}
               </div>
 
-              <p className="text-sm text-zinc-300 mt-0.5">
+              <p className="max-w-2xl text-sm leading-relaxed text-zinc-300 line-clamp-2">
                 {artiste.bio || 'No bio provided yet.'}
               </p>
 
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-300">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-300">
                 {artiste.tertiary_institution && (
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-cyan-500/15 border border-cyan-400/30 px-2.5 py-1 text-cyan-200 font-semibold">
-                    <GraduationCap className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-1 rounded-lg bg-white/10 border border-white/10 px-2.5 py-1 font-semibold">
+                    <GraduationCap className="w-3.5 h-3.5 text-gold-400" />
                     {artiste.tertiary_institution}
                   </span>
                 )}
                 {(artiste.scg_zone || artiste.scg_branch) && (
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-black/40 border border-white/10 px-2.5 py-1">
+                  <span className="inline-flex items-center gap-1 rounded-lg bg-white/10 border border-white/10 px-2.5 py-1">
                     <MapPin className="w-3.5 h-3.5 text-gold-400" />
                     {[artiste.scg_zone, artiste.scg_branch].filter(Boolean).join(' • ')}
                   </span>
                 )}
-                <span className="rounded-lg bg-black/40 border border-white/10 px-2.5 py-1">
+                <span className="inline-flex items-center gap-1 rounded-lg bg-white/10 border border-white/10 px-2.5 py-1">
+                  <Music2 className="w-3.5 h-3.5 text-gold-400" />
                   {releasedSongs.length} Tracks
                   {releasedAlbums.length > 0 ? ` • ${releasedAlbums.length} Albums` : ''} •{' '}
                   {totalPlays.toLocaleString()} Plays
@@ -332,7 +336,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               {releasedSongs.length > 0 && (
                 <button
                   onClick={() => playSong(releasedSongs[0], releasedSongs)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 transition cursor-pointer shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 transition cursor-pointer shadow-lg"
                 >
                   <Play className="w-4 h-4 fill-zinc-950" />
                   Play All ({releasedSongs.length})
@@ -342,7 +346,7 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
           </div>
 
           {/* Fan Support Card (Approval + Gyidi Nnwom Premium gated, admin always visible) */}
-          <div className="w-full md:w-80 rounded-2xl border border-forest-500/30 bg-zinc-950/90 p-4 shadow-xl">
+          <div className="w-full lg:w-80 shrink-0 rounded-2xl border border-forest-500/30 bg-zinc-950/90 p-4 shadow-xl">
             <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2 text-forest-400 text-xs font-bold uppercase tracking-wider">
                 <Wallet className="w-4 h-4" />
@@ -481,15 +485,11 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       {/* Upcoming Album & Song Premieres */}
       {(upcomingAlbums.length > 0 || upcomingSingles.length > 0) && (
         <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-gold-400" />
-            <div>
-              <h3 className="text-lg font-extrabold text-white">Upcoming Premieres</h3>
-              <p className="text-xs text-zinc-400">
-                Approved albums &amp; singles counting down to public launch
-              </p>
-            </div>
-          </div>
+          <SectionHeading
+            icon={<Calendar className="w-4.5 h-4.5" />}
+            title="Upcoming Premieres"
+            subtitle="Approved albums & singles counting down to public launch"
+          />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {upcomingAlbums.map((alb) => (
@@ -526,13 +526,12 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
 
       {/* Released Albums */}
       {releasedAlbums.length > 0 && (
-        <section className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Disc3 className="w-5 h-5 text-gold-400" />
-            <h3 className="text-lg font-extrabold text-white">
-              Albums &amp; EPs ({releasedAlbums.length})
-            </h3>
-          </div>
+        <section className="space-y-4">
+          <SectionHeading
+            icon={<Disc3 className="w-4.5 h-4.5" />}
+            title="Albums & EPs"
+            count={releasedAlbums.length}
+          />
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {releasedAlbums.map((alb) => {
@@ -578,13 +577,12 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
       )}
 
       {/* Released Songs & Sermons */}
-      <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Music2 className="w-5 h-5 text-pink-400" />
-          <h3 className="text-lg font-extrabold text-white">
-            Tracks &amp; Preachings ({releasedSongs.length})
-          </h3>
-        </div>
+      <section className="space-y-4">
+        <SectionHeading
+          icon={<Music2 className="w-4.5 h-4.5" />}
+          title="Tracks & Preachings"
+          count={releasedSongs.length}
+        />
 
         {releasedSongs.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/40 p-10 text-center text-sm text-zinc-400">

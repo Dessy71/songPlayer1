@@ -535,7 +535,7 @@ export const MessagesView: React.FC<MessagesViewProps> = ({
                               <ShieldCheck className="w-3.5 h-3.5 text-gold-400 flex-shrink-0" />
                             )}
                             {partner?.is_verified_artiste && (
-                              <BadgeCheck className="w-3.5 h-3.5 text-gold-400 flex-shrink-0" />
+                              <BadgeCheck className="w-3.5 h-3.5 text-verified flex-shrink-0" />
                             )}
                           </p>
                           <p className="text-[11px] text-zinc-400 truncate">

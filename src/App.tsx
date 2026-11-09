@@ -1652,7 +1652,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                             {art.stage_name || art.display_name}
                           </h4>
                           {art.is_verified_artiste && (
-                            <BadgeCheck className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                            <BadgeCheck className="w-4 h-4 text-verified flex-shrink-0" />
                           )}
                         </div>
 

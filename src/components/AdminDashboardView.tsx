@@ -1516,7 +1516,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             {p.stage_name || p.display_name || 'Listener'}
                           </button>
                           {p.is_verified_artiste && (
-                            <BadgeCheck className="w-4 h-4 text-gold-400 flex-shrink-0 shrink-0" />
+                            <BadgeCheck className="w-4 h-4 text-verified flex-shrink-0 shrink-0" />
                           )}
                           {p.is_sacsu && (
                             <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300 shrink-0 whitespace-nowrap">
