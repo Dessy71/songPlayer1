@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   X,
   Image as ImageIcon,
@@ -30,6 +30,10 @@ interface EditReleaseModalProps {
   onDeleted: () => void;
 }
 
+// Stable default. Writing `[]` inline would hand every render a brand new
+// array, which the sync effect below would read as "the record changed".
+const NO_TRACKS: Song[] = [];
+
 const CHOIR_GROUPS = [
   'SCG Hymns',
   'Obogu Choir',
@@ -51,7 +55,7 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
   onClose,
   song,
   album,
-  albumTracks = [],
+  albumTracks = NO_TRACKS,
   onSaved,
   onDeleted,
 }) => {
@@ -84,7 +88,24 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
 
+  // Which record is being edited. The parent re-renders often - a background
+  // clock ticks every few seconds - and several call sites build `albumTracks`
+  // inline, so depending on those objects directly re-ran this effect on every
+  // render and reset the form mid-keystroke. Only the record's identity counts.
+  const recordKey = album ? `album:${album.id}` : song ? `song:${song.id}` : null;
+  const syncedKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
+    if (!isOpen) {
+      // Closed: forget the sync so reopening the same record loads it fresh
+      // rather than showing edits from a cancelled attempt.
+      syncedKeyRef.current = null;
+      return;
+    }
+    if (!recordKey) return;
+    if (syncedKeyRef.current === recordKey) return;
+    syncedKeyRef.current = recordKey;
+
     if (album) {
       setTitle(album.title);
       setArtist(album.artist);
@@ -121,7 +142,25 @@ export const EditReleaseModal: React.FC<EditReleaseModalProps> = ({
     }
     setError(null);
     setOkMsg(null);
-  }, [album, song, albumTracks, isOpen]);
+  }, [isOpen, recordKey, album, song, albumTracks]);
+
+  // Tracks that show up after the form was built still need a starting title.
+  // This only fills in entries that are missing, so it can never overwrite
+  // track titles that are part-way through being edited.
+  useEffect(() => {
+    if (!isAlbumMode || albumTracks.length === 0) return;
+    setTrackTitles((prev) => {
+      let added = false;
+      const next = { ...prev };
+      for (const track of albumTracks) {
+        if (next[track.id] === undefined) {
+          next[track.id] = track.title;
+          added = true;
+        }
+      }
+      return added ? next : prev;
+    });
+  }, [isAlbumMode, albumTracks]);
 
   if (!isOpen || (!song && !album)) return null;
 
