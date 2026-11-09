@@ -26,6 +26,7 @@ import {
   Crown,
   X,
   Camera,
+  Moon,
 } from 'lucide-react';
 import {
   NavTab,
@@ -58,6 +59,7 @@ interface SidebarProps {
   onOpenUpload: () => void;
   onOpenSupport: () => void;
   onOpenDeveloper: () => void;
+  onOpenAccountClosure?: () => void;
   mobileOpen: boolean;
   onCloseMobile: () => void;
 }
@@ -83,6 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSignOut,
   onOpenSupport,
   onOpenDeveloper,
+  onOpenAccountClosure,
   mobileOpen,
   onCloseMobile,
 }) => {
@@ -500,6 +503,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <LogOut className="w-3.5 h-3.5" />
               Sign Out
             </button>
+
+            {onOpenAccountClosure && (
+              <button
+                onClick={onOpenAccountClosure}
+                className="mt-1.5 w-full flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-[11px] font-medium text-zinc-500 hover:bg-white/5 hover:text-zinc-300 transition cursor-pointer"
+              >
+                <Moon className="w-3.5 h-3.5" />
+                Close or delete account
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-1.5">

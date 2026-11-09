@@ -31,6 +31,7 @@ import {
   Crown,
   Wallet, // NEW: Wallet icon for Support Details
   Ban,
+  DoorOpen,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
@@ -390,6 +391,25 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       await onRefreshAll();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Action failed.');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  // Reopening a closed account is a verification step, so it is admin-only.
+  // Nothing is restored or deleted here - the data was never touched.
+  const toggleClosed = async (profile: UserProfile, closed: boolean) => {
+    setBusyId(profile.id);
+    try {
+      const { error } = await supabase.rpc('admin_set_account_closed', {
+        p_profile_id: profile.id,
+        p_closed: closed,
+      });
+      if (error) throw error;
+      await loadFullAdminData();
+      await onRefreshAll();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Could not update this account.');
     } finally {
       setBusyId(null);
     }
@@ -1514,6 +1534,21 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             </span>
                           )}
                         </div>
+                        {p.is_closed && (
+                          <div className="mt-1 flex items-center gap-1.5 min-w-0 overflow-hidden">
+                            <span className="rounded-full bg-zinc-500/20 px-2 py-0.5 text-[10px] font-bold text-zinc-300 shrink-0 whitespace-nowrap">
+                              Closed
+                            </span>
+                            {p.closed_reason && (
+                              <span
+                                className="truncate text-[10px] text-zinc-500 min-w-0"
+                                title={p.closed_reason}
+                              >
+                                {p.closed_reason}
+                              </span>
+                            )}
+                          </div>
+                        )}
                         {p.is_banned && (
                           <div className="mt-1 flex items-center gap-1.5 min-w-0 overflow-hidden">
                             <span className="rounded-full bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-300 shrink-0 whitespace-nowrap">
@@ -1685,6 +1720,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           >
                             <Ban className="w-3 h-3 shrink-0" />
                             {p.is_banned ? 'Reinstate' : 'Suspend'}
+                          </button>
+                        )}
+
+                        {p.is_closed && (
+                          <button
+                            disabled={busyId === p.id}
+                            onClick={() => void toggleClosed(p, false)}
+                            className="inline-flex items-center gap-1 rounded-lg bg-forest-500/20 px-2 py-1 text-[11px] font-bold text-forest-300 hover:bg-forest-500/30 cursor-pointer shrink-0"
+                            title="Reopen a closed account after verifying the owner"
+                          >
+                            <DoorOpen className="w-3 h-3 shrink-0" />
+                            Reopen
                           </button>
                         )}
                       </div>
