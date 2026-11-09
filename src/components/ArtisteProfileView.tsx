@@ -336,9 +336,9 @@ export const ArtisteProfileView: React.FC<ArtisteProfileViewProps> = ({
               {releasedSongs.length > 0 && (
                 <button
                   onClick={() => playSong(releasedSongs[0], releasedSongs)}
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-extrabold text-zinc-950 hover:bg-gold-100 transition cursor-pointer shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-xs font-extrabold text-white backdrop-blur transition hover:border-white/25 hover:bg-white/10 cursor-pointer"
                 >
-                  <Play className="w-4 h-4 fill-zinc-950" />
+                  <Play className="w-4 h-4 fill-white" />
                   Play All ({releasedSongs.length})
                 </button>
               )}
