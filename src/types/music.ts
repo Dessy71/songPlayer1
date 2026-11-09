@@ -100,6 +100,12 @@ export interface UserProfile {
   is_banned?: boolean;
   ban_reason?: string | null;
   banned_at?: string | null;
+  /** Reversible self-service deactivation. Reopening is administrator-only. */
+  is_closed?: boolean;
+  closed_at?: string | null;
+  closed_reason?: string | null;
+  /** Set when permanent deletion is requested; purged after the recovery window. */
+  delete_requested_at?: string | null;
   is_verified_artiste?: boolean;
   is_premium?: boolean;
   premium_plan?: 'monthly' | 'yearly' | 'lifetime' | null;

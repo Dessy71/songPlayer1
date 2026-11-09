@@ -35,6 +35,7 @@ import {
   RotateCw,
   Smartphone,
   ArrowLeft,
+  AlertTriangle,
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { recoverPremiumAccount } from './lib/premiumPayment';
@@ -74,6 +75,9 @@ import { UploadModal } from './components/UploadModal';
 import { ThemeToggle } from './components/ThemeToggle';
 import { SupportGyidiButton } from './components/SupportGyidiButton';
 import BannedScreen from './components/BannedScreen';
+import ClosedAccountScreen from './components/ClosedAccountScreen';
+import AccountClosureModal from './components/AccountClosureModal';
+import { RECOVERY_DAYS, finaliseDeletion, formatDueDate } from './lib/accountClosure';
 import { SupportModal } from './components/SupportModal';
 import { DeveloperModal } from './components/DeveloperModal';
 import { PlaylistModal } from './components/PlaylistModal';
@@ -118,6 +122,7 @@ interface MainAppInnerProps {
   listeningNowFeed: Array<{ song: Song; playedAt: string }>;
   guestUnlockedIds: Set<string>;
   fetchPlatformData: () => Promise<void>;
+  fetchOwnProfile: (uid: string) => Promise<void>;
   openAccountPrompt: (reason?: string, defaultArtiste?: boolean) => void;
 }
 
@@ -142,6 +147,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   listeningNowFeed,
   guestUnlockedIds,
   fetchPlatformData,
+  fetchOwnProfile,
   openAccountPrompt,
 }) => {
   const {
@@ -180,6 +186,13 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   }, [currentSong?.id]);
 
   const isAuthenticated = Boolean(userId);
+  const hasUploads = useMemo(
+    () =>
+      userProfile
+        ? songs.some((s) => s.artiste_id === userProfile.id || s.uploaded_by === userProfile.id)
+        : false,
+    [songs, userProfile]
+  );
   const [nowTick, setNowTick] = useState<number>(() => Date.now());
   const isPremium = useMemo(
     () => isUserPremiumActive(userProfile, platformSettings, nowTick),
@@ -270,6 +283,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   const [createArtisteOpen, setCreateArtisteOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [developerOpen, setDeveloperOpen] = useState(false);
+  const [accountClosureOpen, setAccountClosureOpen] = useState(false);
   const [playlistModalSong, setPlaylistModalSong] = useState<Song | null>(null);
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
   const [dailyFeedOpen, setDailyFeedOpen] = useState(false);
@@ -1134,6 +1148,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         onOpenUpload={handleUploadTrigger}
         onOpenSupport={() => setSupportOpen(true)}
         onOpenDeveloper={() => setDeveloperOpen(true)}
+        onOpenAccountClosure={() => setAccountClosureOpen(true)}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
@@ -2505,6 +2520,42 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
         </main>
       </div>
 
+      {userProfile?.delete_requested_at && (
+        <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-4 lg:left-64">
+          <div className="flex w-full max-w-md items-start gap-3 rounded-2xl border border-amber-500/30 bg-zinc-900/95 p-3 shadow-2xl backdrop-blur">
+            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-300" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-extrabold text-white">
+                Your account is scheduled for deletion
+              </p>
+              <p className="mt-0.5 text-[11px] text-zinc-400">
+                {formatDueDate(
+                  new Date(
+                    new Date(userProfile.delete_requested_at).getTime() +
+                      RECOVERY_DAYS * 24 * 60 * 60 * 1000
+                  ).toISOString()
+                )
+                  ? `It becomes permanent on ${formatDueDate(
+                      new Date(
+                        new Date(userProfile.delete_requested_at).getTime() +
+                          RECOVERY_DAYS * 24 * 60 * 60 * 1000
+                      ).toISOString()
+                    )}.`
+                  : `It becomes permanent in ${RECOVERY_DAYS} days.`}{' '}
+                You can cancel until then.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAccountClosureOpen(true)}
+              className="flex-shrink-0 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/15 cursor-pointer"
+            >
+              Manage
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* The browser blocks audio on a fresh page load because there has been
           no user gesture yet, which is exactly what arriving from a shared
           link looks like. Offer the single tap it is waiting for rather than
@@ -2630,6 +2681,36 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
       />
       <DeveloperModal isOpen={developerOpen} onClose={() => setDeveloperOpen(false)} />
 
+      <AccountClosureModal
+        isOpen={accountClosureOpen}
+        email={userEmail}
+        state={
+          userProfile
+            ? {
+                is_banned: userProfile.is_banned ?? false,
+                ban_reason: userProfile.ban_reason ?? null,
+                is_closed: userProfile.is_closed ?? false,
+                closed_at: userProfile.closed_at ?? null,
+                closed_reason: userProfile.closed_reason ?? null,
+                delete_requested_at: userProfile.delete_requested_at ?? null,
+                delete_due_at: userProfile.delete_requested_at
+                  ? new Date(
+                      new Date(userProfile.delete_requested_at).getTime() +
+                        RECOVERY_DAYS * 24 * 60 * 60 * 1000
+                    ).toISOString()
+                  : null,
+              }
+            : null
+        }
+        hasUploads={hasUploads}
+        onClose={() => setAccountClosureOpen(false)}
+        onClosed={() => {
+          setAccountClosureOpen(false);
+          void fetchOwnProfile(userId ?? '');
+        }}
+        onDeletionChanged={() => void fetchOwnProfile(userId ?? '')}
+      />
+
       <PlaylistModal
         isOpen={playlistModalOpen}
         onClose={() => setPlaylistModalOpen(false)}
@@ -2678,6 +2759,7 @@ export default function App() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const finalisingDeletionRef = useRef(false);
 
   // Dynamically load Google AdSense script whenever Admin activates it, but
   // never for Premium accounts. Gating the script matters as much as gating
@@ -2748,7 +2830,12 @@ export default function App() {
     }
     if (albumRows) setAlbums(albumRows as Album[]);
     // Suspended accounts drop out of the public directory.
-    if (profileRows) setArtistes((profileRows as UserProfile[]).filter((p) => !p.is_banned));
+    // A closed account takes its public artiste profile down with it. The music
+    // stays up; only the profile disappears from listings.
+    if (profileRows)
+      setArtistes(
+        (profileRows as UserProfile[]).filter((p) => !p.is_banned && !p.is_closed)
+      );
     if (eventRows) setPlayEvents(eventRows as PlayEventItem[]);
     if (settingsRow) setPlatformSettings(settingsRow as PlatformSettings);
     if (flyerRows) setVerseFlyers(flyerRows as DailyVerseFlyer[]);
@@ -2802,6 +2889,29 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, [fetchOwnProfile, fetchPlatformData]);
+
+  // Once the recovery window has passed there is no way back, so finish the
+  // deletion the next time this account surfaces. There is no scheduler on the
+  // project, so the check runs here rather than on a cron.
+  useEffect(() => {
+    if (!userId || !userProfile?.delete_requested_at) return;
+    if (finalisingDeletionRef.current) return;
+    const requested = new Date(userProfile.delete_requested_at).getTime();
+    if (!Number.isFinite(requested)) return;
+    const due = requested + RECOVERY_DAYS * 24 * 60 * 60 * 1000;
+    if (Date.now() < due) return;
+
+    finalisingDeletionRef.current = true;
+    void finaliseDeletion()
+      .catch(() => undefined)
+      .then(async () => {
+        await supabase.auth.signOut().catch(() => undefined);
+        setUserProfile(null);
+        setUserId(null);
+        // The auth user is gone; reload so nothing keeps using a dead session.
+        window.location.reload();
+      });
+  }, [userId, userProfile?.delete_requested_at]);
 
   useEffect(() => {
     if (!userId) return;
@@ -2873,6 +2983,18 @@ export default function App() {
     );
   }
 
+  // A closed account is reversible but not self-service: the owner cannot
+  // sign back in, so the screen has to explain how to be reopened.
+  if (userProfile?.is_closed) {
+    return (
+      <ClosedAccountScreen
+        closedAt={userProfile.closed_at}
+        displayName={userProfile.stage_name || userProfile.display_name}
+        onSignOut={() => void supabase.auth.signOut()}
+      />
+    );
+  }
+
   return (
     <PlayerProvider
       userId={userId}
@@ -2901,6 +3023,7 @@ export default function App() {
         listeningNowFeed={listeningNowFeed}
         guestUnlockedIds={guestUnlockedIds}
         fetchPlatformData={fetchPlatformData}
+        fetchOwnProfile={fetchOwnProfile}
         openAccountPrompt={openAccountPrompt}
       />
 
