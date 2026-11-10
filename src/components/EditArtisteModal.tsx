@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   Camera,
@@ -53,24 +53,45 @@ export const EditArtisteModal: React.FC<EditArtisteModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
 
+  // Which record is being edited. The parent re-renders often - a background
+  // clock ticks every few seconds, and the admin dashboard refreshes its whole
+  // profile list - and `artiste` is an object, so depending on it directly
+  // re-ran this effect on every parent render and reset the form mid-keystroke.
+  // Only the record's identity matters, not the object wrapping it.
+  const recordKey = artiste?.id ? `artiste:${artiste.id}` : null;
+  const syncedKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (isOpen && artiste) {
-      setRealName(artiste.real_name || '');
-      setStageName(artiste.stage_name || artiste.display_name || '');
-      setScgZone(artiste.scg_zone || '');
-      setScgBranch(artiste.scg_branch || '');
-      setIsSacsu(Boolean(artiste.is_sacsu));
-      setTertiaryInstitution(artiste.tertiary_institution || '');
-      setBio(artiste.bio || '');
-      setBankName(artiste.bank_name || '');
-      setBankAccountNumber(artiste.bank_account_number || '');
-      setBankAccountName(artiste.bank_account_name || '');
-      setMomoOperator(artiste.momo_operator || '');
-      setMomoPhoneNumber(artiste.momo_phone_number || '');
-      setAvatarUrl(artiste.avatar_url || '');
-      setAssignEmail(artiste.email || '');
+    if (!isOpen) {
+      // Closed: forget the sync so reopening the same record loads it fresh
+      // rather than showing edits from a cancelled attempt.
+      syncedKeyRef.current = null;
+      return;
     }
-  }, [isOpen, artiste, isAdminViewer]);
+    if (!artiste || !recordKey) return;
+    if (syncedKeyRef.current === recordKey) return;
+    syncedKeyRef.current = recordKey;
+
+    setRealName(artiste.real_name || '');
+    setStageName(artiste.stage_name || artiste.display_name || '');
+    setScgZone(artiste.scg_zone || '');
+    setScgBranch(artiste.scg_branch || '');
+    setIsSacsu(Boolean(artiste.is_sacsu));
+    setTertiaryInstitution(artiste.tertiary_institution || '');
+    setBio(artiste.bio || '');
+    // Previously omitted: every other field was re-seeded but this one was not,
+    // so a stale payment method could survive a record change and be saved.
+    setPaymentMethod(artiste.payment_method || null);
+    setBankName(artiste.bank_name || '');
+    setBankAccountNumber(artiste.bank_account_number || '');
+    setBankAccountName(artiste.bank_account_name || '');
+    setMomoOperator(artiste.momo_operator || '');
+    setMomoPhoneNumber(artiste.momo_phone_number || '');
+    setAvatarUrl(artiste.avatar_url || '');
+    setAssignEmail(artiste.email || '');
+    setError(null);
+    setOkMsg(null);
+  }, [isOpen, recordKey, artiste, isAdminViewer]);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
