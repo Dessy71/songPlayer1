@@ -96,6 +96,7 @@ import {
   syncProfileOfflineLibrary,
 } from './lib/offlineAudio';
 import { clearSermonProgress, getSermonProgressMap } from './lib/sermonProgress';
+import { resolveCoverUrl } from './lib/defaultCovers';
 import { recordPlay, startAnalytics } from './lib/appAnalytics';
 import { formatDuration } from './lib/format';
 
@@ -1791,7 +1792,9 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
                   description: nextPremiere?.premiere_at
                     ? `${nextPremiere.artist} · ${new Date(nextPremiere.premiere_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`
                     : 'Explore scheduled releases and premiere countdowns',
-                  image: nextPremiere?.cover_url || undefined,
+                  image: nextPremiere
+                    ? resolveCoverUrl(nextPremiere.cover_url, nextPremiere.title)
+                    : undefined,
                   icon: <CalendarClock className="h-6 w-6" />,
                   onOpen: () => navigateToTab('upcoming'),
                 },

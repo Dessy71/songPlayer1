@@ -9,6 +9,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Song } from '../types/music';
+import { resolveCoverUrl } from '../lib/defaultCovers';
 
 interface ShareCardModalProps {
   isOpen: boolean;
@@ -119,14 +120,18 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({
       const artY = 250;
 
       let drewCover = false;
-      if (song.cover_url) {
+      // Draw the same cover the app shows. For a release with no artwork of its
+      // own that is one of the defaults, so the share card never renders the
+      // old initials tile.
+      const coverSrc = resolveCoverUrl(song.cover_url, song.title);
+      if (coverSrc) {
         try {
           const img = new Image();
           img.crossOrigin = 'anonymous';
           await new Promise<void>((resolve, reject) => {
             img.onload = () => resolve();
             img.onerror = () => reject(new Error('img load err'));
-            img.src = song.cover_url!;
+            img.src = coverSrc;
           });
           ctx.save();
           ctx.beginPath();
