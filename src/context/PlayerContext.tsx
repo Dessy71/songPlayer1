@@ -9,6 +9,7 @@ import {
   writeRecentCache,
 } from '../lib/recentPlays';
 import { applyAudioVolume, usesSystemVolume } from '../lib/audioVolume';
+import { resolveAudioUrl } from '../lib/audioCdn';
 import { clearSermonProgress, saveSermonProgress } from '../lib/sermonProgress';
 
 interface PlayOptions {
@@ -251,7 +252,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
       if (!prefetcher) return;
       lastPrefetchedUrlRef.current = song.stream_url;
       prefetcher.preload = 'auto';
-      prefetcher.src = song.stream_url;
+      prefetcher.src = resolveAudioUrl(song.stream_url);
       prefetcher.load();
     },
     [isBuffering, currentSong, isAuthenticated, guestUnlockedIds]
@@ -376,7 +377,7 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
     if (!audio || !currentSong) return;
     if (audio.paused) {
       if (!audio.src) {
-        audio.src = currentSong.stream_url;
+        audio.src = resolveAudioUrl(currentSong.stream_url);
       }
       clickStartRef.current = performance.now();
       audio

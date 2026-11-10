@@ -516,7 +516,18 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
 
     const fetchUnread = async () => {
       const [{ data: msgs }, { data: reads }] = await Promise.all([
-        supabase.from('messages').select('id,sender_profile_id,recipient_profile_id,is_broadcast,is_read'),
+        // Filter server-side. Previously this pulled the entire table every
+        // 15s per user and filtered in JS, so cost grew with total message
+        // history rather than with the user's own messages. RLS still scopes
+        // the rows; this just lets the planner use an index to find them.
+        supabase
+          .from('messages')
+          .select('id,sender_profile_id,recipient_profile_id,is_broadcast,is_read')
+          // Spelling out `is_broadcast = false` on the first branch lets the
+          // planner use idx_messages_recipient_unread, which is a partial index
+          // over exactly the non-broadcast rows. is_broadcast is NOT NULL, so
+          // these two branches cover every row: no message can be dropped.
+          .or(`and(recipient_profile_id.eq.${userProfile.id},is_broadcast.eq.false),is_broadcast.eq.true`),
         supabase
           .from('broadcast_reads')
           .select('message_id')
