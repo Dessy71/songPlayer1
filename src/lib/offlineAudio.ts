@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { Song } from '../types/music';
+import { resolveAudioUrl } from './audioCdn';
 
 const AUDIO_CACHE_NAME = 'gyidi-offline-audio-v1';
 
@@ -68,7 +69,10 @@ export async function saveSongForOffline(song: Song, userId: string): Promise<vo
     throw new Error('In-app offline audio storage is not supported in this browser.');
   }
   const cache = await caches.open(AUDIO_CACHE_NAME);
-  const res = await fetch(song.stream_url, { mode: 'cors' });
+  // Fetch from the CDN when one is configured, but always cache under the
+  // canonical Supabase URL so already-saved tracks keep working even if the
+  // CDN base is changed or switched off later.
+  const res = await fetch(resolveAudioUrl(song.stream_url), { mode: 'cors' });
   if (!res.ok) {
     throw new Error('Could not cache audio stream for offline listening.');
   }
@@ -113,7 +117,7 @@ export async function removeSongFromOffline(song: Song, userId: string): Promise
 }
 
 export async function resolvePlayableAudioUrl(song: Song): Promise<string> {
-  if (!('caches' in window)) return song.stream_url;
+  if (!('caches' in window)) return resolveAudioUrl(song.stream_url);
   try {
     const cache = await caches.open(AUDIO_CACHE_NAME);
     const cached = await cache.match(song.stream_url, { ignoreVary: true });
@@ -124,5 +128,5 @@ export async function resolvePlayableAudioUrl(song: Song): Promise<string> {
   } catch {
     // fallback to stream_url
   }
-  return song.stream_url;
+  return resolveAudioUrl(song.stream_url);
 }

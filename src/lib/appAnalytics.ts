@@ -9,7 +9,17 @@ import { supabase } from './supabase';
  */
 
 const SESSION_KEY = 'gyidi_analytics_session';
-const HEARTBEAT_MS = 60_000;
+/**
+ * IMPORTANT: this is coupled to the admin dashboard's "active now" window.
+ *
+ * admin_analytics_overview() counts a session as active when
+ * `last_seen_at > now() - interval '5 minutes'`. At 1000 concurrent listeners a
+ * 60s beat is ~43M edge-function invocations a month, so we halve it — but we
+ * must NOT raise it to 5 minutes: a session's last_seen_at would then sit right
+ * on the boundary and users would flicker in and out of the live counters.
+ * 2 minutes guarantees at least two beats inside every 5-minute window.
+ */
+const HEARTBEAT_MS = 120_000;
 const FUNCTION_NAME = 'app-analytics';
 
 function randomId(): string {
