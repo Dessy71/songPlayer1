@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mic2, Music2, Radio } from 'lucide-react';
+import { resolveCoverUrl } from '../lib/defaultCovers';
 
 /**
  * Generated cover art. Every theme now draws from the two brand hues only —
@@ -71,6 +72,18 @@ export const CoverArt: React.FC<CoverArtProps> = ({
 }) => {
   const style = THEME_MAP[theme] || THEME_MAP.sunset;
 
+  /**
+   * Releases without artwork get one of the default covers. Resolved here
+   * rather than at the ~21 call sites so that every screen agrees on which
+   * artwork a given release shows, seeded on the title because that is the one
+   * identifying field every call site has.
+   */
+  const [failed, setFailed] = React.useState(false);
+  const src = React.useMemo(() => resolveCoverUrl(coverUrl, title), [coverUrl, title]);
+
+  // A release whose artwork changes should get a fresh attempt at loading it.
+  React.useEffect(() => setFailed(false), [src]);
+
   const initials = React.useMemo(() => {
     const cleaned = title.replace(/[^a-zA-Z0-9\s]/g, ' ').trim();
     const parts = cleaned.split(/\s+/).filter(Boolean);
@@ -87,14 +100,18 @@ export const CoverArt: React.FC<CoverArtProps> = ({
     xl: 'w-12 h-12',
   };
 
-  if (coverUrl) {
+  if (src && !failed) {
     return (
       <div className={`relative overflow-hidden bg-zinc-900 select-none ${className}`}>
         <img
-          src={coverUrl}
+          src={src}
           alt={title}
           loading="lazy"
           decoding="async"
+          // Only reachable if a stored URL 404s; keeps a broken-image icon off
+          // the screen. Releases with no artwork never reach this branch,
+          // because they are given a default cover above.
+          onError={() => setFailed(true)}
           className="w-full h-full object-cover"
         />
       </div>

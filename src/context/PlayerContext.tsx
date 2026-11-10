@@ -11,6 +11,7 @@ import {
 import { applyAudioVolume, usesSystemVolume } from '../lib/audioVolume';
 import { resolveAudioUrl } from '../lib/audioCdn';
 import { clearSermonProgress, saveSermonProgress } from '../lib/sermonProgress';
+import { resolveCoverUrl } from '../lib/defaultCovers';
 
 interface PlayOptions {
   isPrelisten?: boolean;
@@ -665,9 +666,15 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({
         title: currentSong.title,
         artist: currentSong.artist,
         album: `Gyidi Nnwom • ${currentSong.choir_group}`,
-        artwork: currentSong.cover_url
-          ? [{ src: currentSong.cover_url, sizes: '512x512', type: 'image/png' }]
-          : [{ src: '/logo-mark.png', sizes: '256x256', type: 'image/png' }],
+        // Shows the same artwork the app does. A release with no cover of its
+        // own gets its default cover here, so the lock screen never falls back
+        // to the app logo for one song and a real cover for the next.
+        artwork: [
+          {
+            src: resolveCoverUrl(currentSong.cover_url, currentSong.title),
+            sizes: '512x512',
+          },
+        ],
       });
 
       navigator.mediaSession.setActionHandler('play', togglePlay);
