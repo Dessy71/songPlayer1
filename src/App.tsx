@@ -82,6 +82,7 @@ import { SupportModal } from './components/SupportModal';
 import { DeveloperModal } from './components/DeveloperModal';
 import { PlaylistModal } from './components/PlaylistModal';
 import { GoogleAdBanner, useGoogleAdSenseScript } from './components/GoogleAdBanner';
+import { canServeAds } from './lib/adPlacement';
 import { DailyFeedModal, getTodayUtcDateStr } from './components/DailyFeedModal';
 import { LyricsDrawer } from './components/LyricsDrawer';
 import { ShareCardModal } from './components/ShareCardModal';
@@ -201,6 +202,20 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
   );
 
   const [activeTab, setActiveTab] = useState<NavTab>(() => new URLSearchParams(window.location.search).has('payment_return') ? 'premium' : 'discover');
+
+  /**
+   * Ads are served only on catalogue screens that actually have content - never
+   * on Premium, Messages, the admin dashboard, an empty library tab, or while
+   * the catalogue is still loading. See src/lib/adPlacement.ts.
+   *
+   * Loading the script per screen rather than once for the whole session is the
+   * point: it is removed again the moment the viewer moves somewhere ads are
+   * not allowed, which is what stops Auto Ads placing a unit on a screen with
+   * no publisher content.
+   */
+  const adsAllowed =
+    !isPremium && canServeAds({ tab: activeTab, hasPublishedContent: songs.length > 0 });
+  useGoogleAdSenseScript(platformSettings, adsAllowed);
   const [tabHistory, setTabHistory] = useState<NavTab[]>([]);
   const [premiumPromptReason, setPremiumPromptReason] = useState<string | null>(null);
   const [selectedArtisteId, setSelectedArtisteId] = useState<string | null>(null);
@@ -1881,7 +1896,7 @@ const MainAppInner: React.FC<MainAppInnerProps> = ({
               <GoogleAdBanner
                 settings={platformSettings}
                 slotType="home"
-                adsEnabled={!isPremium}
+                adsEnabled={adsAllowed}
                 isAdmin={userProfile?.role === 'admin'}
                 onConfigureClick={() => {
                   setAdminInitialSubTab('adsense');
@@ -2775,11 +2790,6 @@ export default function App() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const finalisingDeletionRef = useRef(false);
 
-  // Dynamically load Google AdSense script whenever Admin activates it, but
-  // never for Premium accounts. Gating the script matters as much as gating
-  // the banners: Auto Ads inject units on their own once this is on the page.
-  const adsAllowed = !isUserPremiumActive(userProfile, platformSettings);
-  useGoogleAdSenseScript(platformSettings, adsAllowed);
 
   // Auth modal state hoisted so PlayerProvider & every action gate can open Create Account!
   const [authOpen, setAuthOpen] = useState(false);

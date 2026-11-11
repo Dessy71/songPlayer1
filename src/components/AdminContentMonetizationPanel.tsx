@@ -1135,8 +1135,16 @@ export const AdminContentMonetizationPanel: React.FC<AdminContentMonetizationPan
                 onChange={(e) => setAdsAutoAds(e.target.checked)}
                 className="rounded accent-forest-400"
               />
-              Enable Google Auto Ads (Recommended — Google automatically places high-earning ads)
+              Enable Google Auto Ads
             </label>
+            <p className="-mt-1 text-[11px] leading-relaxed text-zinc-400">
+              Auto Ads is switched on and off in your{' '}
+              <strong className="text-zinc-300">Google AdSense dashboard</strong>. This
+              switch only records your intent; it cannot turn Google's automatic placement
+              on or off. The app decides <em>where</em> ads may appear: only on catalogue
+              screens that actually have content. Google is not given the chance to place
+              an ad on Premium, Messages, Admin, Studio, Live, or an empty library tab.
+            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div>

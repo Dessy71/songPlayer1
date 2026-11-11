@@ -35,6 +35,7 @@ import {
   isUserPremiumActive,
 } from '../types/music';
 import { GoogleAdBanner } from './GoogleAdBanner';
+import { isAdSafeTab } from '../lib/adPlacement';
 import { supabase } from '../lib/supabase';
 
 interface SidebarProps {
@@ -451,7 +452,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <GoogleAdBanner
             settings={platformSettings || null}
             slotType="sidebar"
-            adsEnabled={!isPremium}
+            adsEnabled={!isPremium && isAdSafeTab(activeTab)}
           />
         </div>
       </nav>
