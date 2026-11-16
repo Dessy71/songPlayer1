@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Gyidi Nnwom — iPhone Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="stage">
+  <div class="device">
+    <!-- iOS status bar -->
+    <div class="notch"></div>
+    <div class="status">
+      <span id="clock">9:41</span>
+      <span class="status__right">
+        <span class="bars"><i></i><i></i><i></i><i></i></span>
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="none" aria-hidden="true">
+          <path d="M1 3.6a9.5 9.5 0 0113 0M3.6 6.2a6 6 0 017.8 0M6.2 8.8a2.4 2.4 0 012.6 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="batt"><span></span></span>
+      </span>
+    </div>
+
+    <!-- Screens render here -->
+    <div id="screen"></div>
+
+    <!-- Tab bar + mini player render here -->
+    <div id="chrome"></div>
+
+    <!-- Sheets / full player render here -->
+    <div id="overlay"></div>
+
+    <div class="home-ind"></div>
+  </div>
+
+  <p class="stage__hint">
+    <b>Tap anything.</b> Bottom tabs switch screens, tapping a song opens the player,
+    and the lyrics / queue buttons slide up sheets.
+  </p>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
